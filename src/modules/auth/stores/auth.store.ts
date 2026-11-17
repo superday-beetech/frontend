@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
       updated_at: context.updated_at,
     }
 
-    permissions.value = context.permissions
+    permissions.value = Array.isArray(context.permissions) ? context.permissions : []
     isSuperadmin.value = context.is_superadmin
   }
 
