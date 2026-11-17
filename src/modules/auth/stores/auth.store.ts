@@ -72,7 +72,6 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     permissions.value = []
     isSuperadmin.value = false
-    isRoutesLoaded.value = false
   }
 
   async function logout() {
