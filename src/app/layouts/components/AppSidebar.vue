@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { X, PanelLeftClose, PanelLeftOpen } from 'lucide-vue-next'
-import { useAuthStore } from '@/modules/auth'
+import { useNavigationStore } from '@/modules/navigation'
 import { useLayout } from '@/app/layouts/useLayout'
 import SidebarTreeItem from './SidebarTreeItem.vue'
 
-const auth = useAuthStore()
+const navigation = useNavigationStore()
 const { isSidebarMini, isMobileSidebarOpen, toggleSidebarMini, closeMobileSidebar } = useLayout()
 </script>
 
@@ -43,7 +43,7 @@ const { isSidebarMini, isMobileSidebarOpen, toggleSidebarMini, closeMobileSideba
 
     <!-- Navigation Tree -->
     <nav class="smooth-scroll flex-1 p-3 space-y-1">
-      <SidebarTreeItem v-for="menu in auth.visibleMenus" :key="menu.id" :item="menu" :mini="isSidebarMini" />
+      <SidebarTreeItem v-for="menu in navigation.visibleSidebar" :key="menu.id" :item="menu" :mini="isSidebarMini" />
     </nav>
 
     <!-- Collapse / Mini Toggle Footer (Desktop) -->
