@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getErrorStatus } from '@/core/api/errors'
 import { authApi } from '../api/auth.api'
-import { can, filterMenus } from '../utils/permissions'
-import type { AuthUser, DynamicMenu, LoginPayload } from '../types'
+import { can } from '../utils/permissions'
+import type { AuthUser, LoginPayload } from '../types'
 
 /**
  * Status login ditentukan oleh session server (cookie HttpOnly).
@@ -13,8 +13,6 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<AuthUser | null>(null)
   const permissions = ref<string[]>([])
   const isSuperadmin = ref(false)
-  const menus = ref<DynamicMenu[]>([])
-  const isRoutesLoaded = ref(false)
   const isSessionChecked = ref(false)
 
   const isAuthenticated = computed(() => user.value !== null)
@@ -22,8 +20,6 @@ export const useAuthStore = defineStore('auth', () => {
   function hasPermission(permission: string | string[]): boolean {
     return can(permissions.value, permission)
   }
-
-  const visibleMenus = computed(() => filterMenus(menus.value, hasPermission))
 
   async function fetchSessionContext() {
     const context = await authApi.getSessionContext()
@@ -65,7 +61,6 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(payload: LoginPayload) {
     await authApi.login(payload)
 
-    isRoutesLoaded.value = false
     await fetchSessionContext()
     isSessionChecked.value = true
   }
@@ -77,7 +72,6 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     permissions.value = []
     isSuperadmin.value = false
-    menus.value = []
     isRoutesLoaded.value = false
   }
 
@@ -96,9 +90,6 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     permissions,
     isSuperadmin,
-    menus,
-    visibleMenus,
-    isRoutesLoaded,
     isSessionChecked,
     isAuthenticated,
     hasPermission,
