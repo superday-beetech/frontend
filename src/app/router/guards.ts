@@ -1,6 +1,7 @@
 import type { Router } from 'vue-router'
 
 import { useAuthStore } from '@/modules/auth'
+import { useNavigationStore } from '@/modules/navigation'
 import { useOrganizationStore } from '@/modules/auth/stores/organization.store'
 
 import { useToast } from '@/shared/composables/useToast'
@@ -11,6 +12,7 @@ import { registerDynamicRoutes, resetDynamicRoutes } from './dynamic-routes'
 export function installRouterGuards(router: Router): void {
   router.beforeEach(async (to) => {
     const auth = useAuthStore()
+    const navigation = useNavigationStore()
 
     if (to.meta.guestOnly && !auth.isAuthenticated) {
       return true
@@ -30,6 +32,7 @@ export function installRouterGuards(router: Router): void {
     // 2. Authentication
     if (!auth.isAuthenticated) {
       resetDynamicRoutes(router)
+      navigation.clear()
 
       if (to.meta.guestOnly) return true
 
@@ -43,11 +46,19 @@ export function installRouterGuards(router: Router): void {
       return { name: 'Dashboard' }
     }
 
-    // 3. Register dynamic routes
-    if (!auth.isRoutesLoaded) {
-      registerDynamicRoutes(router, auth.menus)
-      auth.isRoutesLoaded = true
+    // 3. Load navigation separately from /auth/me, then register its Vue routes.
+    if (!navigation.isLoaded) {
+      try {
+        await navigation.fetchNavigation()
+      } catch {
+        useToast().error('Gagal memuat navigasi', 'Periksa endpoint navigasi dan koneksi server.')
+        return false
+      }
+    }
 
+    if (!navigation.isRoutesLoaded) {
+      registerDynamicRoutes(router, navigation.sidebar)
+      navigation.setRoutesLoaded(true)
       return to.fullPath
     }
 
