@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import customerService, { type Customer, type CustomerPayload } from "../services/customerService";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const props = defineProps<{
   customer?: Customer | null;
@@ -45,7 +47,7 @@ async function submitForm() {
   if (loading.value) return;
 
   if (!(form.code ?? "").trim() || !form.name.trim()) {
-    notify.warning("Kode dan nama customer wajib diisi.");
+    toast.warning("Kode dan nama customer wajib diisi.");
     return;
   }
 
@@ -70,14 +72,14 @@ async function submitForm() {
       throw new Error(Array.isArray(result.message) ? result.message.join(", ") : result.message || "Gagal menyimpan customer.");
     }
 
-    notify.success(isEdit.value ? "Customer berhasil diperbarui." : "Customer berhasil ditambahkan.");
+    toast.success(isEdit.value ? "Customer berhasil diperbarui." : "Customer berhasil ditambahkan.");
 
     emit("select", result.data);
     emit("close");
   } catch (error: any) {
     const message = error?.response?.data?.message || error?.message || "Terjadi kesalahan saat menyimpan customer.";
 
-    notify.error(Array.isArray(message) ? message.join(", ") : message);
+    toast.error(Array.isArray(message) ? message.join(", ") : message);
   } finally {
     loading.value = false;
   }
