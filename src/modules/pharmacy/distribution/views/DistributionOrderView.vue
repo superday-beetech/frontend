@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import distributionService from "../services/distributionService";
-import type { DistributionOrder, DistributionOrderStatus } from "../types/distribution";
+import type { DistributionOrder } from "../types/distribution";
 
 import { useToast } from "@/shared/composables/useToast";
 
