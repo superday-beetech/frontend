@@ -1,8 +1,7 @@
 import { computed } from "vue";
 
-import { useMenuStore } from "@/stores/menu";
-import { usePermissionStore } from "@/stores/permission";
-import type { MenuItem } from "@/types/menu";
+import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import type { DynamicMenu } from '@/modules/auth/types'
 
 import type { SettlementMode } from "../types/sales";
 import type { DockState } from "./usePosDock";
@@ -41,21 +40,14 @@ function flattenMenu(items: DynamicMenu[]): DynamicMenu[] {
 
 /** Menu bar dan item dock. Murni presentasi: id aksi dieksekusi oleh usePosMenuActions. */
 export function usePosMenus(options: UsePosMenusOptions) {
-  const menuStore = useMenuStore();
-  const permission = usePermissionStore();
-
-  function can(code?: string): boolean {
-    return !code || permission.hasPermission(code);
-  }
+  const auth = useAuthStore()
 
   // Ganti sumbernya (quick_links / apps / sidebar) sesuai isi menu Anda.
   const pageMenuItems = computed<MenuEntry[]>(() => {
-    const source = menuStore.menus.quick_links.length ? menuStore.menus.quick_links : menuStore.menus.apps;
-
-    return flattenMenu(source)
-      .filter((item) => !String(item.url).includes(POS_ROUTES.pos))
+    return flattenMenu(auth.visibleMenus)
+      .filter((item) => item.path && item.path !== POS_ROUTES.pos)
       .slice(0, MAX_PAGE_MENU_ITEMS)
-      .map((item) => ({ id: `url:${item.url}`, label: item.title }));
+      .map((item) => ({ id: `url:${item.path}`, label: item.title }));
   });
 
   const menus = computed(() => [
@@ -117,9 +109,5 @@ export function usePosMenus(options: UsePosMenusOptions) {
     { id: "shortcuts", icon: "ti ti-keyboard", label: "Bantuan shortcut" },
   ]);
 
-  // Dimuat saat halaman dibuka (lihat usePosLifecycle); kegagalan tidak boleh menghalangi kasir.
-  const loadMenu = (): Promise<unknown> => menuStore.load();
-  const loadPermission = (): Promise<unknown> => permission.load();
-
-  return { menus, dockItems, loadMenu, loadPermission };
+  return { menus, dockItems };
 }
