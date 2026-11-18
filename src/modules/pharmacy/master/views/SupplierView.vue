@@ -125,7 +125,6 @@ function openDetail(supplier: Supplier) {
       supplier,
     },
     onSelect: (value) => {
-      modalStore.close();
       openEditForm(value as Supplier);
     },
   });
