@@ -37,10 +37,12 @@ const selectedGroups = reactive<Record<string, string[]>>({})
 const availableCandidates = computed(() => candidates.value.filter((item) => !item.exists && Boolean(item.url)))
 const selectedCount = computed(() => availableCandidates.value.filter((item) => selected[String(item.id)]).length)
 
-const positionOptions = [
+const positionOptions: { label: string; value: MenuPosition }[] = [
   { label: 'Sidebar', value: 'sidebar' },
   { label: 'Topbar', value: 'topbar' },
+  { label: 'Quick Links', value: 'quick_links' },
   { label: 'Down', value: 'down' },
+  { label: 'Apps', value: 'apps' },
 ]
 
 function candidateKey(item: RouteRegistryCandidate): string {
