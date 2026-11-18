@@ -1,0 +1,81 @@
+/*
+ * Pharmacy UI adapter.
+ * Existing Pharmacy views use legacy Bootstrap class names. This adapter
+ * maps those classes to the active Tailwind design tokens until each view
+ * is migrated to shared primitives.
+ */
+@layer components {
+  .container-fluid { @apply w-full; }
+  .row { @apply grid grid-cols-12; }
+  .col-12 { @apply col-span-12; }
+  .col-6 { @apply col-span-6; }
+  .col-4 { @apply col-span-4; }
+  .col-3 { @apply col-span-3; }
+  .col-md-2 { @apply col-span-12 md:col-span-2; }
+  .col-md-3 { @apply col-span-12 md:col-span-3; }
+  .col-md-4 { @apply col-span-12 md:col-span-4; }
+  .col-md-6 { @apply col-span-12 md:col-span-6; }
+  .col-md-8 { @apply col-span-12 md:col-span-8; }
+  .col-md-9 { @apply col-span-12 md:col-span-9; }
+  .col-lg-3 { @apply col-span-12 lg:col-span-3; }
+  .col-lg-4 { @apply col-span-12 lg:col-span-4; }
+  .col-lg-6 { @apply col-span-12 lg:col-span-6; }
+  .col-lg-8 { @apply col-span-12 lg:col-span-8; }
+
+  .card { @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900; }
+  .card-body { @apply p-5; }
+  .card-title { @apply text-base font-semibold text-slate-900 dark:text-white; }
+
+  .form-label { @apply mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300; }
+  .form-control, .form-select {
+    @apply min-h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:disabled:bg-slate-800;
+  }
+  .form-control-sm, .form-select-sm { @apply min-h-8 px-2.5 py-1.5 text-xs; }
+  .input-group { @apply flex w-full items-stretch; }
+  .input-group > .form-control, .input-group > .form-select { @apply min-w-0 flex-1 rounded-none first:rounded-l-lg last:rounded-r-lg; }
+  .input-group > .btn { @apply shrink-0 rounded-none first:rounded-l-lg last:rounded-r-lg; }
+
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+  .btn-lg { @apply px-5 py-2.5 text-base; }
+  .btn-primary { @apply bg-primary-600 text-white hover:bg-primary-700; }
+  .btn-outline-primary { @apply border border-primary-600 bg-transparent text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-500/10; }
+  .btn-secondary { @apply bg-slate-600 text-white hover:bg-slate-700; }
+  .btn-outline-secondary { @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800; }
+  .btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
+  .btn-outline-danger { @apply border border-rose-300 text-rose-700 hover:bg-rose-50; }
+  .btn-light { @apply bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700; }
+  .btn-light-primary { @apply bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-300; }
+  .btn-light-warning { @apply bg-amber-50 text-amber-700 hover:bg-amber-100; }
+  .btn-light-danger { @apply bg-rose-50 text-rose-700 hover:bg-rose-100; }
+
+  .table-responsive { @apply w-full overflow-x-auto; }
+  .table { @apply w-full border-collapse text-left text-sm; }
+  .table th { @apply bg-slate-50 px-3 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-300; }
+  .table td { @apply border-t border-slate-100 px-3 py-3 text-slate-700 dark:border-slate-800 dark:text-slate-200; }
+  .table-hover tbody tr:hover { @apply bg-slate-50 dark:bg-slate-800/50; }
+  .table-sm th, .table-sm td { @apply px-2 py-2; }
+  .table-light { @apply bg-slate-50 dark:bg-slate-800; }
+
+  .badge { @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium; }
+  .bg-success { @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300; }
+  .bg-secondary { @apply bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200; }
+  .bg-danger { @apply bg-rose-100 text-rose-700; }
+  .bg-warning { @apply bg-amber-100 text-amber-700; }
+  .bg-info { @apply bg-sky-100 text-sky-700; }
+  .bg-light { @apply bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200; }
+
+  .alert { @apply rounded-lg border px-4 py-3 text-sm; }
+  .alert-warning { @apply border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200; }
+  .alert-danger { @apply border-rose-200 bg-rose-50 text-rose-800; }
+  .alert-success { @apply border-emerald-200 bg-emerald-50 text-emerald-800; }
+  .alert-info { @apply border-sky-200 bg-sky-50 text-sky-800; }
+
+  .text-muted { @apply text-slate-500 dark:text-slate-400; }
+  .text-danger { @apply text-rose-600 dark:text-rose-400; }
+  .text-success { @apply text-emerald-600 dark:text-emerald-400; }
+  .text-primary { @apply text-primary-600 dark:text-primary-400; }
+  .spinner-border { @apply inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent; }
+  .modal-body { @apply p-5; }
+  .modal-footer { @apply mt-4 flex justify-end gap-2 border-t border-slate-200 pt-4 dark:border-slate-700; }
+}
