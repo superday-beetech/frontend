@@ -21,12 +21,10 @@ const state = reactive({
   centered: true,
   scrollable: true,
   onSelect: undefined as ModalOptions['onSelect'],
-  instance: 0,
 })
 
 export function useModal() {
   function open(options: ModalOptions) {
-    state.instance += 1
     state.title = options.title
     state.component = markRaw(options.component)
     state.props = options.props ?? {}
@@ -37,9 +35,7 @@ export function useModal() {
     state.open = true
   }
 
-  function close(instance = state.instance) {
-    // Event close dari komponen modal lama tidak boleh menutup modal baru.
-    if (instance !== state.instance) return
+  function close() {
     state.open = false
     state.component = null
     state.props = {}
