@@ -1,4 +1,4 @@
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 import type { ApiResponse } from "@/core/api/types";
 
 export interface CategoryTypeOption {
