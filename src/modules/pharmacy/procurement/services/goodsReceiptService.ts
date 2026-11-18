@@ -1,5 +1,5 @@
-import api from "@/api/client";
-import type { ApiResponse } from "@/types/types";
+import api from "@/core/api/client";
+import type { ApiResponse } from "@/core/api/types";
 import type { GoodsReceipt, GoodsReceiptListParams, GoodsReceiptListResult, GoodsReceiptPayload } from "../types/goodsReceipt";
 
 const BASE_URL = "/pharmacy/procurement-api";
