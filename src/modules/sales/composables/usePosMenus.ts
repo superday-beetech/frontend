@@ -31,17 +31,28 @@ interface UsePosMenusOptions {
   isProcessing: () => boolean;
 }
 
-function flattenMenu(items: DynamicMenu[]): DynamicMenu[] {
-  return items.flatMap((item) => item.children?.length ? flattenMenu(item.children) : [item])
+function flattenMenu(items: DynamicMenu[] | null | undefined): DynamicMenu[] {
+  if (!Array.isArray(items)) return []
+
+  return items.flatMap((item) => {
+    const children = Array.isArray(item.children) ? item.children : []
+    return children.length ? flattenMenu(children) : [item]
+  })
 }
 
 /** Menu bar dan item dock. Murni presentasi: id aksi dieksekusi oleh usePosMenuActions. */
 export function usePosMenus(options: UsePosMenusOptions) {
   const auth = useAuthStore()
 
-  // Ganti sumbernya (quick_links / apps / sidebar) sesuai isi menu Anda.
+  // Menu dapat belum tersedia saat session context belum selesai dimuat.
   const pageMenuItems = computed<MenuEntry[]>(() => {
-    return flattenMenu(auth.visibleMenus)
+    const source = Array.isArray(auth.visibleMenus)
+      ? auth.visibleMenus
+      : Array.isArray(auth.menus)
+        ? auth.menus
+        : []
+
+    return flattenMenu(source)
       .filter((item) => item.path && item.path !== POS_ROUTES.pos)
       .slice(0, MAX_PAGE_MENU_ITEMS)
       .map((item) => ({ id: `url:${item.path}`, label: item.title }));
