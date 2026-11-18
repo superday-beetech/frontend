@@ -1,4 +1,4 @@
-import { markRaw, reactive, shallowRef, type Component } from 'vue'
+import { markRaw, reactive, type Component } from 'vue'
 
 export interface ModalOptions {
   title: string
@@ -13,7 +13,7 @@ export interface ModalOptions {
 const state = reactive({
   open: false,
   title: '',
-  component: shallowRef<Component | null>(null),
+  component: null as Component | null,
   props: {} as Record<string, unknown>,
   maxWidth: 'md' as 'sm' | 'md' | 'lg' | 'xl',
   onSelect: undefined as ModalOptions['onSelect'],
