@@ -155,10 +155,6 @@ async function loadDeliveryDetail() {
   }
 }
 
-function getRemainingQuantity(item: ReturnItemForm): number {
-  return Math.max(0, item.dispatchedQuantity - Number(item.quantity || 0));
-}
-
 async function submitReturn() {
   errorMessage.value = "";
   successMessage.value = "";
