@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import reportService, { type StockCardFilter, type StockCardReport } from "../services/reportService";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 defineOptions({
   name: "StockCardView",
@@ -97,17 +99,17 @@ function buildFilters(page = 1): StockCardFilter {
 
 async function loadReport(page = 1): Promise<void> {
   if (!hasProduct.value) {
-    notify.warning("Masukkan ID produk terlebih dahulu.");
+    toast.warning("Masukkan ID produk terlebih dahulu.");
     return;
   }
 
   if (filters.batch_id.trim() && (!Number.isInteger(Number(filters.batch_id)) || Number(filters.batch_id) <= 0)) {
-    notify.warning("ID batch harus berupa angka positif.");
+    toast.warning("ID batch harus berupa angka positif.");
     return;
   }
 
   if (filters.date_from && filters.date_to && filters.date_from > filters.date_to) {
-    notify.warning("Tanggal awal tidak boleh melebihi tanggal akhir.");
+    toast.warning("Tanggal awal tidak boleh melebihi tanggal akhir.");
     return;
   }
 
@@ -118,7 +120,7 @@ async function loadReport(page = 1): Promise<void> {
     report.value = await reportService.getStockCard(buildFilters(page));
   } catch (error: any) {
     report.value = null;
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat laporan kartu stok.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat laporan kartu stok.");
   } finally {
     loading.value = false;
   }
@@ -135,7 +137,7 @@ function resetFilters(): void {
 
 async function downloadFile(type: "csv" | "excel" | "pdf"): Promise<void> {
   if (!hasProduct.value) {
-    notify.warning("Pilih produk terlebih dahulu.");
+    toast.warning("Pilih produk terlebih dahulu.");
     return;
   }
 
@@ -171,9 +173,9 @@ async function downloadFile(type: "csv" | "excel" | "pdf"): Promise<void> {
     link.remove();
 
     URL.revokeObjectURL(url);
-    notify.success("Laporan berhasil diunduh.");
+    toast.success("Laporan berhasil diunduh.");
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal mengunduh laporan.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal mengunduh laporan.");
   } finally {
     exporting.value = false;
   }
