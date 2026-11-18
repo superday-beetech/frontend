@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { notify } from "@/utils/notification";
-import { useModalStore } from "@/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
+import { useModal } from "@/shared/composables/useModal";
 
 import financeService from "../services/financeService";
 import type { ExpensePayload } from "../types/finance";
 
 import ExpenseFormModal from "./ExpenseFormModal.vue";
+
+const toast = useToast();
 
 interface ExpenseRow {
   id: number;
@@ -20,7 +22,7 @@ interface ExpenseRow {
   notes?: string | null;
 }
 
-const modalStore = useModalStore();
+const modalStore = useModal();
 
 const expenses = ref<ExpenseRow[]>([]);
 const loading = ref(false);
@@ -107,7 +109,7 @@ async function loadExpenses(): Promise<void> {
     expenses.value = rows;
   } catch (error) {
     console.error("Gagal memuat pengeluaran:", error);
-    notify.error("Gagal memuat daftar pengeluaran.");
+    toast.error("Gagal memuat daftar pengeluaran.");
   } finally {
     loading.value = false;
   }
@@ -117,14 +119,14 @@ async function saveExpense(payload: ExpensePayload): Promise<void> {
   try {
     await financeService.createExpense(payload);
 
-    notify.success("Pengeluaran berhasil disimpan.");
+    toast.success("Pengeluaran berhasil disimpan.");
     await loadExpenses();
   } catch (error: any) {
     console.error("Gagal menyimpan pengeluaran:", error);
 
     const message = error?.response?.data?.messages?.error ?? error?.response?.data?.message ?? "Gagal menyimpan pengeluaran.";
 
-    notify.error(message);
+    toast.error(message);
   }
 }
 
