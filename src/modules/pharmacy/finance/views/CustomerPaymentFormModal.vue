@@ -60,68 +60,68 @@ function submit(): void {
 
 <template>
   <form @submit.prevent="submit">
-    <div class="row g-3">
-      <div class="col-12">
-        <label class="form-label">Nomor Pembayaran</label>
-        <input type="text" class="form-control" :value="paymentNumber" readonly />
+    <div class="grid grid-cols-12 g-3">
+      <div class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nomor Pembayaran</label>
+        <input type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :value="paymentNumber" readonly />
       </div>
 
-      <div class="col-12">
-        <label class="form-label"> Pelanggan <span class="text-danger">*</span> </label>
-        <select v-model="form.customer_id" class="form-select" required>
+      <div class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Pelanggan <span class="text-rose-600">*</span> </label>
+        <select v-model="form.customer_id" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required>
           <option value="">Pilih pelanggan</option>
           <option v-for="customer in customers" :key="customer.id" :value="String(customer.id)">
             {{ customer.name }}
           </option>
         </select>
-        <small v-if="customers.length === 0" class="text-muted"> Data pelanggan belum tersedia. </small>
+        <small v-if="customers.length === 0" class="text-slate-500"> Data pelanggan belum tersedia. </small>
       </div>
 
-      <div class="col-12">
-        <label class="form-label">Distribution Order ID</label>
-        <input v-model="form.distribution_order_id" type="number" min="1" class="form-control" placeholder="Opsional" />
-        <small class="text-muted"> Kosongkan jika pembayaran tidak dikaitkan dengan pesanan tertentu. </small>
+      <div class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Distribution Order ID</label>
+        <input v-model="form.distribution_order_id" type="number" min="1" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Opsional" />
+        <small class="text-slate-500"> Kosongkan jika pembayaran tidak dikaitkan dengan pesanan tertentu. </small>
       </div>
 
-      <div class="col-md-6">
-        <label class="form-label"> Tanggal Pembayaran <span class="text-danger">*</span> </label>
-        <input v-model="form.payment_date" type="date" class="form-control" required />
+      <div class="col-span-12 md:col-span-6">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Tanggal Pembayaran <span class="text-rose-600">*</span> </label>
+        <input v-model="form.payment_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required />
       </div>
 
-      <div class="col-md-6">
-        <label class="form-label"> Jumlah Pembayaran <span class="text-danger">*</span> </label>
-        <input v-model="form.amount" type="number" min="1" step="0.01" class="form-control" placeholder="Masukkan jumlah" required />
+      <div class="col-span-12 md:col-span-6">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Jumlah Pembayaran <span class="text-rose-600">*</span> </label>
+        <input v-model="form.amount" type="number" min="1" step="0.01" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Masukkan jumlah" required />
       </div>
 
-      <div class="col-12">
-        <label class="form-label"> Metode Pembayaran <span class="text-danger">*</span> </label>
-        <select v-model="form.payment_method" class="form-select" required>
+      <div class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Metode Pembayaran <span class="text-rose-600">*</span> </label>
+        <select v-model="form.payment_method" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required>
           <option v-for="method in paymentMethods" :key="method.value" :value="method.value">
             {{ method.label }}
           </option>
         </select>
       </div>
 
-      <div v-if="form.payment_method === 'other'" class="col-12">
-        <label class="form-label"> Nama Metode Pembayaran <span class="text-danger">*</span> </label>
-        <input v-model="form.custom_payment_method" type="text" class="form-control" placeholder="Masukkan metode pembayaran" required />
+      <div v-if="form.payment_method === 'other'" class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nama Metode Pembayaran <span class="text-rose-600">*</span> </label>
+        <input v-model="form.custom_payment_method" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Masukkan metode pembayaran" required />
       </div>
 
-      <div class="col-12">
-        <label class="form-label">Nomor Referensi</label>
-        <input v-model="form.reference_number" type="text" class="form-control" placeholder="Nomor transfer atau referensi" />
+      <div class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nomor Referensi</label>
+        <input v-model="form.reference_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nomor transfer atau referensi" />
       </div>
 
-      <div class="col-12">
-        <label class="form-label">Catatan</label>
-        <textarea v-model="form.notes" class="form-control" rows="3" placeholder="Catatan pembayaran"></textarea>
+      <div class="col-span-12">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Catatan</label>
+        <textarea v-model="form.notes" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="3" placeholder="Catatan pembayaran"></textarea>
       </div>
     </div>
 
-    <div class="d-flex justify-content-end gap-2 mt-4">
-      <button type="button" class="btn btn-light" @click="emit('close')">Batal</button>
+    <div class="flex justify-end gap-2 mt-4">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="emit('close')">Batal</button>
 
-      <button type="submit" class="btn btn-primary" :disabled="!isValid">Simpan Pembayaran</button>
+      <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="!isValid">Simpan Pembayaran</button>
     </div>
   </form>
 </template>
