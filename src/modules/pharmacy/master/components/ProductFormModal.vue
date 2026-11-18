@@ -380,24 +380,24 @@ onMounted(async () => {
     <form @submit.prevent="save">
       <!-- ══════════ Tab: Produk ══════════ -->
       <div v-show="activeTab === 'product'">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="product-sku" class="form-label"> SKU <span class="text-danger">*</span> </label>
-            <input id="product-sku" v-model="form.sku" type="text" class="form-control" maxlength="50" placeholder="Kode produk" :disabled="saving" required />
+        <div class="grid grid-cols-12">
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="product-sku" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> SKU <span class="text-rose-600">*</span> </label>
+            <input id="product-sku" v-model="form.sku" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="50" placeholder="Kode produk" :disabled="saving" required />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label for="product-barcode" class="form-label">Barcode</label>
-            <input id="product-barcode" v-model="form.barcode" type="text" class="form-control" maxlength="100" placeholder="Barcode produk" :disabled="saving" />
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="product-barcode" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Barcode</label>
+            <input id="product-barcode" v-model="form.barcode" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="100" placeholder="Barcode produk" :disabled="saving" />
           </div>
 
-          <div class="col-12 mb-3">
-            <label for="product-name" class="form-label"> Nama Produk <span class="text-danger">*</span> </label>
-            <input id="product-name" v-model="form.name" type="text" class="form-control" maxlength="180" placeholder="Nama produk" :disabled="saving" required />
+          <div class="col-span-12 mb-3">
+            <label for="product-name" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nama Produk <span class="text-rose-600">*</span> </label>
+            <input id="product-name" v-model="form.name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="180" placeholder="Nama produk" :disabled="saving" required />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label"> Kategori <span class="text-danger">*</span> </label>
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Kategori <span class="text-rose-600">*</span> </label>
             <OptionSelect
               :model-value="form.category_id"
               :options="categoryOptions"
@@ -408,22 +408,22 @@ onMounted(async () => {
             />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label"> Satuan <span class="text-danger">*</span> </label>
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Satuan <span class="text-rose-600">*</span> </label>
             <OptionSelect :model-value="form.unit_id" :options="unitOptions" placeholder="Pilih satuan" search-placeholder="Cari satuan..." :disabled="saving || loadingOptions" @update:model-value="(v) => (form.unit_id = Number(v))" />
           </div>
 
           <!-- Harga Beli -->
-          <div class="col-md-6 mb-3">
-            <label for="product-purchase-price" class="form-label"> Harga Beli <span class="text-danger">*</span> </label>
-            <div class="input-group">
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="product-purchase-price" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Harga Beli <span class="text-rose-600">*</span> </label>
+            <div class="flex w-full items-stretch">
               <span class="input-group-text">Rp</span>
               <input
                 id="product-purchase-price"
                 :value="purchasePriceInput.formattedValue.value"
                 type="text"
                 inputmode="numeric"
-                class="form-control text-end"
+                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-right"
                 :disabled="saving"
                 @input="purchasePriceInput.update(($event.target as HTMLInputElement).value)"
               />
@@ -431,30 +431,30 @@ onMounted(async () => {
           </div>
 
           <!-- Harga Jual -->
-          <div class="col-md-6 mb-3">
-            <label for="product-selling-price" class="form-label"> Harga Jual <span class="text-danger">*</span> </label>
-            <div class="input-group">
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="product-selling-price" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Harga Jual <span class="text-rose-600">*</span> </label>
+            <div class="flex w-full items-stretch">
               <span class="input-group-text">Rp</span>
               <input
                 id="product-selling-price"
                 :value="sellingPriceInput.formattedValue.value"
                 type="text"
                 inputmode="numeric"
-                class="form-control text-end"
+                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 text-right"
                 :disabled="saving"
                 @input="sellingPriceInput.update(($event.target as HTMLInputElement).value)"
               />
             </div>
           </div>
 
-          <div class="col-12 mb-3">
-            <label for="product-description" class="form-label">Deskripsi</label>
-            <textarea id="product-description" v-model="form.description" class="form-control" rows="3" placeholder="Keterangan produk" :disabled="saving"></textarea>
+          <div class="col-span-12 mb-3">
+            <label for="product-description" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Deskripsi</label>
+            <textarea id="product-description" v-model="form.description" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="3" placeholder="Keterangan produk" :disabled="saving"></textarea>
           </div>
 
-          <div class="col-12 mb-3">
-            <label for="product-status" class="form-label">Status</label>
-            <select id="product-status" v-model.number="form.is_active" class="form-select" :disabled="saving">
+          <div class="col-span-12 mb-3">
+            <label for="product-status" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+            <select id="product-status" v-model.number="form.is_active" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :disabled="saving">
               <option :value="1">Aktif</option>
               <option :value="0">Tidak Aktif</option>
             </select>
@@ -464,38 +464,38 @@ onMounted(async () => {
 
       <!-- ══════════ Tab: Detail Farmasi ══════════ -->
       <div v-show="activeTab === 'detail'">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="detail-generic-name" class="form-label">Nama Generik</label>
-            <input id="detail-generic-name" v-model="detailForm.generic_name" type="text" class="form-control" maxlength="200" placeholder="cth: Paracetamol" :disabled="saving" />
+        <div class="grid grid-cols-12">
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="detail-generic-name" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Generik</label>
+            <input id="detail-generic-name" v-model="detailForm.generic_name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="200" placeholder="cth: Paracetamol" :disabled="saving" />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label for="detail-active-ingredient" class="form-label">Zat Aktif</label>
-            <input id="detail-active-ingredient" v-model="detailForm.active_ingredient" type="text" class="form-control" maxlength="200" placeholder="cth: Paracetamol" :disabled="saving" />
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="detail-active-ingredient" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Zat Aktif</label>
+            <input id="detail-active-ingredient" v-model="detailForm.active_ingredient" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="200" placeholder="cth: Paracetamol" :disabled="saving" />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Bentuk Sediaan</label>
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Bentuk Sediaan</label>
             <OptionSelect :model-value="detailForm.dosage_form" :options="dosageFormOptions" placeholder="Pilih bentuk sediaan" :searchable="false" :disabled="saving" @update:model-value="(v) => (detailForm.dosage_form = String(v))" />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label for="detail-strength" class="form-label">Kekuatan / Dosis</label>
-            <input id="detail-strength" v-model="detailForm.strength" type="text" class="form-control" maxlength="50" placeholder="cth: 500 mg" :disabled="saving" />
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="detail-strength" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kekuatan / Dosis</label>
+            <input id="detail-strength" v-model="detailForm.strength" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="50" placeholder="cth: 500 mg" :disabled="saving" />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Golongan Obat</label>
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Golongan Obat</label>
             <OptionSelect :model-value="detailForm.drug_class" :options="drugClassOptions" placeholder="Pilih golongan obat" :searchable="false" :disabled="saving" @update:model-value="(v) => (detailForm.drug_class = String(v))" />
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label for="detail-bpom-number" class="form-label"> No. Izin Edar (BPOM) </label>
-            <input id="detail-bpom-number" v-model="detailForm.bpom_number" type="text" class="form-control" maxlength="100" placeholder="cth: DBL1234567890A1" :disabled="saving" />
+          <div class="col-span-12 md:col-span-6 mb-3">
+            <label for="detail-bpom-number" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> No. Izin Edar (BPOM) </label>
+            <input id="detail-bpom-number" v-model="detailForm.bpom_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="100" placeholder="cth: DBL1234567890A1" :disabled="saving" />
           </div>
 
-          <div class="col-12 mb-3">
+          <div class="col-span-12 mb-3">
             <div class="form-check form-switch">
               <input id="detail-requires-prescription" v-model.number="detailForm.requires_prescription" class="form-check-input" type="checkbox" :true-value="1" :false-value="0" :disabled="saving" />
               <label class="form-check-label" for="detail-requires-prescription"> Perlu Resep Dokter </label>
@@ -503,27 +503,27 @@ onMounted(async () => {
           </div>
 
           <!-- Konversi Satuan -->
-          <div class="col-12 mb-3">
-            <label class="form-label">Konversi Satuan</label>
+          <div class="col-span-12 mb-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Konversi Satuan</label>
 
-            <div v-if="unitConversions.length === 0" class="text-muted small mb-2">Belum ada konversi. Contoh: 1 Box = 100 Tablet.</div>
+            <div v-if="unitConversions.length === 0" class="text-slate-500 small mb-2">Belum ada konversi. Contoh: 1 Box = 100 Tablet.</div>
 
-            <div v-for="(row, index) in unitConversions" :key="index" class="row g-2 align-items-center mb-2">
+            <div v-for="(row, index) in unitConversions" :key="index" class="grid grid-cols-12 g-2 items-center mb-2">
               <div class="col-5">
-                <input v-model="row.unit" type="text" class="form-control" placeholder="Nama satuan (cth: box)" maxlength="30" :disabled="saving" />
+                <input v-model="row.unit" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nama satuan (cth: box)" maxlength="30" :disabled="saving" />
               </div>
-              <div class="col-2 text-center text-muted small">=</div>
+              <div class="col-2 text-center text-slate-500 small">=</div>
               <div class="col-3">
-                <input v-model.number="row.qty" type="number" class="form-control" placeholder="Jumlah" min="1" step="1" :disabled="saving" />
+                <input v-model.number="row.qty" type="number" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Jumlah" min="1" step="1" :disabled="saving" />
               </div>
-              <div class="col-2 text-end">
-                <button type="button" class="btn btn-sm btn-light text-danger" title="Hapus" :disabled="saving" @click="removeUnitConversion(index)">
+              <div class="col-2 text-right">
+                <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600" title="Hapus" :disabled="saving" @click="removeUnitConversion(index)">
                   <i class="ti ti-trash"></i>
                 </button>
               </div>
             </div>
 
-            <button type="button" class="btn btn-sm btn-outline-primary" :disabled="saving" @click="addUnitConversion">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-primary-600 text-primary-700 hover:bg-primary-50" :disabled="saving" @click="addUnitConversion">
               <i class="ti ti-plus me-1"></i>
               Tambah Satuan
             </button>
@@ -531,39 +531,39 @@ onMounted(async () => {
             <div class="form-text">Contoh: Box = 100, Strip = 10. Artinya 1 Box = 100 Tablet, 1 Strip = 10 Tablet.</div>
           </div>
 
-          <div class="col-md-4 mb-3">
-            <label for="detail-min-stock" class="form-label">Stok Minimum</label>
-            <input id="detail-min-stock" v-model.number="detailForm.min_stock" type="number" min="0" class="form-control" :disabled="saving" />
+          <div class="col-span-12 md:col-span-4 mb-3">
+            <label for="detail-min-stock" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Stok Minimum</label>
+            <input id="detail-min-stock" v-model.number="detailForm.min_stock" type="number" min="0" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :disabled="saving" />
           </div>
 
-          <div class="col-md-4 mb-3">
-            <label for="detail-max-stock" class="form-label">Stok Maksimum</label>
-            <input id="detail-max-stock" v-model.number="detailForm.max_stock" type="number" min="0" class="form-control" :disabled="saving" />
+          <div class="col-span-12 md:col-span-4 mb-3">
+            <label for="detail-max-stock" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Stok Maksimum</label>
+            <input id="detail-max-stock" v-model.number="detailForm.max_stock" type="number" min="0" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :disabled="saving" />
           </div>
 
-          <div class="col-md-4 mb-3">
-            <label for="detail-rack-location" class="form-label">Rak / Lokasi</label>
-            <input id="detail-rack-location" v-model="detailForm.rack_location" type="text" class="form-control" maxlength="50" placeholder="cth: A1" :disabled="saving" />
+          <div class="col-span-12 md:col-span-4 mb-3">
+            <label for="detail-rack-location" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Rak / Lokasi</label>
+            <input id="detail-rack-location" v-model="detailForm.rack_location" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="50" placeholder="cth: A1" :disabled="saving" />
           </div>
 
-          <div class="col-12 mb-3">
-            <label for="detail-manufacturer" class="form-label">Pabrik</label>
-            <input id="detail-manufacturer" v-model="detailForm.manufacturer" type="text" class="form-control" maxlength="150" placeholder="cth: Kimia Farma" :disabled="saving" />
+          <div class="col-span-12 mb-3">
+            <label for="detail-manufacturer" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Pabrik</label>
+            <input id="detail-manufacturer" v-model="detailForm.manufacturer" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="150" placeholder="cth: Kimia Farma" :disabled="saving" />
           </div>
         </div>
       </div>
 
       <!-- Footer -->
-      <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-        <div class="text-muted small">
-          <span v-if="activeTab === 'product'"> Field bertanda <span class="text-danger">*</span> wajib diisi. </span>
+      <div class="flex justify-between items-center gap-2 mt-3">
+        <div class="text-slate-500 small">
+          <span v-if="activeTab === 'product'"> Field bertanda <span class="text-rose-600">*</span> wajib diisi. </span>
           <span v-else>Detail farmasi opsional.</span>
         </div>
 
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-light" :disabled="saving || loadingOptions || !optionsLoaded" @click="emit('close')">Batal</button>
-          <button type="submit" class="btn btn-primary" :disabled="saving || loadingOptions">
-            <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+        <div class="flex gap-2">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="saving || loadingOptions || !optionsLoaded" @click="emit('close')">Batal</button>
+          <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="saving || loadingOptions">
+            <span v-if="saving" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1"></span>
             {{ saving ? "Menyimpan..." : "Simpan" }}
           </button>
         </div>
