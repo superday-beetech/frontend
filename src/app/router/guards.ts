@@ -12,10 +12,6 @@ export function installRouterGuards(router: Router): void {
   router.beforeEach(async (to) => {
     const auth = useAuthStore()
 
-    if (to.meta.guestOnly && !auth.isAuthenticated) {
-      return true
-    }
-
     // 1. Restore session
     if (!auth.isSessionChecked) {
       try {
