@@ -24,6 +24,15 @@ export interface GoodsReceiptPostResult {
 }
 
 const goodsReceiptService = {
+  // Legacy endpoints consumed by the purchase-return workflow.
+  async getReturnableReceipts() {
+    return api.get('/pharmacy/goods-receipts')
+  },
+
+  async getReturnableReceiptDetail(id: number) {
+    return api.get(`/pharmacy/goods-receipt-detail/${id}`)
+  },
+
   async getAll(params: GoodsReceiptListParams = {}) {
     const response = await api.get<ApiResponse<GoodsReceiptListResult>>(`${BASE_URL}/goodsReceipts`, {
       params,
