@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { ApiResponse } from "@/core/api/types";
 
-import dashboard.api from "@/modules/pharmacy/master/api/dashboard.api";
+import dashboardService from "@/modules/pharmacy/master/api/dashboard.api";
 
 import type {
     DashboardDateRange,

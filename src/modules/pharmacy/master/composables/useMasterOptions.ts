@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 
 import categoryService, { type Category } from "@/modules/pharmacy/master/api/category.api";
 import unitService, { type Unit } from "@/modules/pharmacy/master/api/unit.api";
-import product.api from "../api/product.api";
+import productService from "../api/product.api";
 import type { OptionItem } from "@/shared/composables/useOption";
 
 // State module-level → dibagi antar komponen (singleton)
