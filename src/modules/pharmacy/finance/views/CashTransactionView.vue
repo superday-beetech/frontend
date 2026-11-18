@@ -118,7 +118,7 @@ async function loadTransactions(): Promise<void> {
     if (filters.date_from) params.date_from = filters.date_from;
     if (filters.date_to) params.date_to = filters.date_to;
 
-    const response = await finance.api.getCashTransactions(params);
+    const response = await financeService.getCashTransactions(params);
     const body = unwrapResponse(response);
 
     const rows = Array.isArray(body) ? body : (body?.items ?? body?.transactions ?? []);

@@ -101,7 +101,7 @@ async function loadExpenses(): Promise<void> {
   loading.value = true;
 
   try {
-    const response = await finance.api.getExpenses();
+    const response = await financeService.getExpenses();
     const body = unwrapResponse(response);
 
     const rows = Array.isArray(body) ? body : (body?.items ?? body?.expenses ?? []);
@@ -117,7 +117,7 @@ async function loadExpenses(): Promise<void> {
 
 async function saveExpense(payload: ExpensePayload): Promise<void> {
   try {
-    await finance.api.createExpense(payload);
+    await financeService.createExpense(payload);
 
     toast.success("Pengeluaran berhasil disimpan.");
     await loadExpenses();

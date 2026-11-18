@@ -75,7 +75,7 @@ const loadPayments = async () => {
   loading.value = true;
 
   try {
-    const response = await finance.api.getSupplierPayments();
+    const response = await financeService.getSupplierPayments();
     const result = response.data?.data;
 
     payments.value = Array.isArray(result) ? result : [];
@@ -105,7 +105,7 @@ const savePayment = async (payload: SupplierPaymentPayload) => {
   saving.value = true;
 
   try {
-    const response = await finance.api.createSupplierPayment(payload);
+    const response = await financeService.createSupplierPayment(payload);
 
     toast.success(response.data?.message ?? "Pembayaran supplier berhasil dicatat.", "success");
 

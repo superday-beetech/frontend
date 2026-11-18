@@ -114,7 +114,7 @@ async function loadPayments(): Promise<void> {
   loading.value = true;
 
   try {
-    const response = await finance.api.getCustomerPayments();
+    const response = await financeService.getCustomerPayments();
     const body = unwrapResponse(response);
     const rows = Array.isArray(body) ? body : (body?.items ?? body?.payments ?? []);
 
@@ -129,7 +129,7 @@ async function loadPayments(): Promise<void> {
 
 async function savePayment(payload: CustomerPaymentPayload): Promise<void> {
   try {
-    await finance.api.createCustomerPayment(payload);
+    await financeService.createCustomerPayment(payload);
 
     toast.success("Pembayaran pelanggan berhasil disimpan.");
     await loadPayments();

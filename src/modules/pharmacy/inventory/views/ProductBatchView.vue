@@ -30,7 +30,7 @@ async function loadData(): Promise<void> {
   loading.value = true;
 
   try {
-    const result = await inventory.api.getBatches({
+    const result = await inventoryService.getBatches({
       page: page.value,
       per_page: perPage.value,
       search: search.value.trim() || undefined,
@@ -52,7 +52,7 @@ async function showDetail(id: number): Promise<void> {
   selectedBatch.value = null;
 
   try {
-    selectedBatch.value = await inventory.api.getBatchDetail(id);
+    selectedBatch.value = await inventoryService.getBatchDetail(id);
   } catch (error) {
     console.error("Gagal memuat detail batch:", error);
     toast.error("Gagal memuat detail batch.");
