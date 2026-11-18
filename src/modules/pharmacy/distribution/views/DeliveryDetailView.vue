@@ -135,14 +135,6 @@ function extractItems(response: any): any[] {
   return candidates.find(Array.isArray) ?? [];
 }
 
-function formatCurrency(value: number | string): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
-}
-
 function formatNumber(value: number | string): string {
   return new Intl.NumberFormat("id-ID", {
     maximumFractionDigits: 3,
