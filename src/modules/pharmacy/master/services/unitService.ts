@@ -1,5 +1,5 @@
-import api from "@/api/client";
-import type { ApiResponse } from "@/types/types";
+import api from "@/core/api/client";
+import type { ApiResponse } from "@/core/api/types";
 
 export interface Unit {
     id: number;
