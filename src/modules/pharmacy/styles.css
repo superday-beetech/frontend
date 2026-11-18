@@ -78,4 +78,35 @@
   .spinner-border { @apply inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent; }
   .modal-body { @apply p-5; }
   .modal-footer { @apply mt-4 flex justify-end gap-2 border-t border-slate-200 pt-4 dark:border-slate-700; }
+  .g-1 { @apply gap-1; }
+  .g-2 { @apply gap-2; }
+  .g-3 { @apply gap-3; }
+  .g-4 { @apply gap-4; }
+  .me-1 { margin-inline-end: .25rem; }
+  .me-2 { margin-inline-end: .5rem; }
+  .ms-1 { margin-inline-start: .25rem; }
+  .ms-2 { margin-inline-start: .5rem; }
+  .position-relative { @apply relative; }
+  .position-absolute { @apply absolute; }
+  .top-100 { top: 100%; }
+  .start-0 { inset-inline-start: 0; }
+  .end-0 { inset-inline-end: 0; }
+  .overflow-auto { @apply overflow-auto; }
+  .w-100 { @apply w-full; }
+  .h-100 { @apply h-full; }
+  .text-nowrap { @apply whitespace-nowrap; }
+  .fs-2 { @apply text-2xl; }
+  .fs-3 { @apply text-xl; }
+  .fs-4 { @apply text-lg; }
+  .col-xl-3, .col-xl-4, .col-xl-6 { @apply col-span-12; }
+  @media (min-width: 1280px) {
+    .col-xl-3 { grid-column: span 3 / span 3; }
+    .col-xl-4 { grid-column: span 4 / span 4; }
+    .col-xl-6 { grid-column: span 6 / span 6; }
+  }
+  @media (min-width: 768px) {
+    .mt-md-0 { margin-top: 0; }
+  }
+  .ti { display: inline-block; vertical-align: middle; }
+
 }
