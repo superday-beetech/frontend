@@ -180,40 +180,40 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="w-full">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-between items-center mb-4">
       <div>
         <h4 class="mb-1">Supplier</h4>
-        <p class="text-muted mb-0">Pengelolaan data pemasok barang dan produk.</p>
+        <p class="text-slate-500 mb-0">Pengelolaan data pemasok barang dan produk.</p>
       </div>
 
-      <button class="btn btn-primary" @click="openCreateForm">
+      <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreateForm">
         <i class="ti ti-plus me-1" />
         Tambah Supplier
       </button>
     </div>
 
     <!-- Filter -->
-    <div class="card">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-6">
-            <label class="form-label">Pencarian</label>
-            <input v-model="search" type="search" class="form-control" placeholder="Cari kode, nama, telepon, atau email..." />
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
+        <div class="grid grid-cols-12 g-3 items-end">
+          <div class="col-span-12 md:col-span-6">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Pencarian</label>
+            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Cari kode, nama, telepon, atau email..." />
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label">Status</label>
-            <select v-model="status" class="form-select">
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+            <select v-model="status" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
               <option value="">Semua Status</option>
               <option value="1">Aktif</option>
               <option value="0">Nonaktif</option>
             </select>
           </div>
 
-          <div class="col-md-3">
-            <button class="btn btn-light w-100" type="button" @click="resetFilters">
+          <div class="col-span-12 md:col-span-3">
+            <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 w-full" type="button" @click="resetFilters">
               <i class="ti ti-refresh me-1" />
               Reset Filter
             </button>
@@ -222,8 +222,8 @@ onMounted(() => {
       </div>
 
       <!-- Table -->
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+      <div class="w-full overflow-x-auto">
+        <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0">
           <thead class="table-light">
             <tr>
               <th class="ps-4" style="width: 60px">No.</th>
@@ -232,20 +232,20 @@ onMounted(() => {
               <th>Telepon</th>
               <th>Email</th>
               <th>Status</th>
-              <th class="text-end pe-4" style="width: 150px">Aksi</th>
+              <th class="text-right pe-4" style="width: 150px">Aksi</th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-if="loading">
               <td colspan="7" class="text-center py-5">
-                <span class="spinner-border spinner-border-sm me-2" />
+                <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-2" />
                 Memuat data supplier...
               </td>
             </tr>
 
             <tr v-else-if="suppliers.length === 0">
-              <td colspan="7" class="text-center text-muted py-5">Belum ada data supplier.</td>
+              <td colspan="7" class="text-center text-slate-500 py-5">Belum ada data supplier.</td>
             </tr>
 
             <tr v-for="(supplier, index) in suppliers" v-else :key="supplier.id">
@@ -254,12 +254,12 @@ onMounted(() => {
               </td>
 
               <td>
-                <span class="fw-semibold">{{ supplier.code }}</span>
+                <span class="font-semibold">{{ supplier.code }}</span>
               </td>
 
               <td>
-                <div class="fw-semibold">{{ supplier.name }}</div>
-                <small class="text-muted">
+                <div class="font-semibold">{{ supplier.name }}</div>
+                <small class="text-slate-500">
                   {{ supplier.address || "-" }}
                 </small>
               </td>
@@ -268,22 +268,22 @@ onMounted(() => {
               <td>{{ supplier.email || "-" }}</td>
 
               <td>
-                <span class="badge" :class="Number(supplier.is_active) === 1 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="Number(supplier.is_active) === 1 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
                   {{ Number(supplier.is_active) === 1 ? "Aktif" : "Nonaktif" }}
                 </span>
               </td>
 
-              <td class="text-end pe-4">
-                <div class="d-flex justify-content-end gap-1">
-                  <button class="btn btn-sm btn-light" title="Detail" @click="openDetail(supplier)">
+              <td class="text-right pe-4">
+                <div class="flex justify-end gap-1">
+                  <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Detail" @click="openDetail(supplier)">
                     <i class="ti ti-eye" />
                   </button>
 
-                  <button class="btn btn-sm btn-light" title="Edit" @click="openEditForm(supplier)">
+                  <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Edit" @click="openEditForm(supplier)">
                     <i class="ti ti-edit" />
                   </button>
 
-                  <button class="btn btn-sm btn-light text-danger" title="Hapus" @click="deleteSupplier(supplier)">
+                  <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600" title="Hapus" @click="deleteSupplier(supplier)">
                     <i class="ti ti-trash" />
                   </button>
                 </div>
@@ -294,18 +294,18 @@ onMounted(() => {
       </div>
 
       <!-- Pagination -->
-      <div v-if="pagination.total > 0" class="card-body border-top d-flex flex-wrap justify-content-between align-items-center gap-3">
-        <div class="d-flex align-items-center gap-2">
-          <small class="text-muted">Tampilkan</small>
+      <div v-if="pagination.total > 0" class="p-5 border-top flex flex-wrap justify-between items-center gap-3">
+        <div class="flex items-center gap-2">
+          <small class="text-slate-500">Tampilkan</small>
 
-          <select v-model.number="perPage" class="form-select form-select-sm" style="width: 75px">
+          <select v-model.number="perPage" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-select-sm" style="width: 75px">
             <option :value="10">10</option>
             <option :value="25">25</option>
             <option :value="50">50</option>
             <option :value="100">100</option>
           </select>
 
-          <small class="text-muted"> Total {{ pagination.total }} supplier </small>
+          <small class="text-slate-500"> Total {{ pagination.total }} supplier </small>
         </div>
 
         <nav aria-label="Supplier pagination">
