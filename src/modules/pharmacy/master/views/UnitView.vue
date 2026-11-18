@@ -5,7 +5,7 @@ import { useToast } from "@/shared/composables/useToast";
 import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
 
-import unit.api, { type Unit, type UnitPagination } from "../api/unit.api";
+import unitService, { type Unit, type UnitPagination } from "../api/unit.api";
 
 import UnitFormModal from "../components/UnitFormModal.vue";
 import UnitDetailModal from "../components/UnitDetailModal.vue";
@@ -44,7 +44,7 @@ async function loadUnits(page = currentPage.value): Promise<void> {
   loading.value = true;
 
   try {
-    const response = await unit.api.getAll({
+    const response = await unitService.getAll({
       page,
       per_page: perPage.value,
       search: search.value.trim(),
@@ -98,7 +98,7 @@ function openEditForm(unit: Unit): void {
 
 async function openDetail(unit: Unit): Promise<void> {
   try {
-    const response = await unit.api.getById(unit.id);
+    const response = await unitService.getById(unit.id);
     const result = response.data;
 
     if (result.error || !result.data) {
@@ -133,7 +133,7 @@ async function deleteUnit(unit: Unit): Promise<void> {
   if (!confirmed) return;
 
   try {
-    const response = await unit.api.delete(unit.id);
+    const response = await unitService.delete(unit.id);
     const result = response.data;
 
     if (result.error) {

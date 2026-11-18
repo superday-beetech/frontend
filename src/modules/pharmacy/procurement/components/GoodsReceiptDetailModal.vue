@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 
 import GoodsReceiptBatchModal from "./GoodsReceiptBatchModal.vue";
-import goods-receipt.api, { type GoodsReceiptPostPayload } from "../api/goods-receipt.api";
+import goodsReceiptService, { type GoodsReceiptPostPayload } from "../api/goods-receipt.api";
 
 import type { GoodsReceipt } from "../types/goodsReceipt";
 
@@ -30,7 +30,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    receipt.value = (await goods-receipt.api.getById(props.receiptId)) ?? null;
+    receipt.value = (await goodsReceiptService.getById(props.receiptId)) ?? null;
   } catch (error: any) {
     toast.error(error?.response?.data?.message || error?.message || "Gagal memuat detail Goods Receipt.");
   } finally {
@@ -54,7 +54,7 @@ async function handleBatchPosting(payload: GoodsReceiptPostPayload) {
   posting.value = true;
 
   try {
-    await goods-receipt.api.post(props.receiptId, payload);
+    await goodsReceiptService.post(props.receiptId, payload);
 
     toast.success("Goods Receipt berhasil diposting.");
 

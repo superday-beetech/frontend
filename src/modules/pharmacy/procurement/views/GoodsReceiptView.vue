@@ -47,7 +47,7 @@ async function loadReceipts(page = 1) {
   loading.value = true;
 
   try {
-    const result = await goods-receipt.api.getAll({
+    const result = await goodsReceiptService.getAll({
       page,
       per_page: pagination.value.per_page,
       search: search.value.trim() || undefined,
@@ -99,7 +99,7 @@ function openCreateModal() {
 
 async function createReceipt(payload: GoodsReceiptPayload) {
   try {
-    await goods-receipt.api.create(payload);
+    await goodsReceiptService.create(payload);
 
     toast.success("Goods Receipt berhasil dibuat sebagai draft.");
 

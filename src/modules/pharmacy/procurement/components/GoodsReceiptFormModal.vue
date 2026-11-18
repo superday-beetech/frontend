@@ -56,7 +56,7 @@ async function loadPurchaseOrders() {
   loadingOrders.value = true;
 
   try {
-    const response = await purchase-order.api.getAll({
+    const response = await purchaseOrderService.getAll({
       page: 1,
       per_page: 100,
     });
@@ -87,7 +87,7 @@ async function selectPurchaseOrder() {
   loadingOrderDetail.value = true;
 
   try {
-    const response = await purchase-order.api.getById(form.purchase_order_id);
+    const response = await purchaseOrderService.getById(form.purchase_order_id);
 
     const order = response.data;
 
