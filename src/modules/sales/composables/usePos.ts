@@ -328,7 +328,6 @@ export function usePos(options: UsePosOptions) {
 
     heldTransactions,
     loadingHeldTransactions,
-    offlineTransaction,
 
     createDraft,
     postCurrentSale,
@@ -499,7 +498,6 @@ export function usePos(options: UsePosOptions) {
     transactionLocked,
     canCreateDraft,
     canPostSale,
-    offlineTransaction,
 
     // Calculation state
     transactionDiscountMode,
