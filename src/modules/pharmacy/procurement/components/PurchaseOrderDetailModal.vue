@@ -30,114 +30,114 @@ function date(value?: string | null) {
 
 <template>
   <div>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <small class="text-muted">Nomor PO</small>
-        <div class="fw-semibold">{{ order.order_number }}</div>
+    <div class="grid grid-cols-12 g-3 mb-4">
+      <div class="col-span-12 md:col-span-6">
+        <small class="text-slate-500">Nomor PO</small>
+        <div class="font-semibold">{{ order.order_number }}</div>
       </div>
 
-      <div class="col-md-6">
-        <small class="text-muted">Status</small>
+      <div class="col-span-12 md:col-span-6">
+        <small class="text-slate-500">Status</small>
         <div>
-          <span class="badge bg-light-primary text-primary">
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-light-primary text-primary-600">
             {{ order.status }}
           </span>
         </div>
       </div>
 
-      <div class="col-md-6">
-        <small class="text-muted">Supplier</small>
-        <div class="fw-semibold">
+      <div class="col-span-12 md:col-span-6">
+        <small class="text-slate-500">Supplier</small>
+        <div class="font-semibold">
           {{ order.supplier_name || "-" }}
         </div>
-        <small class="text-muted">
+        <small class="text-slate-500">
           {{ order.supplier_phone || "" }}
         </small>
       </div>
 
-      <div class="col-md-6">
-        <small class="text-muted">Tanggal Order</small>
+      <div class="col-span-12 md:col-span-6">
+        <small class="text-slate-500">Tanggal Order</small>
         <div>{{ date(order.order_date) }}</div>
 
-        <small class="text-muted">Estimasi Kedatangan</small>
+        <small class="text-slate-500">Estimasi Kedatangan</small>
         <div>{{ date(order.expected_date) }}</div>
       </div>
 
-      <div class="col-12">
-        <small class="text-muted">Alamat Supplier</small>
+      <div class="col-span-12">
+        <small class="text-slate-500">Alamat Supplier</small>
         <div>{{ order.supplier_address || "-" }}</div>
       </div>
     </div>
 
-    <h6 class="fw-semibold mb-3">Daftar Produk</h6>
+    <h6 class="font-semibold mb-3">Daftar Produk</h6>
 
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle">
+    <div class="w-full overflow-x-auto">
+      <table class="w-full border-collapse text-sm table-bordered align-middle">
         <thead class="table-light">
           <tr>
             <th>Produk</th>
-            <th class="text-end">Qty</th>
-            <th class="text-end">Harga</th>
-            <th class="text-end">Diskon</th>
-            <th class="text-end">Subtotal</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Harga</th>
+            <th class="text-right">Diskon</th>
+            <th class="text-right">Subtotal</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="item in order.items || []" :key="item.id">
             <td>
-              <div class="fw-semibold">
+              <div class="font-semibold">
                 {{ item.product_name || `Produk #${item.product_id}` }}
               </div>
-              <small class="text-muted">
+              <small class="text-slate-500">
                 {{ item.sku || "" }}
               </small>
             </td>
 
-            <td class="text-end">
+            <td class="text-right">
               {{ Number(item.quantity).toLocaleString("id-ID") }}
             </td>
 
-            <td class="text-end">
+            <td class="text-right">
               {{ currency(item.unit_cost) }}
             </td>
 
-            <td class="text-end">
+            <td class="text-right">
               {{ currency(item.discount_amount) }}
             </td>
 
-            <td class="text-end">
+            <td class="text-right">
               {{ currency(item.subtotal) }}
             </td>
           </tr>
 
           <tr v-if="!order.items?.length">
-            <td colspan="5" class="text-center text-muted py-4">Tidak ada item Purchase Order.</td>
+            <td colspan="5" class="text-center text-slate-500 py-4">Tidak ada item Purchase Order.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="row justify-content-end">
+    <div class="grid grid-cols-12 justify-end">
       <div class="col-md-5">
-        <div class="d-flex justify-content-between mb-2">
+        <div class="flex justify-between mb-2">
           <span>Subtotal</span>
           <strong>{{ currency(order.subtotal) }}</strong>
         </div>
 
-        <div class="d-flex justify-content-between mb-2">
+        <div class="flex justify-between mb-2">
           <span>Diskon</span>
           <strong>{{ currency(order.discount_amount) }}</strong>
         </div>
 
-        <div class="d-flex justify-content-between mb-2">
+        <div class="flex justify-between mb-2">
           <span>Pajak</span>
           <strong>{{ currency(order.tax_amount) }}</strong>
         </div>
 
-        <div class="d-flex justify-content-between border-top pt-3">
+        <div class="flex justify-between border-top pt-3">
           <strong>Total</strong>
-          <strong class="text-primary">
+          <strong class="text-primary-600">
             {{ currency(order.total_amount) }}
           </strong>
         </div>
@@ -145,12 +145,12 @@ function date(value?: string | null) {
     </div>
 
     <div v-if="order.notes" class="mt-3">
-      <small class="text-muted">Catatan</small>
+      <small class="text-slate-500">Catatan</small>
       <p class="mb-0">{{ order.notes }}</p>
     </div>
 
-    <div class="text-end mt-4">
-      <button type="button" class="btn btn-light" @click="emit('close')">Tutup</button>
+    <div class="text-right mt-4">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="emit('close')">Tutup</button>
     </div>
   </div>
 </template>
