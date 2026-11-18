@@ -35,24 +35,35 @@ export const useNavigationStore = defineStore('navigation', () => {
   // Getters
   // ---------------------------------------------------------------------------
 
-  const menuTree = computed(() => buildMenuTree(menus.value))
+  const menuTree = computed(() => buildMenuTree(Array.isArray(menus.value) ? menus.value : []))
 
   // ---------------------------------------------------------------------------
   // Menu helpers
   // ---------------------------------------------------------------------------
 
-  function buildMenuTree(items: NavigationMenu[], parentId = '0'): NavigationMenu[] {
-    return items
+  function buildMenuTree(
+    items: NavigationMenu[] = [],
+    parentId = '0',
+    ancestors = new Set<string>()
+  ): NavigationMenu[] {
+    const source = Array.isArray(items) ? items : []
+
+    return source
       .filter((item) => {
         const itemParent = item.parent_id === null || item.parent_id === undefined || item.parent_id === '' ? '0' : String(item.parent_id)
-
-        return itemParent === parentId
+        return itemParent === parentId && !ancestors.has(String(item.id))
       })
       .sort((a, b) => Number(a.sequence ?? 0) - Number(b.sequence ?? 0))
-      .map((item) => ({
-        ...item,
-        children: buildMenuTree(items, String(item.id)),
-      }))
+      .map((item) => {
+        const id = String(item.id)
+        const nextAncestors = new Set(ancestors)
+        nextAncestors.add(id)
+
+        return {
+          ...item,
+          children: buildMenuTree(source, id, nextAncestors),
+        }
+      })
   }
 
   function flattenMenuTree(items: NavigationMenu[]): NavigationMenu[] {
@@ -86,13 +97,16 @@ export const useNavigationStore = defineStore('navigation', () => {
   }
 
   function applyNavigation(payload: Awaited<ReturnType<typeof navigationApi.getNavigation>>): void {
-    position.value = payload.position ?? position.value
-    section.value = payload.section ?? section.value
-    title.value = payload.title ?? 'Manajemen Navigasi'
+    const data = payload && typeof payload === 'object' ? payload : ({} as NavigationGroups)
 
-    menus.value = Array.isArray(payload.menus) ? payload.menus : []
+    position.value = data.position ?? position.value
+    section.value = data.section ?? section.value
+    title.value = typeof data.title === 'string' ? data.title : 'Manajemen Navigasi'
 
-    roles.value = Array.isArray(payload.roles) ? payload.roles : []
+    menus.value = Array.isArray(data.menus) ? data.menus : []
+    roles.value = Array.isArray(data.roles)
+      ? data.roles.filter((role): role is string => typeof role === 'string' && role.trim() !== '')
+      : []
   }
 
   // ---------------------------------------------------------------------------
