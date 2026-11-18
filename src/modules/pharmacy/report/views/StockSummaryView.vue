@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import reportService from "../services/reportService";
-import type { StockSummaryFilter, StockSummaryItem, StockSummaryReport } from "../services/reportService";
+import report.api from "../api/report.api";
+import type { StockSummaryFilter, StockSummaryItem, StockSummaryReport } from "../api/report.api";
 
 const loading = ref(false);
 const exporting = ref(false);
@@ -91,7 +91,7 @@ async function loadData() {
   errorMessage.value = "";
 
   try {
-    const result = await reportService.getStockSummary(getFilters());
+    const result = await report.api.getStockSummary(getFilters());
 
     report.value = result;
     items.value = result.items || [];
@@ -167,7 +167,7 @@ async function exportCsv() {
   errorMessage.value = "";
 
   try {
-    const blob = await reportService.downloadStockSummaryCsv(getExportFilters());
+    const blob = await report.api.downloadStockSummaryCsv(getExportFilters());
 
     saveBlob(blob, getFilename("csv"));
   } catch (error: any) {
@@ -188,7 +188,7 @@ async function exportExcel() {
   errorMessage.value = "";
 
   try {
-    const blob = await reportService.downloadStockSummaryExcel(getExportFilters());
+    const blob = await report.api.downloadStockSummaryExcel(getExportFilters());
 
     saveBlob(blob, getFilename("xlsx"));
   } catch (error: any) {
@@ -232,7 +232,7 @@ async function printReport() {
 
     printWindow.document.close();
 
-    const blob = await reportService.downloadStockSummaryPdf(getExportFilters());
+    const blob = await report.api.downloadStockSummaryPdf(getExportFilters());
 
     const pdfUrl = URL.createObjectURL(blob);
 
