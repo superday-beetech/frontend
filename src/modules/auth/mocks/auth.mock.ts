@@ -2,6 +2,7 @@
 // Tidak ikut ter-bundle ke build produksi.
 import { STORAGE_KEYS } from '@/core/storage'
 import type { LoginPayload, SessionContext } from '../types'
+import { pharmacyMenus } from './pharmacy-menus.mock'
 
 export class MockApiError extends Error {
   response: { status: number; data: { message: string; errors?: Record<string, string> } }
@@ -54,6 +55,7 @@ const MOCK_SESSION: SessionContext = {
   ],
   is_superadmin: true,
   groups: ['superadmin'],
+  menus: pharmacyMenus,
   /*  menus: [
     { id: 1, parent_id: null, title: 'Dashboard', path: '/', name: 'Dashboard', component_key: null, icon: 'LayoutDashboard' },
     {
