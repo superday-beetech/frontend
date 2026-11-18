@@ -370,60 +370,60 @@ function submit(): void {
 <template>
   <form @submit.prevent="submit">
     <!-- HEADER -->
-    <div class="row g-3">
+    <div class="grid grid-cols-12 g-3">
       <!-- PO NUMBER -->
-      <div class="col-md-6">
-        <label class="form-label">
+      <div class="col-span-12 md:col-span-6">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
           Nomor Purchase Order
-          <span class="text-danger">*</span>
+          <span class="text-rose-600">*</span>
         </label>
 
-        <div class="input-group">
-          <input v-model="form.order_number" type="text" class="form-control" placeholder="Contoh: PO-20261109-123456" maxlength="50" required :readonly="numberMode === 'auto'" />
+        <div class="flex w-full items-stretch">
+          <input v-model="form.order_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Contoh: PO-20261109-123456" maxlength="50" required :readonly="numberMode === 'auto'" />
 
-          <button type="button" class="btn" :class="numberMode === 'auto' ? 'btn-primary' : 'btn-outline-primary'" @click="useAutomaticNumber">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50" :class="numberMode === 'auto' ? 'btn-primary' : 'btn-outline-primary'" @click="useAutomaticNumber">
             <i class="ti ti-refresh me-1"></i>
             Otomatis
           </button>
 
-          <button type="button" class="btn" :class="numberMode === 'manual' ? 'btn-secondary' : 'btn-outline-secondary'" @click="useManualNumber">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50" :class="numberMode === 'manual' ? 'btn-secondary' : 'btn-outline-secondary'" @click="useManualNumber">
             <i class="ti ti-edit me-1"></i>
             Manual
           </button>
         </div>
 
-        <small class="text-muted">
+        <small class="text-slate-500">
           {{ numberMode === "auto" ? "Nomor dibuat otomatis. Klik Manual jika ingin mengubahnya." : "Masukkan nomor PO secara manual." }}
         </small>
       </div>
 
       <!-- SUPPLIER -->
-      <div class="col-md-6">
-        <label class="form-label">
+      <div class="col-span-12 md:col-span-6">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
           Supplier
-          <span class="text-danger">*</span>
+          <span class="text-rose-600">*</span>
         </label>
 
         <OptionSelect v-model="form.supplier_id" :options="supplierOptions" placeholder="Pilih supplier..." search-placeholder="Cari nama supplier..." empty-text="Supplier tidak ditemukan" />
       </div>
 
       <!-- ORDER DATE -->
-      <div class="col-md-6">
-        <label class="form-label">
+      <div class="col-span-12 md:col-span-6">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
           Tanggal Order
-          <span class="text-danger">*</span>
+          <span class="text-rose-600">*</span>
         </label>
 
-        <input v-model="form.order_date" type="date" class="form-control" required />
+        <input v-model="form.order_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required />
       </div>
 
       <!-- EXPECTED DATE -->
-      <div class="col-md-6">
-        <label class="form-label"> Estimasi Kedatangan </label>
+      <div class="col-span-12 md:col-span-6">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Estimasi Kedatangan </label>
 
-        <input v-model="form.expected_date" type="date" class="form-control" :min="form.order_date" />
+        <input v-model="form.expected_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :min="form.order_date" />
 
-        <small v-if="invalidExpectedDate" class="text-danger"> Tanggal estimasi tidak boleh sebelum tanggal order. </small>
+        <small v-if="invalidExpectedDate" class="text-rose-600"> Tanggal estimasi tidak boleh sebelum tanggal order. </small>
       </div>
     </div>
 
@@ -431,15 +431,15 @@ function submit(): void {
 
     <!-- PRODUCT SELECTION -->
     <div class="mb-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="flex justify-between items-center mb-3">
         <div>
-          <h6 class="mb-0 fw-semibold">Item Purchase Order</h6>
+          <h6 class="mb-0 font-semibold">Item Purchase Order</h6>
 
-          <small class="text-muted"> {{ form.items.length }} produk dipilih </small>
+          <small class="text-slate-500"> {{ form.items.length }} produk dipilih </small>
         </div>
       </div>
 
-      <label class="form-label small fw-semibold"> Cari dan Tambahkan Produk </label>
+      <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small font-semibold"> Cari dan Tambahkan Produk </label>
 
       <OptionSelect
         v-model="productToAdd"
@@ -450,19 +450,19 @@ function submit(): void {
         @update:model-value="addProduct"
       />
 
-      <small class="text-muted d-block mt-1"> Pilih produk untuk memasukkannya ke daftar Purchase Order. </small>
+      <small class="text-slate-500 block mt-1"> Pilih produk untuk memasukkannya ke daftar Purchase Order. </small>
     </div>
 
     <!-- ITEM TABLE -->
-    <div class="table-responsive border rounded">
-      <table class="table table-sm align-middle mb-0 po-items-table">
+    <div class="w-full overflow-x-auto border rounded">
+      <table class="w-full border-collapse text-sm text-xs align-middle mb-0 po-items-table">
         <thead class="table-light">
           <tr>
             <th style="min-width: 220px">Produk</th>
             <th style="width: 100px">Qty</th>
             <th style="width: 160px">Harga Satuan</th>
             <th style="width: 150px">Diskon</th>
-            <th style="width: 145px" class="text-end">Subtotal</th>
+            <th style="width: 145px" class="text-right">Subtotal</th>
             <th style="width: 45px"></th>
           </tr>
         </thead>
@@ -471,11 +471,11 @@ function submit(): void {
           <!-- EMPTY STATE -->
           <tr v-if="form.items.length === 0">
             <td colspan="6" class="text-center py-5">
-              <i class="ti ti-shopping-cart fs-2 text-muted d-block mb-2"></i>
+              <i class="ti ti-shopping-cart fs-2 text-slate-500 block mb-2"></i>
 
-              <div class="fw-semibold">Belum ada produk</div>
+              <div class="font-semibold">Belum ada produk</div>
 
-              <small class="text-muted"> Cari dan tambahkan produk melalui kolom pencarian di atas. </small>
+              <small class="text-slate-500"> Cari dan tambahkan produk melalui kolom pencarian di atas. </small>
             </td>
           </tr>
 
@@ -483,14 +483,14 @@ function submit(): void {
           <tr v-for="(item, index) in form.items" :key="String(item.product_id)">
             <!-- PRODUCT -->
             <td>
-              <div class="d-flex flex-column">
-                <span class="fw-semibold">
+              <div class="flex flex-col">
+                <span class="font-semibold">
                   {{ getProductName(item.product_id) }}
                 </span>
 
-                <small class="text-muted"> SKU: {{ getProductSku(item.product_id) }} </small>
+                <small class="text-slate-500"> SKU: {{ getProductSku(item.product_id) }} </small>
 
-                <small v-if="!getProduct(item.product_id)" class="text-danger"> Produk tidak ditemukan dalam daftar produk saat ini. </small>
+                <small v-if="!getProduct(item.product_id)" class="text-rose-600"> Produk tidak ditemukan dalam daftar produk saat ini. </small>
               </div>
             </td>
 
@@ -508,19 +508,19 @@ function submit(): void {
             <td>
               <DiscountInput v-model="item.discount_amount" v-model:mode="item.discount_mode" />
 
-              <small v-if="!isDiscountValid(getItemGross(item), item.discount_amount, item.discount_mode)" class="text-danger d-block mt-1"> Diskon tidak valid </small>
+              <small v-if="!isDiscountValid(getItemGross(item), item.discount_amount, item.discount_mode)" class="text-rose-600 block mt-1"> Diskon tidak valid </small>
             </td>
 
             <!-- SUBTOTAL -->
-            <td class="text-end">
-              <strong class="text-nowrap">
+            <td class="text-right">
+              <strong class="whitespace-nowrap">
                 {{ formatCurrency(getItemNet(item)) }}
               </strong>
             </td>
 
             <!-- DELETE -->
             <td class="text-center">
-              <button type="button" class="btn btn-sm btn-light text-danger" title="Hapus produk" @click="removeItem(index)">
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600" title="Hapus produk" @click="removeItem(index)">
                 <i class="ti ti-trash"></i>
               </button>
             </td>
@@ -530,23 +530,23 @@ function submit(): void {
     </div>
 
     <!-- VALIDATION -->
-    <div v-if="invalidItems" class="alert alert-warning py-2 mt-3 mb-2">
+    <div v-if="invalidItems" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 py-2 mt-3 mb-2">
       <i class="ti ti-alert-triangle me-1"></i>
       Tambahkan minimal satu produk dan periksa kuantitas serta harga satuan.
     </div>
 
-    <div v-if="duplicateProducts" class="alert alert-warning py-2 mt-2 mb-2">Produk yang sama tidak boleh dimasukkan lebih dari satu kali.</div>
+    <div v-if="duplicateProducts" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 py-2 mt-2 mb-2">Produk yang sama tidak boleh dimasukkan lebih dari satu kali.</div>
 
-    <div v-if="invalidItemDiscount" class="alert alert-warning py-2 mt-2 mb-2">Periksa nilai diskon item.</div>
+    <div v-if="invalidItemDiscount" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 py-2 mt-2 mb-2">Periksa nilai diskon item.</div>
 
-    <div v-if="invalidOrderDiscount" class="alert alert-warning py-2 mt-2 mb-2">Diskon PO tidak boleh melebihi subtotal.</div>
+    <div v-if="invalidOrderDiscount" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 py-2 mt-2 mb-2">Diskon PO tidak boleh melebihi subtotal.</div>
 
-    <div v-if="invalidTax" class="alert alert-warning py-2 mt-2 mb-2">Nilai pajak tidak boleh negatif.</div>
+    <div v-if="invalidTax" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 py-2 mt-2 mb-2">Nilai pajak tidak boleh negatif.</div>
 
     <!-- TOTAL -->
-    <div class="row justify-content-end mt-3">
-      <div class="col-md-5 col-lg-4">
-        <div class="d-flex justify-content-between mb-2">
+    <div class="grid grid-cols-12 justify-end mt-3">
+      <div class="col-md-5 col-span-12 lg:col-span-4">
+        <div class="flex justify-between mb-2">
           <span>Subtotal</span>
 
           <strong>
@@ -555,21 +555,21 @@ function submit(): void {
         </div>
 
         <div class="mb-2">
-          <label class="form-label small mb-1"> Diskon PO </label>
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1"> Diskon PO </label>
 
           <CurrencyInput v-model="form.discount_amount" :min="0" placeholder="Diskon PO" size="sm" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label small mb-1"> Pajak </label>
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1"> Pajak </label>
 
           <CurrencyInput v-model="form.tax_amount" :min="0" placeholder="Pajak" size="sm" />
         </div>
 
-        <div class="d-flex justify-content-between border-top pt-3">
+        <div class="flex justify-between border-top pt-3">
           <strong>Total PO</strong>
 
-          <strong class="text-primary fs-5">
+          <strong class="text-primary-600 fs-5">
             {{ formatCurrency(total) }}
           </strong>
         </div>
@@ -578,16 +578,16 @@ function submit(): void {
 
     <!-- NOTES -->
     <div class="mt-3">
-      <label class="form-label"> Catatan Purchase Order </label>
+      <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Catatan Purchase Order </label>
 
-      <textarea v-model="form.notes" class="form-control" rows="2" placeholder="Catatan tambahan untuk PO..."></textarea>
+      <textarea v-model="form.notes" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="2" placeholder="Catatan tambahan untuk PO..."></textarea>
     </div>
 
     <!-- ACTIONS -->
-    <div class="d-flex justify-content-end gap-2 mt-4">
-      <button type="button" class="btn btn-light" @click="emit('close')">Batal</button>
+    <div class="flex justify-end gap-2 mt-4">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="emit('close')">Batal</button>
 
-      <button type="submit" class="btn btn-primary" :disabled="!canSubmit">
+      <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="!canSubmit">
         <i class="ti ti-device-floppy me-1"></i>
 
         {{ isEdit ? "Simpan Perubahan" : "Simpan Purchase Order" }}
