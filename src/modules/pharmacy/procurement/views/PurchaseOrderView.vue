@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from "vue";
 
 import api from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
+import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
 
 import purchaseOrderService from "../services/purchaseOrderService";
@@ -16,6 +17,7 @@ import type { OptionItem } from "@/shared/composables/useOption";
 import type { CreatePurchaseOrderPayload, PurchaseOrder, PurchaseOrderPagination } from "../types/purchaseOrder";
 
 const toast = useToast();
+const { confirm } = useConfirm();
 
 interface SupplierOption {
   id: number;
@@ -296,7 +298,12 @@ async function deleteOrder(order: PurchaseOrder) {
     return;
   }
 
-  const confirmed = window.confirm(`Hapus Purchase Order ${order.order_number}? Tindakan ini tidak dapat dibatalkan.`);
+  const confirmed = await confirm({
+    title: "Konfirmasi Hapus",
+    message: `Hapus Purchase Order ${order.order_number}? Tindakan ini tidak dapat dibatalkan.`,
+    confirmText: "Ya, Hapus",
+    variant: "danger",
+  });
 
   if (!confirmed) return;
 
