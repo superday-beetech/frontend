@@ -1,937 +1,628 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import api from "@/api/client";
-import { notify } from "@/utils/notification";
-import { getSettingField } from "@/utils/setting-field";
-// ======================================================
-// API
-// ======================================================
+import { computed, onMounted, ref } from 'vue'
+import {
+  AlertTriangle,
+  Check,
+  ChevronRight,
+  Code2,
+  Database,
+  Layers3,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings2,
+  SlidersHorizontal,
+  Trash2,
+  Undo2,
+} from 'lucide-vue-next'
 
-const API = "/backend/setting-api";
+import BaseAlert from '@/shared/components/ui/feedback/BaseAlert.vue'
+import BaseBadge from '@/shared/components/ui/feedback/BaseBadge.vue'
+import BaseButton from '@/shared/components/ui/primitives/BaseButton.vue'
+import BaseCheckbox from '@/shared/components/ui/form/BaseCheckbox.vue'
+import BaseInput from '@/shared/components/ui/form/BaseInput.vue'
+import BaseSelect from '@/shared/components/ui/form/BaseSelect.vue'
+import BaseSwitch from '@/shared/components/ui/form/BaseSwitch.vue'
+import BaseTextarea from '@/shared/components/ui/form/BaseTextarea.vue'
+import BaseModal from '@/shared/components/ui/overlay/BaseModal.vue'
+import { useSettings } from '../composables/useSettings'
+import type { SettingFieldOption, SettingRow } from '../types/settings'
 
-// ======================================================
-// TYPES
-// ======================================================
+const {
+  groups,
+  selectedGroupId,
+  selectedGroup,
+  rows,
+  forget,
+  loading,
+  saving,
+  addingClass,
+  showAddModal,
+  newClass,
+  loadSettings,
+  selectGroup,
+  addRow,
+  removeRow,
+  restoreRow,
+  saveSettings,
+  openAddModal,
+  closeAddModal,
+  submitAddClass,
+  fieldFor,
+  newClassField,
+  checkboxGroupValues,
+  toggleCheckboxGroup,
+} = useSettings()
 
-type SettingType = "string" | "integer" | "float" | "boolean" | "json";
+const groupSearch = ref('')
 
-interface SettingItem {
-  property: string;
-  type: SettingType;
-  value: unknown;
+const filteredGroups = computed(() => {
+  const query = groupSearch.value.trim().toLowerCase()
+  if (!query) return groups.value
+
+  return groups.value.filter((group) =>
+    [group.name, group.class, group.context ?? ''].some((value) => value.toLowerCase().includes(query)),
+  )
+})
+
+const selectedCount = computed(() => rows.value.filter((row) => row.property.trim()).length)
+
+function optionsFor(options: SettingFieldOption[] | undefined) {
+  return (options ?? []).map((option) => ({
+    label: option.label,
+    value: String(option.value),
+  }))
 }
 
-interface SettingGroup {
-  id: string;
-  name: string;
-  class: string;
-  context: string | null;
-  items: SettingItem[];
+function checkboxValue(row: SettingRow): boolean {
+  return row.value === 'true'
 }
 
-interface SettingRow {
-  property: string;
-  type: SettingType;
-  value: string;
-  isNew: boolean;
-}
-interface NewClassForm {
-  class: string;
-  property: string;
-  type: SettingType;
-  value: string;
-  context: string;
+function setCheckboxValue(row: SettingRow, value: boolean): void {
+  row.value = value ? 'true' : 'false'
 }
 
-interface SettingsIndexResponse {
-  groups?: SettingGroup[];
+function fieldLabel(row: SettingRow): string {
+  return fieldFor(row).label ?? row.property
 }
-
-// ======================================================
-// STATE
-// ======================================================
-
-const groups = ref<SettingGroup[]>([]);
-const selectedGroupId = ref("");
-
-const rows = ref<SettingRow[]>([]);
-const forget = ref<string[]>([]);
-
-const loading = ref(false);
-const saving = ref(false);
-const addingClass = ref(false);
-
-const showAddModal = ref(false);
-
-const newClass = ref<NewClassForm>({
-  class: "",
-  property: "",
-  type: "string",
-  value: "",
-  context: "",
-});
-
-// ======================================================
-// COMPUTED
-// ======================================================
-
-const selectedGroup = computed(() => groups.value.find((group) => group.id === selectedGroupId.value) ?? null);
-
-// ======================================================
-// HELPERS
-// ======================================================
-
-function getErrorMessage(error: unknown, fallback = "Terjadi kesalahan."): string {
-  if (typeof error === "object" && error !== null && "response" in error) {
-    const response = (
-      error as {
-        response?: {
-          data?: {
-            message?: string;
-            errors?: Record<string, string | string[]>;
-          };
-        };
-      }
-    ).response;
-
-    const data = response?.data;
-
-    if (data?.errors) {
-      return Object.values(data.errors).flat().join("\n");
-    }
-
-    if (data?.message) {
-      return data.message;
-    }
-  }
-
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return fallback;
-}
-
-function displayValue(value: unknown, type: SettingType): string {
-  if (type === "boolean") {
-    return String(value === true || value === "true" || value === 1 || value === "1");
-  }
-
-  if (type === "json") {
-    return typeof value === "string" ? value : JSON.stringify(value, null, 2);
-  }
-
-  return String(value ?? "");
-}
-
-function normalizeValue(value: string, type: SettingType): unknown {
-  switch (type) {
-    case "boolean":
-      return value === "true" || value === "1";
-
-    case "integer":
-      return Number.parseInt(value, 10);
-
-    case "float":
-      return Number(value);
-
-    case "json":
-      return JSON.parse(value);
-
-    default:
-      return value;
-  }
-}
-
-function validateProperty(property: string): void {
-  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(property)) {
-    throw new Error(`Nama properti "${property}" tidak valid.`);
-  }
-}
-
-function validateValue(property: string, value: string | boolean, type: SettingType): void {
-  if (type === "json") {
-    try {
-      JSON.parse(String(value));
-    } catch {
-      throw new Error(`Format JSON pada "${property}" tidak valid.`);
-    }
-  }
-
-  if (type === "integer" && !/^-?\d+$/.test(String(value))) {
-    throw new Error(`Nilai "${property}" harus berupa bilangan bulat.`);
-  }
-
-  if (type === "float" && (String(value).trim() === "" || !Number.isFinite(Number(value)))) {
-    throw new Error(`Nilai "${property}" harus berupa angka.`);
-  }
-}
-
-function fieldFor(row: SettingRow) {
-  return getSettingField(selectedGroup.value?.class ?? "", row.property, row.type);
-}
-
-function newClassField() {
-  return getSettingField(newClass.value.class, newClass.value.property, newClass.value.type);
-}
-
-function checkboxGroupValues(row: SettingRow): string[] {
-  if (!row.value.trim()) {
-    return [];
-  }
-
-  return row.value
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
-
-function toggleCheckboxGroup(row: SettingRow, value: string, checked: boolean): void {
-  const selected = new Set(checkboxGroupValues(row));
-
-  if (checked) {
-    selected.add(value);
-  } else {
-    selected.delete(value);
-  }
-
-  row.value = Array.from(selected).join(",");
-}
-// ======================================================
-// GROUP MANAGEMENT
-// ======================================================
-
-function prepareGroup(group: SettingGroup): void {
-  rows.value = group.items.map((item) => ({
-    property: item.property,
-    type: item.type,
-    value: displayValue(item.value, item.type),
-    isNew: false,
-  }));
-
-  forget.value = [];
-}
-
-function selectGroup(id: string): void {
-  selectedGroupId.value = id;
-
-  const group = groups.value.find((item) => item.id === id);
-
-  if (!group) return;
-
-  prepareGroup(group);
-
-  localStorage.setItem("erp-settings-active-tab", id);
-}
-
-// ======================================================
-// LOAD SETTINGS
-// ======================================================
-
-async function loadSettings() {
-  loading.value = true;
-
-  try {
-    const response = await api.get<{
-      status: number;
-      error: boolean;
-      message: string;
-      data: SettingsIndexResponse;
-    }>(`${API}`);
-
-    groups.value = response.data.data.groups ?? [];
-
-    if (groups.value.length > 0) {
-      const remembered = localStorage.getItem("erp-settings-active-tab");
-
-      const target = groups.value.find((group) => group.id === remembered) ?? groups.value[0];
-
-      selectGroup(target.id);
-    } else {
-      selectedGroupId.value = "";
-      rows.value = [];
-      forget.value = [];
-    }
-  } catch (error: unknown) {
-    notify.error(getErrorMessage(error, "Gagal memuat pengaturan."));
-  } finally {
-    loading.value = false;
-  }
-}
-
-// ======================================================
-// ROW MANAGEMENT
-// ======================================================
-
-function addRow(): void {
-  rows.value.push({
-    property: "",
-    type: "string",
-    value: "",
-    isNew: true,
-  });
-}
-
-function removeRow(index: number): void {
-  const row = rows.value[index];
-
-  if (!row) return;
-
-  if (!row.isNew && row.property && !forget.value.includes(row.property)) {
-    forget.value.push(row.property);
-  }
-
-  rows.value.splice(index, 1);
-}
-
-function restoreRow(property: string): void {
-  forget.value = forget.value.filter((item) => item !== property);
-
-  const original = selectedGroup.value?.items.find((item) => item.property === property);
-
-  if (!original) return;
-
-  rows.value.push({
-    property: original.property,
-    type: original.type,
-    value: displayValue(original.value, original.type),
-    isNew: false,
-  });
-}
-
-// ======================================================
-// VALIDATION
-// ======================================================
-
-function validateRows(): void {
-  const names = new Set<string>();
-
-  for (const row of rows.value) {
-    const property = row.property.trim();
-
-    // Lewati baris yang benar-benar kosong.
-    if (!property && !String(row.value).trim()) {
-      continue;
-    }
-
-    validateProperty(property);
-
-    const normalized = property.toLowerCase();
-
-    if (names.has(normalized)) {
-      throw new Error(`Properti "${property}" ditulis lebih dari sekali.`);
-    }
-
-    names.add(normalized);
-
-    validateValue(property, row.value, row.type);
-  }
-
-  for (const property of forget.value) {
-    if (names.has(property.toLowerCase())) {
-      throw new Error(`Properti "${property}" tidak dapat disimpan dan dihapus sekaligus.`);
-    }
-  }
-}
-
-// ======================================================
-// NORMALIZE PAYLOAD
-// ======================================================
-
-function normalizeRows() {
-  return rows.value
-    .filter((row) => row.property.trim() !== "")
-    .map((row) => ({
-      property: row.property.trim(),
-      type: row.type,
-      value: normalizeValue(row.value, row.type),
-    }));
-}
-
-// ======================================================
-// SAVE SETTINGS
-// ======================================================
-
-async function saveSettings(): Promise<void> {
-  const group = selectedGroup.value;
-
-  if (!group || saving.value) return;
-
-  try {
-    validateRows();
-
-    saving.value = true;
-
-    await api.put(`${API}/bulk-save`, {
-      group: group.class,
-      context: group.context,
-      rows: normalizeRows(),
-      forget: forget.value,
-    });
-
-    notify.success("Pengaturan berhasil disimpan.");
-
-    await loadSettings();
-  } catch (error: unknown) {
-    notify.error(getErrorMessage(error, "Gagal menyimpan pengaturan."));
-  } finally {
-    saving.value = false;
-  }
-}
-
-// ======================================================
-// ADD CLASS
-// ======================================================
-
-function openAddModal(): void {
-  newClass.value = {
-    class: "",
-    property: "",
-    type: "string",
-    value: "",
-    context: "",
-  };
-
-  showAddModal.value = true;
-}
-
-async function submitAddClass(): Promise<void> {
-  if (addingClass.value) return;
-
-  try {
-    const form = newClass.value;
-
-    const className = form.class.trim();
-    const property = form.property.trim();
-
-    if (!className) {
-      throw new Error("Nama class wajib diisi.");
-    }
-
-    if (!property) {
-      throw new Error("Nama properti wajib diisi.");
-    }
-
-    validateProperty(property);
-
-    validateValue(property, form.value, form.type);
-
-    addingClass.value = true;
-
-    await api.post(`${API}/add-class`, {
-      class: className,
-      property,
-      type: form.type,
-      value: normalizeValue(form.value, form.type),
-      context: form.context.trim() || null,
-    });
-
-    showAddModal.value = false;
-
-    notify.success("Class berhasil ditambahkan.");
-    console.log("Adding class:", className, property, form.type, form.value, form.context);
-    await loadSettings();
-  } catch (error: unknown) {
-    notify.error(getErrorMessage(error, "Gagal menambahkan class."));
-  } finally {
-    addingClass.value = false;
-  }
-}
-
-// ======================================================
-// DELETE OVERRIDE
-// ======================================================
-
-async function deleteOverride(property: string): Promise<void> {
-  const group = selectedGroup.value;
-
-  if (!group) return;
-
-  const confirmed = window.confirm(`Hapus override "${property}"? Nilai default konfigurasi akan digunakan kembali.`);
-
-  if (!confirmed) return;
-
-  try {
-    await api.delete(`${API}/delete`, {
-      data: {
-        group: group.class,
-        property,
-        context: group.context,
-      },
-    });
-
-    notify.success("Override berhasil dihapus.");
-
-    await loadSettings();
-  } catch (error: unknown) {
-    notify.error(getErrorMessage(error, "Gagal menghapus override."));
-  }
-}
-
-// ======================================================
-// LIFECYCLE
-// ======================================================
 
 onMounted(() => {
-  loadSettings();
-});
+  void loadSettings()
+})
 </script>
+
 <template>
-  <div class="settings-page">
-    <!-- Page header -->
-    <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
-      <div>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-1 small">
-            <li class="breadcrumb-item text-muted">Sistem</li>
-            <li class="breadcrumb-item active" aria-current="page">Pengaturan Aplikasi</li>
-          </ol>
-        </nav>
-        <h4 class="fw-semibold mb-1">Pengaturan Aplikasi</h4>
-        <p class="text-muted mb-0">Kelola konfigurasi aplikasi berdasarkan class dan context.</p>
-      </div>
+  <main class="space-y-6 pb-8">
+    <header class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div class="min-w-0">
+        <div class="mb-2 flex items-center gap-2 text-xs font-medium text-slate-400">
+          <span>Sistem</span>
+          <ChevronRight class="h-3.5 w-3.5" />
+          <span class="text-primary-600 dark:text-primary-400">Pengaturan Aplikasi</span>
+        </div>
 
-      <button type="button" class="btn btn-primary" @click="openAddModal">
-        <i class="ti ti-plus me-1"></i>
-        Tambah Class
-      </button>
-    </div>
-
-    <!-- Loading -->
-    <div v-if="loading" class="card border-0 shadow-sm">
-      <div class="card-body text-center py-5">
-        <div class="spinner-border text-primary"></div>
-        <p class="text-muted mt-2 mb-0">Memuat pengaturan...</p>
-      </div>
-    </div>
-
-    <template v-else>
-      <!-- Empty state -->
-      <div v-if="groups.length === 0" class="card border-0 shadow-sm">
-        <div class="card-body text-center py-5">
-          <div class="empty-icon mx-auto mb-3">
-            <i class="ti ti-settings fs-7"></i>
+        <div class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 dark:bg-primary-500/10 dark:ring-primary-500/20">
+            <Settings2 class="h-5 w-5" />
           </div>
-          <h5 class="mb-1">Belum ada pengaturan</h5>
-          <p class="text-muted mb-3">Tambahkan class untuk mulai mengelola pengaturan.</p>
-          <button type="button" class="btn btn-primary btn-sm" @click="openAddModal">
-            <i class="ti ti-plus me-1"></i>
-            Tambah Class
-          </button>
+          <div>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
+              Pengaturan Aplikasi
+            </h1>
+            <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              Kelola konfigurasi berdasarkan class dan context.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div v-else class="row g-3">
-        <!-- Sidebar: daftar class -->
-        <div class="col-12 col-lg-3">
-          <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom py-3">
-              <div class="d-flex align-items-center justify-content-between">
-                <span class="section-label">Class Pengaturan</span>
-                <span class="badge rounded-pill bg-light text-secondary border">{{ groups.length }}</span>
+      <BaseButton @click="openAddModal">
+        <Plus class="h-4 w-4" />
+        Tambah Class
+      </BaseButton>
+    </header>
+
+    <section v-if="loading" class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <RefreshCw class="mx-auto h-6 w-6 animate-spin text-primary-500" />
+      <p class="mt-3 text-sm font-medium text-slate-600 dark:text-slate-300">Memuat pengaturan...</p>
+      <p class="mt-1 text-xs text-slate-400">Mengambil konfigurasi aplikasi</p>
+    </section>
+
+    <section
+      v-else-if="groups.length === 0"
+      class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center dark:border-slate-700 dark:bg-slate-900"
+    >
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800">
+        <Database class="h-6 w-6" />
+      </div>
+      <h2 class="mt-4 text-base font-semibold text-slate-800 dark:text-white">Belum ada pengaturan</h2>
+      <p class="mx-auto mt-1 max-w-sm text-sm text-slate-500 dark:text-slate-400">
+        Tambahkan class beserta properti awal untuk mulai mengelola konfigurasi aplikasi.
+      </p>
+      <BaseButton class="mt-5" @click="openAddModal">
+        <Plus class="h-4 w-4" />
+        Tambah Class
+      </BaseButton>
+    </section>
+
+    <section v-else class="grid min-w-0 gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <aside class="h-fit overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 lg:sticky lg:top-5">
+        <div class="border-b border-slate-100 p-4 dark:border-slate-800">
+          <div class="mb-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <Layers3 class="h-4 w-4 text-primary-500" />
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                Class Pengaturan
+              </h2>
+            </div>
+            <BaseBadge variant="primary">{{ groups.length }}</BaseBadge>
+          </div>
+
+          <div class="relative">
+            <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              v-model="groupSearch"
+              type="search"
+              placeholder="Cari class..."
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-primary-400 focus:bg-white focus:ring-3 focus:ring-primary-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-primary-500 dark:focus:bg-slate-800"
+            />
+          </div>
+        </div>
+
+        <div class="max-h-[min(65vh,620px)] space-y-1 overflow-y-auto p-2">
+          <button
+            v-for="group in filteredGroups"
+            :key="group.id"
+            type="button"
+            class="group flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200"
+            :class="selectedGroupId === group.id
+              ? 'border-primary-200 bg-primary-50 shadow-sm dark:border-primary-500/30 dark:bg-primary-500/10'
+              : 'border-transparent hover:border-slate-200 hover:bg-slate-50 dark:hover:border-slate-700 dark:hover:bg-slate-800/70'"
+            @click="selectGroup(group.id)"
+          >
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors"
+              :class="selectedGroupId === group.id
+                ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-white dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700'"
+            >
+              <Code2 class="h-4 w-4" />
+            </span>
+
+            <span class="min-w-0 flex-1">
+              <span
+                class="block truncate text-xs font-semibold"
+                :class="selectedGroupId === group.id
+                  ? 'text-primary-800 dark:text-primary-300'
+                  : 'text-slate-700 dark:text-slate-200'"
+              >
+                {{ group.name }}
+              </span>
+              <span class="mt-1 block truncate text-[10px] text-slate-400">
+                {{ group.context || group.class }}
+              </span>
+            </span>
+
+            <span
+              class="rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums"
+              :class="selectedGroupId === group.id
+                ? 'bg-primary-100 text-primary-700 dark:bg-primary-500/20 dark:text-primary-300'
+                : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'"
+            >
+              {{ group.items.length }}
+            </span>
+          </button>
+
+          <p v-if="filteredGroups.length === 0" class="px-3 py-8 text-center text-xs text-slate-400">
+            Class tidak ditemukan.
+          </p>
+        </div>
+
+        <div class="border-t border-slate-100 bg-slate-50/70 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/30">
+          <p class="text-[10px] leading-relaxed text-slate-400">
+            Pilih class untuk melihat dan mengubah properti konfigurasinya.
+          </p>
+        </div>
+      </aside>
+
+      <div v-if="selectedGroup" class="min-w-0 space-y-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div class="min-w-0">
+              <div class="mb-2 flex items-center gap-2">
+                <SlidersHorizontal class="h-4 w-4 text-primary-500" />
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Configuration Group</span>
+              </div>
+              <h2 class="truncate text-lg font-bold text-slate-900 dark:text-white">{{ selectedGroup.name }}</h2>
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <code class="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                  {{ selectedGroup.class }}
+                </code>
+                <BaseBadge v-if="selectedGroup.context" variant="neutral">
+                  {{ selectedGroup.context }}
+                </BaseBadge>
               </div>
             </div>
 
-            <div class="list-group list-group-flush group-list">
-              <button v-for="group in groups" :key="group.id" type="button" class="list-group-item list-group-item-action group-item" :class="{ active: selectedGroupId === group.id }" @click="selectGroup(group.id)">
-                <div class="d-flex align-items-start justify-content-between gap-2">
-                  <div class="text-truncate">
-                    <div class="fw-semibold text-truncate">{{ group.name }}</div>
-                    <small v-if="group.context" class="group-context d-block text-truncate"> <i class="ti ti-tag me-1"></i>{{ group.context }} </small>
-                  </div>
-                  <span class="badge rounded-pill count-badge">{{ group.items.length }}</span>
-                </div>
-              </button>
+            <BaseButton variant="secondary" size="sm" @click="addRow">
+              <Plus class="h-4 w-4" />
+              Tambah Properti
+            </BaseButton>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 dark:border-slate-800 sm:grid-cols-3">
+            <div>
+              <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">Total properti</p>
+              <p class="mt-1 text-lg font-bold tabular-nums text-slate-800 dark:text-white">{{ selectedGroup.items.length }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">Sedang diedit</p>
+              <p class="mt-1 text-lg font-bold tabular-nums text-slate-800 dark:text-white">{{ selectedCount }}</p>
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+              <p class="text-[10px] font-medium uppercase tracking-wide text-slate-400">Akan dihapus</p>
+              <p class="mt-1 text-lg font-bold tabular-nums" :class="forget.length ? 'text-amber-600' : 'text-slate-800 dark:text-white'">
+                {{ forget.length }}
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Detail: editor properti -->
-        <div class="col-12 col-lg-9">
-          <div class="card border-0 shadow-sm">
-            <!-- Header -->
-            <div v-if="selectedGroup" class="card-header bg-white border-bottom py-3">
-              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div>
-                  <h5 class="mb-1 fw-semibold">{{ selectedGroup.name }}</h5>
-                  <div class="d-flex align-items-center flex-wrap gap-2">
-                    <code class="class-code">{{ selectedGroup.class }}</code>
-                    <span v-if="selectedGroup.context" class="badge bg-light text-secondary border fw-normal"> <i class="ti ti-tag me-1"></i>{{ selectedGroup.context }} </span>
-                  </div>
+        <BaseAlert v-if="forget.length" variant="warning" title="Override akan dihapus">
+          <div class="flex flex-wrap items-center gap-2">
+            <span>Properti berikut akan dihapus saat perubahan disimpan:</span>
+            <span
+              v-for="property in forget"
+              :key="property"
+              class="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-white/70 px-2 py-1 font-mono text-[11px] dark:border-amber-700 dark:bg-slate-900/40"
+            >
+              {{ property }}
+              <button
+                type="button"
+                :aria-label="'Pulihkan ' + property"
+                class="rounded p-0.5 text-amber-700 transition hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-500/20"
+                @click="restoreRow(property)"
+              >
+                <Undo2 class="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+        </BaseAlert>
+
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="hidden grid-cols-[minmax(0,1fr)_145px_minmax(0,1.2fr)_40px] gap-3 border-b border-slate-100 bg-slate-50/80 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:border-slate-800 dark:bg-slate-950/40 sm:grid">
+            <span>Property</span>
+            <span>Type</span>
+            <span>Value</span>
+            <span class="text-center">Aksi</span>
+          </div>
+
+          <div v-if="rows.length" class="divide-y divide-slate-100 dark:divide-slate-800">
+            <div
+              v-for="(row, index) in rows"
+              :key="row.property || 'new-' + index"
+              class="grid gap-3 p-4 transition-colors hover:bg-slate-50/60 dark:hover:bg-slate-800/30 sm:grid-cols-[minmax(0,1fr)_145px_minmax(0,1.2fr)_40px] sm:items-start"
+            >
+              <div class="min-w-0">
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:hidden">Property</label>
+                <BaseInput
+                  v-model="row.property"
+                  :readonly="!row.isNew"
+                  :placeholder="row.isNew ? 'propertyName' : ''"
+                />
+                <p v-if="!row.isNew" class="mt-1 truncate font-mono text-[10px] text-slate-400">
+                  {{ fieldLabel(row) }}
+                </p>
+                <BaseBadge v-else variant="success" class="mt-1">Properti baru</BaseBadge>
+              </div>
+
+              <div class="min-w-0">
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:hidden">Type</label>
+                <BaseSelect
+                  v-model="row.type"
+                  :options="[
+                    { label: 'String', value: 'string' },
+                    { label: 'Integer', value: 'integer' },
+                    { label: 'Float', value: 'float' },
+                    { label: 'Boolean', value: 'boolean' },
+                    { label: 'JSON', value: 'json' },
+                  ]"
+                />
+              </div>
+
+              <div class="min-w-0">
+                <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:hidden">Value</label>
+
+                <BaseSelect
+                  v-if="fieldFor(row).input === 'select'"
+                  v-model="row.value"
+                  :options="optionsFor(fieldFor(row).options)"
+                />
+
+                <div v-else-if="fieldFor(row).input === 'color'" class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
+                  <input v-model="row.value" type="color" class="h-8 w-10 cursor-pointer rounded-md border-0 bg-transparent p-0" />
+                  <code class="text-xs text-slate-600 dark:text-slate-300">{{ row.value }}</code>
                 </div>
 
-                <button type="button" class="btn btn-outline-primary btn-sm" @click="addRow">
-                  <i class="ti ti-plus me-1"></i>
-                  Tambah Properti
+                <BaseSwitch
+                  v-else-if="fieldFor(row).input === 'switch'"
+                  :model-value="checkboxValue(row)"
+                  :label="checkboxValue(row) ? 'Aktif' : 'Nonaktif'"
+                  @update:model-value="setCheckboxValue(row, $event)"
+                />
+
+                <div v-else-if="fieldFor(row).input === 'radio'" class="flex flex-wrap gap-2">
+                  <label
+                    v-for="option in fieldFor(row).options ?? []"
+                    :key="String(option.value)"
+                    class="group flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-all"
+                    :class="row.value === String(option.value)
+                      ? 'border-primary-300 bg-primary-50 text-primary-700 dark:border-primary-500/40 dark:bg-primary-500/10 dark:text-primary-300'
+                      : 'border-slate-200 text-slate-600 hover:border-primary-200 dark:border-slate-700 dark:text-slate-300 dark:hover:border-primary-500/40'"
+                  >
+                    <input v-model="row.value" type="radio" :name="'setting-' + row.property" :value="String(option.value)" class="sr-only" />
+                    <span
+                      v-if="option.color"
+                      class="h-4 w-4 rounded-full border border-black/10 shadow-sm"
+                      :style="{ backgroundColor: option.color }"
+                    />
+                    <span
+                      v-else
+                      class="flex h-4 w-4 items-center justify-center rounded-full border"
+                      :class="row.value === String(option.value) ? 'border-primary-500 bg-primary-500 text-white' : 'border-slate-300 dark:border-slate-600'"
+                    >
+                      <Check v-if="row.value === String(option.value)" class="h-2.5 w-2.5" />
+                    </span>
+                    {{ option.label }}
+                  </label>
+                </div>
+
+                <div v-else-if="fieldFor(row).input === 'checkbox-group'" class="flex flex-wrap gap-2">
+                  <label
+                    v-for="option in fieldFor(row).options ?? []"
+                    :key="String(option.value)"
+                    class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:border-slate-700 dark:hover:border-primary-500/40 dark:hover:bg-primary-500/5"
+                  >
+                    <BaseCheckbox
+                      :model-value="checkboxGroupValues(row).includes(String(option.value))"
+                      :label="option.label"
+                      @update:model-value="toggleCheckboxGroup(row, String(option.value), $event)"
+                    />
+                  </label>
+                </div>
+
+                <BaseCheckbox
+                  v-else-if="fieldFor(row).input === 'checkbox'"
+                  :model-value="checkboxValue(row)"
+                  :label="fieldFor(row).label ?? (checkboxValue(row) ? 'Ya' : 'Tidak')"
+                  @update:model-value="setCheckboxValue(row, $event)"
+                />
+
+                <BaseTextarea
+                  v-else-if="fieldFor(row).input === 'json' || row.type === 'json'"
+                  v-model="row.value"
+                  :rows="fieldFor(row).rows ?? 4"
+                  placeholder='{"key":"value"}'
+                />
+
+                <BaseTextarea
+                  v-else-if="fieldFor(row).input === 'textarea'"
+                  v-model="row.value"
+                  :rows="fieldFor(row).rows ?? 3"
+                  :placeholder="fieldFor(row).placeholder"
+                />
+
+                <BaseInput
+                  v-else-if="fieldFor(row).input === 'number'"
+                  v-model="row.value"
+                  type="number"
+                  :placeholder="fieldFor(row).placeholder"
+                />
+
+                <BaseAlert v-else-if="fieldFor(row).input === 'file'" variant="warning" title="Unggahan belum tersedia">
+                  Field ini membutuhkan endpoint upload khusus; penyimpanan bulk settings hanya menerima nilai konfigurasi.
+                </BaseAlert>
+
+                <BaseInput
+                  v-else
+                  v-model="row.value"
+                  :placeholder="fieldFor(row).placeholder ?? row.type"
+                />
+              </div>
+
+              <div class="flex justify-end sm:justify-center">
+                <button
+                  type="button"
+                  :aria-label="'Hapus properti ' + row.property"
+                  title="Hapus properti"
+                  class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+                  @click="removeRow(index)"
+                >
+                  <Trash2 class="h-4 w-4" />
                 </button>
               </div>
             </div>
-
-            <div class="card-body p-0">
-              <!-- Override yang akan dihapus -->
-              <div v-if="forget.length" class="forget-box mx-3 mt-3">
-                <div class="d-flex align-items-center mb-2">
-                  <i class="ti ti-alert-triangle me-2"></i>
-                  <strong class="small">Override yang akan dihapus saat disimpan</strong>
-                </div>
-
-                <div class="d-flex flex-wrap gap-2">
-                  <span v-for="property in forget" :key="property" class="badge forget-chip">
-                    {{ property }}
-                    <button type="button" class="btn-close ms-1" style="font-size: 8px" title="Batalkan" @click="restoreRow(property)"></button>
-                  </span>
-                </div>
-              </div>
-
-              <!-- Tabel -->
-              <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 settings-table">
-                  <thead>
-                    <tr>
-                      <th style="width: 24%">Property</th>
-                      <th style="width: 15%">Type</th>
-                      <th>Value</th>
-                      <th class="text-center" style="width: 70px">Aksi</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr v-for="(row, index) in rows" :key="index">
-                      <td>
-                        <input v-model="row.property" type="text" class="form-control form-control-sm font-monospace" :readonly="!row.isNew" :class="{ 'bg-light': !row.isNew }" placeholder="propertyName" />
-                      </td>
-
-                      <td>
-                        <select v-model="row.type" class="form-select form-select-sm">
-                          <option value="string">String</option>
-                          <option value="integer">Integer</option>
-                          <option value="float">Float</option>
-                          <option value="boolean">Boolean</option>
-                          <option value="json">JSON</option>
-                        </select>
-                      </td>
-
-                      <td>
-                        <!-- Select -->
-                        <select v-if="fieldFor(row).input === 'select'" v-model="row.value" class="form-select form-select-sm">
-                          <option v-for="option in fieldFor(row).options ?? []" :key="String(option.value)" :value="String(option.value)">
-                            {{ option.label }}
-                          </option>
-                        </select>
-
-                        <!-- Color -->
-                        <input v-else-if="fieldFor(row).input === 'color'" v-model="row.value" type="color" class="form-control form-control-color" />
-
-                        <!-- Switch -->
-                        <div v-else-if="fieldFor(row).input === 'switch'" class="form-check form-switch mb-0">
-                          <input :checked="row.value === 'true'" @change="row.value = ($event.target as HTMLInputElement).checked ? 'true' : 'false'" class="form-check-input" type="checkbox" role="switch" />
-
-                          <label class="form-check-label small">
-                            {{ row.value === "true" ? "Aktif" : "Nonaktif" }}
-                          </label>
-                        </div>
-
-                        <!-- Radio -->
-                        <div v-else-if="fieldFor(row).input === 'radio'" class="d-flex flex-wrap gap-3">
-                          <div v-for="option in fieldFor(row).options ?? []" :key="String(option.value)" class="form-check mb-0">
-                            <input :id="`setting-${row.property}-${option.value}`" v-model="row.value" class="form-check-input" type="radio" :name="`setting-${row.property}`" :value="String(option.value)" />
-
-                            <label :for="`setting-${row.property}-${option.value}`" class="form-check-label d-flex align-items-center gap-2">
-                              <span v-if="option.color" class="theme-color-swatch" :style="{ backgroundColor: option.color }"></span>
-
-                              <i v-else-if="option.icon" :class="option.icon"></i>
-
-                              {{ option.label }}
-                            </label>
-                          </div>
-                        </div>
-                        <!-- Checkbox Group -->
-                        <div v-else-if="fieldFor(row).input === 'checkbox-group'" class="d-flex flex-wrap gap-3">
-                          <div v-for="option in fieldFor(row).options ?? []" :key="String(option.value)" class="form-check">
-                            <input
-                              :id="`setting-${row.property}-${option.value}`"
-                              :checked="checkboxGroupValues(row).includes(String(option.value))"
-                              @change="toggleCheckboxGroup(row, String(option.value), ($event.target as HTMLInputElement).checked)"
-                              class="form-check-input"
-                              type="checkbox"
-                            />
-
-                            <label :for="`setting-${row.property}-${option.value}`" class="form-check-label">
-                              {{ option.label }}
-                            </label>
-                          </div>
-                        </div>
-                        <!-- Checkbox -->
-                        <div v-else-if="fieldFor(row).input === 'checkbox'" class="form-check mb-0">
-                          <input :checked="row.value === 'true'" @change="row.value = ($event.target as HTMLInputElement).checked ? 'true' : 'false'" class="form-check-input" type="checkbox" />
-
-                          <label class="form-check-label small">
-                            {{ row.value === "true" ? "Ya" : "Tidak" }}
-                          </label>
-                        </div>
-
-                        <!-- JSON -->
-                        <textarea
-                          v-else-if="fieldFor(row).input === 'json' || row.type === 'json'"
-                          v-model="row.value"
-                          class="form-control form-control-sm font-monospace"
-                          :rows="fieldFor(row).rows ?? 3"
-                          placeholder='{"key":"value"}'
-                        ></textarea>
-
-                        <!-- Textarea -->
-                        <textarea v-else-if="fieldFor(row).input === 'textarea'" v-model="row.value" class="form-control form-control-sm" :rows="fieldFor(row).rows ?? 3" :placeholder="fieldFor(row).placeholder"></textarea>
-
-                        <!-- Number -->
-                        <input v-else-if="fieldFor(row).input === 'number'" v-model="row.value" type="number" class="form-control form-control-sm" :step="row.type === 'integer' ? '1' : 'any'" :placeholder="fieldFor(row).placeholder" />
-
-                        <input v-else-if="fieldFor(row).input === 'file'" type="file" class="form-control form-control-sm" :accept="fieldFor(row).accept" :multiple="fieldFor(row).multiple" />
-
-                        <!-- Default Text -->
-                        <input v-else v-model="row.value" type="text" class="form-control form-control-sm" :placeholder="fieldFor(row).placeholder ?? row.type" />
-                      </td>
-
-                      <td class="text-center">
-                        <button type="button" class="btn btn-icon btn-sm btn-light-danger" title="Hapus" @click="removeRow(index)">
-                          <i class="ti ti-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-
-                    <tr v-if="rows.length === 0">
-                      <td colspan="4" class="text-center text-muted py-5">
-                        <i class="ti ti-inbox fs-6 d-block mb-1"></i>
-                        Tidak ada properti pada kelompok ini.
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Footer aksi -->
-            <div class="card-footer bg-white border-top d-flex align-items-center justify-content-between py-3">
-              <small class="text-muted">
-                {{ rows.length }} properti
-                <span v-if="forget.length"> · {{ forget.length }} akan dihapus</span>
-              </small>
-
-              <button type="button" class="btn btn-primary" :disabled="saving" @click="saveSettings">
-                <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
-                <i v-else class="ti ti-device-floppy me-1"></i>
-                {{ saving ? "Menyimpan..." : "Simpan Perubahan" }}
-              </button>
-            </div>
           </div>
+
+          <div v-else class="px-6 py-14 text-center">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800">
+              <Database class="h-5 w-5" />
+            </div>
+            <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada properti</p>
+            <p class="mt-1 text-xs text-slate-400">Tambahkan properti untuk kelompok pengaturan ini.</p>
+            <BaseButton variant="secondary" size="sm" class="mt-4" @click="addRow">
+              <Plus class="h-4 w-4" />
+              Tambah Properti
+            </BaseButton>
+          </div>
+
+          <footer class="flex flex-col justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/30 sm:flex-row sm:items-center sm:px-5">
+            <div class="text-xs text-slate-500 dark:text-slate-400">
+              <span class="font-semibold text-slate-700 dark:text-slate-200">{{ selectedCount }}</span>
+              properti
+              <span v-if="forget.length" class="ml-1 text-amber-600 dark:text-amber-400">
+                · {{ forget.length }} akan dihapus
+              </span>
+            </div>
+
+            <BaseButton :loading="saving" :disabled="saving" @click="saveSettings">
+              <Check v-if="!saving" class="h-4 w-4" />
+              Simpan Perubahan
+            </BaseButton>
+          </footer>
         </div>
       </div>
-    </template>
+    </section>
 
-    <!-- Modal Tambah Class -->
-    <div v-if="showAddModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(15, 23, 42, 0.55)" @click.self="showAddModal = false">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg">
-          <div class="modal-header border-bottom">
+    <BaseModal
+      :open="showAddModal"
+      title="Tambah Class Pengaturan"
+      max-width="lg"
+      @close="closeAddModal"
+    >
+      <form class="space-y-5" @submit.prevent="submitAddClass">
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400">
+              <Layers3 class="h-4 w-4" />
+            </div>
             <div>
-              <h5 class="modal-title fw-semibold mb-0">Tambah Class Pengaturan</h5>
-              <small class="text-muted">Buat class baru beserta satu properti awal.</small>
+              <h3 class="text-xs font-bold text-slate-800 dark:text-white">Informasi Class</h3>
+              <p class="text-[10px] text-slate-400">Identitas kelompok konfigurasi</p>
             </div>
-            <button type="button" class="btn-close" @click="showAddModal = false"></button>
           </div>
 
-          <form @submit.prevent="submitAddClass">
-            <div class="modal-body">
-              <div class="section-label mb-3">Informasi Class</div>
-
-              <div class="mb-3">
-                <label class="form-label">Nama Class <span class="text-danger">*</span></label>
-                <input v-model="newClass.class" type="text" class="form-control font-monospace" placeholder="Config\App" required />
-                <div class="form-text">Contoh: Config\App atau Config\Email</div>
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label">Context</label>
-                <input v-model="newClass.context" type="text" class="form-control font-monospace" placeholder="module:backend" />
-              </div>
-
-              <div class="section-label mb-3 pt-3 border-top">Properti Awal</div>
-
-              <div class="row g-3">
-                <div class="col-md-7">
-                  <label class="form-label">Nama Properti <span class="text-danger">*</span></label>
-                  <input v-model="newClass.property" type="text" class="form-control font-monospace" placeholder="siteName" required />
-                </div>
-
-                <div class="col-md-5">
-                  <label class="form-label">Tipe Data</label>
-                  <select v-model="newClass.type" class="form-select">
-                    <option value="string">String</option>
-                    <option value="integer">Integer</option>
-                    <option value="float">Float</option>
-                    <option value="boolean">Boolean</option>
-                    <option value="json">JSON</option>
-                  </select>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label">Nilai Awal</label>
-
-                  <select v-if="newClassField().input === 'select'" v-model="newClass.value" class="form-select">
-                    <option v-for="option in newClassField().options ?? []" :key="String(option.value)" :value="String(option.value)">
-                      {{ option.label }}
-                    </option>
-                  </select>
-
-                  <input v-else-if="newClassField().input === 'color'" v-model="newClass.value" type="color" class="form-control form-control-color" />
-
-                  <div v-else-if="newClassField().input === 'switch' || newClassField().input === 'checkbox'" class="form-check form-switch">
-                    <input :checked="newClass.value === 'true'" @change="newClass.value = ($event.target as HTMLInputElement).checked ? 'true' : 'false'" class="form-check-input" type="checkbox" role="switch" />
-
-                    <label class="form-check-label">
-                      {{ newClass.value === "true" ? "Aktif" : "Nonaktif" }}
-                    </label>
-                  </div>
-
-                  <textarea v-else-if="newClassField().input === 'json' || newClass.type === 'json'" v-model="newClass.value" class="form-control font-monospace" :rows="newClassField().rows ?? 4" placeholder='{"key":"value"}'></textarea>
-
-                  <textarea v-else-if="newClassField().input === 'textarea'" v-model="newClass.value" class="form-control" :rows="newClassField().rows ?? 3" :placeholder="newClassField().placeholder"></textarea>
-
-                  <input v-else-if="newClassField().input === 'number'" v-model="newClass.value" type="number" class="form-control" :step="newClass.type === 'integer' ? '1' : 'any'" />
-
-                  <input v-else v-model="newClass.value" type="text" class="form-control" :placeholder="newClassField().placeholder" />
-                </div>
-              </div>
-            </div>
-
-            <div class="modal-footer border-top">
-              <button type="button" class="btn btn-light" @click="showAddModal = false">Batal</button>
-
-              <button type="submit" class="btn btn-primary" :disabled="addingClass">
-                <span v-if="addingClass" class="spinner-border spinner-border-sm me-1"></span>
-                Simpan Class
-              </button>
-            </div>
-          </form>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <BaseInput
+              v-model="newClass.class"
+              label="Nama Class"
+              placeholder="Config\App"
+              required
+            />
+            <BaseInput
+              v-model="newClass.context"
+              label="Context"
+              placeholder="module:backend"
+            />
+          </div>
+          <p class="mt-2 text-[10px] text-slate-400">Contoh class: Config\App atau Config\Email.</p>
         </div>
-      </div>
-    </div>
-  </div>
+
+        <div class="border-t border-slate-100 pt-5 dark:border-slate-800">
+          <div class="mb-3 flex items-center gap-2">
+            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+              <Code2 class="h-4 w-4" />
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 dark:text-white">Properti Awal</h3>
+              <p class="text-[10px] text-slate-400">Properti pertama pada class ini</p>
+            </div>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_150px]">
+            <BaseInput
+              v-model="newClass.property"
+              label="Nama Properti"
+              placeholder="siteName"
+              required
+            />
+            <BaseSelect
+              v-model="newClass.type"
+              label="Tipe Data"
+              :options="[
+                { label: 'String', value: 'string' },
+                { label: 'Integer', value: 'integer' },
+                { label: 'Float', value: 'float' },
+                { label: 'Boolean', value: 'boolean' },
+                { label: 'JSON', value: 'json' },
+              ]"
+            />
+          </div>
+
+          <div class="mt-4">
+            <BaseSelect
+              v-if="newClassField().input === 'select'"
+              v-model="newClass.value"
+              :label="newClassField().label ?? 'Nilai Awal'"
+              :options="optionsFor(newClassField().options)"
+            />
+
+            <div v-else-if="newClassField().input === 'color'" class="space-y-2">
+              <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">{{ newClassField().label ?? 'Nilai Awal' }}</label>
+              <input v-model="newClass.value" type="color" class="h-10 w-16 cursor-pointer rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-800" />
+            </div>
+
+            <BaseSwitch
+              v-else-if="newClassField().input === 'switch' || newClassField().input === 'checkbox'"
+              :model-value="newClass.value === 'true'"
+              :label="newClassField().label ?? (newClass.value === 'true' ? 'Aktif' : 'Nonaktif')"
+              @update:model-value="newClass.value = $event ? 'true' : 'false'"
+            />
+
+            <div v-else-if="newClassField().input === 'radio'" class="space-y-2">
+              <label class="block text-xs font-medium text-slate-700 dark:text-slate-300">{{ newClassField().label ?? 'Nilai Awal' }}</label>
+              <div class="flex flex-wrap gap-2">
+                <label
+                  v-for="option in newClassField().options ?? []"
+                  :key="String(option.value)"
+                  class="flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs transition-colors"
+                  :class="newClass.value === String(option.value)
+                    ? 'border-primary-300 bg-primary-50 text-primary-700 dark:border-primary-500/40 dark:bg-primary-500/10 dark:text-primary-300'
+                    : 'border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300'"
+                >
+                  <input v-model="newClass.value" type="radio" :value="String(option.value)" class="sr-only" />
+                  <span v-if="option.color" class="h-4 w-4 rounded-full border border-black/10" :style="{ backgroundColor: option.color }" />
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+
+            <BaseTextarea
+              v-else-if="newClassField().input === 'json' || newClass.type === 'json'"
+              v-model="newClass.value"
+              :label="newClassField().label ?? 'Nilai Awal'"
+              :rows="newClassField().rows ?? 4"
+              placeholder='{"key":"value"}'
+            />
+
+            <BaseTextarea
+              v-else-if="newClassField().input === 'textarea'"
+              v-model="newClass.value"
+              :label="newClassField().label ?? 'Nilai Awal'"
+              :rows="newClassField().rows ?? 3"
+              :placeholder="newClassField().placeholder"
+            />
+
+            <BaseInput
+              v-else-if="newClassField().input === 'number'"
+              v-model="newClass.value"
+              :label="newClassField().label ?? 'Nilai Awal'"
+              type="number"
+            />
+
+            <BaseAlert v-else-if="newClassField().input === 'file'" variant="warning" title="Unggahan belum tersedia">
+              Endpoint tambah class menerima nilai konfigurasi, bukan file.
+            </BaseAlert>
+
+            <BaseInput
+              v-else
+              v-model="newClass.value"
+              :label="newClassField().label ?? 'Nilai Awal'"
+              :placeholder="newClassField().placeholder"
+            />
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+          <BaseButton variant="secondary" type="button" :disabled="addingClass" @click="closeAddModal">
+            Batal
+          </BaseButton>
+          <BaseButton type="submit" :loading="addingClass" :disabled="addingClass">
+            <Check v-if="!addingClass" class="h-4 w-4" />
+            Simpan Class
+          </BaseButton>
+        </div>
+      </form>
+    </BaseModal>
+  </main>
 </template>
-
-<style scoped>
-.settings-page {
-  --st-border: #e5e7eb;
-  --st-muted-bg: #f8fafc;
-}
-
-.section-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
-.empty-icon {
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--st-muted-bg);
-  color: #94a3b8;
-}
-
-/* Sidebar class list */
-.group-list {
-  max-height: calc(100vh - 280px);
-  overflow-y: auto;
-}
-.group-item {
-  border-left: 3px solid transparent;
-  padding: 0.75rem 1rem;
-}
-.group-item.active {
-  background: rgba(var(--bs-primary-rgb), 0.07);
-  color: inherit;
-  border-left-color: var(--bs-primary);
-  border-color: var(--st-border);
-}
-.group-context {
-  color: #94a3b8;
-  font-size: 0.72rem;
-}
-.count-badge {
-  background: #eef2f7;
-  color: #475569;
-  font-weight: 600;
-}
-.group-item.active .count-badge {
-  background: var(--bs-primary);
-  color: #fff;
-}
-
-/* Header detail */
-.class-code {
-  background: var(--st-muted-bg);
-  border: 1px solid var(--st-border);
-  border-radius: 4px;
-  padding: 1px 8px;
-  font-size: 0.8rem;
-  color: #334155;
-}
-
-/* Override warning */
-.forget-box {
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 6px;
-  padding: 0.75rem 1rem;
-  color: #92400e;
-}
-.forget-chip {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fcd34d;
-  font-weight: 500;
-}
-
-/* Tabel */
-.settings-table {
-  margin-top: 0.75rem;
-}
-.settings-table thead th {
-  /* background: var(--st-muted-bg); */
-  border-top: 1px solid var(--st-border);
-  border-bottom: 1px solid var(--st-border);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #64748b;
-  padding: 0.6rem 1rem;
-}
-.settings-table tbody td {
-  padding: 0.6rem 1rem;
-  border-color: #f1f5f9;
-  vertical-align: middle;
-}
-.btn-icon {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.theme-color-swatch {
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-</style>
