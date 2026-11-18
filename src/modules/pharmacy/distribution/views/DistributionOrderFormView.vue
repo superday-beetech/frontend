@@ -268,43 +268,43 @@ onMounted(loadMasterData);
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
       <div>
         <h4 class="mb-1">Buat Pesanan Distribusi</h4>
-        <p class="text-muted mb-0">Masukkan informasi pelanggan dan produk yang dipesan.</p>
+        <p class="text-slate-500 mb-0">Masukkan informasi pelanggan dan produk yang dipesan.</p>
       </div>
 
-      <button type="button" class="btn btn-light" @click="cancel">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="cancel">
         <i class="ti ti-arrow-left me-1"></i>
         Kembali
       </button>
     </div>
 
-    <div v-if="loadingMaster" class="card">
-      <div class="card-body text-center py-5">
-        <div class="spinner-border text-primary"></div>
-        <p class="text-muted mt-2 mb-0">Memuat data master...</p>
+    <div v-if="loadingMaster" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600"></div>
+        <p class="text-slate-500 mt-2 mb-0">Memuat data master...</p>
       </div>
     </div>
 
     <template v-else>
       <!-- Header -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Informasi Pesanan</h5>
         </div>
 
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label"> Nomor Pesanan <span class="text-danger">*</span> </label>
-              <input v-model="form.order_number" type="text" class="form-control" placeholder="Contoh: DO-2026-001" />
+        <div class="p-5">
+          <div class="grid grid-cols-12 g-3">
+            <div class="col-span-12 md:col-span-6">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nomor Pesanan <span class="text-rose-600">*</span> </label>
+              <input v-model="form.order_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Contoh: DO-2026-001" />
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label"> Pelanggan <span class="text-danger">*</span> </label>
-              <select v-model.number="form.customer_id" class="form-select">
+            <div class="col-span-12 md:col-span-6">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Pelanggan <span class="text-rose-600">*</span> </label>
+              <select v-model.number="form.customer_id" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
                 <option :value="null">Pilih pelanggan</option>
                 <option v-for="customer in customers" :key="customer.id" :value="customer.id">
                   {{ customer.code ? `${customer.code} - ` : "" }}
@@ -312,53 +312,53 @@ onMounted(loadMasterData);
                 </option>
               </select>
 
-              <small v-if="customers.length === 0" class="text-muted"> Belum ada data pelanggan aktif. </small>
+              <small v-if="customers.length === 0" class="text-slate-500"> Belum ada data pelanggan aktif. </small>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label"> Tanggal Pesanan <span class="text-danger">*</span> </label>
-              <input v-model="form.order_date" type="date" class="form-control" />
+            <div class="col-span-12 md:col-span-6">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Tanggal Pesanan <span class="text-rose-600">*</span> </label>
+              <input v-model="form.order_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Rencana Pengiriman</label>
-              <input v-model="form.requested_delivery_date" type="date" class="form-control" />
+            <div class="col-span-12 md:col-span-6">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Rencana Pengiriman</label>
+              <input v-model="form.requested_delivery_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
             </div>
 
-            <div class="col-12">
-              <label class="form-label">Catatan</label>
-              <textarea v-model="form.notes" class="form-control" rows="2" placeholder="Catatan pesanan..."></textarea>
+            <div class="col-span-12">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Catatan</label>
+              <textarea v-model="form.notes" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="2" placeholder="Catatan pesanan..."></textarea>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Items -->
-      <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
+        <div class="card-header flex justify-between items-center">
           <h5 class="mb-0">Detail Produk</h5>
 
-          <button type="button" class="btn btn-sm btn-outline-primary" @click="addItem">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-primary-600 text-primary-700 hover:bg-primary-50" @click="addItem">
             <i class="ti ti-plus me-1"></i>
             Tambah Produk
           </button>
         </div>
 
-        <div class="card-body">
+        <div class="p-5">
           <div v-for="(item, index) in items" :key="index" class="border rounded p-3 mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="flex justify-between items-center mb-3">
               <h6 class="mb-0">Produk {{ index + 1 }}</h6>
 
-              <button type="button" class="btn btn-sm btn-outline-danger" @click="removeItem(index)">
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs btn-outline-danger" @click="removeItem(index)">
                 <i class="ti ti-trash me-1"></i>
                 Hapus
               </button>
             </div>
 
-            <div class="row g-3">
-              <div class="col-lg-4">
-                <label class="form-label">Produk</label>
-                <select v-model.number="item.product_id" class="form-select" @change="onProductChange(item)">
+            <div class="grid grid-cols-12 g-3">
+              <div class="col-span-12 lg:col-span-4">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Produk</label>
+                <select v-model.number="item.product_id" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" @change="onProductChange(item)">
                   <option :value="null">Pilih produk</option>
                   <option v-for="product in products" :key="product.id" :value="product.id">
                     {{ product.sku ? `${product.sku} - ` : "" }}
@@ -368,78 +368,78 @@ onMounted(loadMasterData);
               </div>
 
               <div class="col-sm-4 col-lg-2">
-                <label class="form-label">Kuantitas</label>
-                <input v-model.number="item.quantity" type="number" min="0.001" step="0.001" class="form-control" />
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kuantitas</label>
+                <input v-model.number="item.quantity" type="number" min="0.001" step="0.001" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
               </div>
 
               <div class="col-sm-4 col-lg-2">
-                <label class="form-label">Harga Satuan</label>
-                <input v-model.number="item.unit_price" type="number" min="0" step="0.01" class="form-control" />
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Harga Satuan</label>
+                <input v-model.number="item.unit_price" type="number" min="0" step="0.01" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
               </div>
 
               <div class="col-sm-4 col-lg-2">
-                <label class="form-label">Diskon</label>
-                <input v-model.number="item.discount_amount" type="number" min="0" step="0.01" class="form-control" />
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Diskon</label>
+                <input v-model.number="item.discount_amount" type="number" min="0" step="0.01" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
               </div>
 
               <div class="col-lg-2">
-                <label class="form-label">Subtotal</label>
-                <div class="form-control bg-light">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Subtotal</label>
+                <div class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 bg-slate-100 text-slate-700">
                   {{ formatCurrency(lineSubtotal(item)) }}
                 </div>
               </div>
 
-              <div class="col-12">
-                <label class="form-label">Catatan Item</label>
-                <input v-model="item.notes" type="text" class="form-control" placeholder="Catatan produk..." />
+              <div class="col-span-12">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Catatan Item</label>
+                <input v-model="item.notes" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Catatan produk..." />
               </div>
             </div>
           </div>
 
-          <div v-if="products.length === 0" class="alert alert-warning mb-0">Data produk belum tersedia. Pastikan produk sudah dibuat dan berstatus aktif.</div>
+          <div v-if="products.length === 0" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 mb-0">Data produk belum tersedia. Pastikan produk sudah dibuat dan berstatus aktif.</div>
         </div>
       </div>
 
       <!-- Summary -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Ringkasan Pembayaran</h5>
         </div>
 
-        <div class="card-body">
-          <div class="row g-3 justify-content-end">
-            <div class="col-md-6 col-lg-4">
-              <label class="form-label">Diskon Pesanan</label>
-              <input v-model.number="form.discount_amount" type="number" min="0" step="0.01" class="form-control" />
+        <div class="p-5">
+          <div class="grid grid-cols-12 g-3 justify-end">
+            <div class="col-span-12 md:col-span-6 col-span-12 lg:col-span-4">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Diskon Pesanan</label>
+              <input v-model.number="form.discount_amount" type="number" min="0" step="0.01" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
             </div>
 
-            <div class="col-md-6 col-lg-4">
-              <label class="form-label">Pajak</label>
-              <input v-model.number="form.tax_amount" type="number" min="0" step="0.01" class="form-control" />
+            <div class="col-span-12 md:col-span-6 col-span-12 lg:col-span-4">
+              <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Pajak</label>
+              <input v-model.number="form.tax_amount" type="number" min="0" step="0.01" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
             </div>
 
-            <div class="col-12 col-lg-8">
+            <div class="col-span-12 col-lg-8">
               <div class="border rounded p-3">
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-muted">Subtotal</span>
+                <div class="flex justify-between mb-2">
+                  <span class="text-slate-500">Subtotal</span>
                   <span>{{ formatCurrency(subtotal) }}</span>
                 </div>
 
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-muted">Total Diskon</span>
+                <div class="flex justify-between mb-2">
+                  <span class="text-slate-500">Total Diskon</span>
                   <span>{{ formatCurrency(totalDiscount) }}</span>
                 </div>
 
-                <div class="d-flex justify-content-between mb-2">
-                  <span class="text-muted">Pajak</span>
+                <div class="flex justify-between mb-2">
+                  <span class="text-slate-500">Pajak</span>
                   <span>{{ formatCurrency(form.tax_amount) }}</span>
                 </div>
 
                 <hr />
 
-                <div class="d-flex justify-content-between">
+                <div class="flex justify-between">
                   <strong>Total Pesanan</strong>
-                  <strong class="text-primary fs-5">
+                  <strong class="text-primary-600 fs-5">
                     {{ formatCurrency(totalAmount) }}
                   </strong>
                 </div>
@@ -450,11 +450,11 @@ onMounted(loadMasterData);
       </div>
 
       <!-- Actions -->
-      <div class="d-flex justify-content-end gap-2 mb-4">
-        <button type="button" class="btn btn-light" :disabled="saving" @click="cancel">Batal</button>
+      <div class="flex justify-end gap-2 mb-4">
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="saving" @click="cancel">Batal</button>
 
-        <button type="button" class="btn btn-primary" :disabled="saving || loadingMaster" @click="saveOrder">
-          <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="saving || loadingMaster" @click="saveOrder">
+          <span v-if="saving" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1"></span>
           <i v-else class="ti ti-device-floppy me-1"></i>
           Simpan Pesanan
         </button>
