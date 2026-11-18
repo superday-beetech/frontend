@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-import customerService from "../../services/posCustomerService";
-import type { Customer } from "../../services/posCustomerService";
+import customerService from '../../services/customer.service'
+import type { Customer } from '../../types/customer'
 
 interface Props {
   modelValue: number | string | null;
@@ -112,13 +112,7 @@ async function searchCustomers(searchTerm: string, exactLookup = false): Promise
 
     if (currentSequence !== requestSequence) return;
 
-    if (response.data.error) {
-      const message = response.data.message;
-
-      throw new Error(Array.isArray(message) ? message.join(", ") : message || "Pencarian pelanggan gagal.");
-    }
-
-    const customers = response.data.data?.items ?? [];
+    const customers = response.items ?? [];
 
     results.value = customers.filter((customer) => Number(customer.is_active) === 1);
 
