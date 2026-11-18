@@ -300,39 +300,39 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="w-full">
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-between items-center mb-4">
       <div>
         <h4 class="mb-1">Kategori Produk Farmasi</h4>
-        <p class="text-muted mb-0">Pengelolaan kategori produk apotek (module: {{ FIXED_MODULE }}).</p>
+        <p class="text-slate-500 mb-0">Pengelolaan kategori produk apotek (module: {{ FIXED_MODULE }}).</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="openCreate">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreate">
         <i class="ti ti-plus me-1"></i>
         Tambah Kategori
       </button>
     </div>
 
     <!-- Notifications -->
-    <div v-if="successMessage" class="alert alert-success alert-dismissible" role="alert">
+    <div v-if="successMessage" class="rounded-lg border px-4 py-3 text-sm border-emerald-200 bg-emerald-50 text-emerald-800 alert-dismissible" role="alert">
       {{ successMessage }}
       <button type="button" class="btn-close" @click="successMessage = ''"></button>
     </div>
 
-    <div v-if="errorMessage" class="alert alert-danger alert-dismissible" role="alert">
+    <div v-if="errorMessage" class="rounded-lg border px-4 py-3 text-sm border-rose-200 bg-rose-50 text-rose-800 alert-dismissible" role="alert">
       {{ errorMessage }}
       <button type="button" class="btn-close" @click="errorMessage = ''"></button>
     </div>
 
     <!-- Main Table -->
-    <div class="card">
-      <div class="card-body">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
         <!-- Filters -->
-        <div class="row g-3 mb-4">
-          <div class="col-md-2">
-            <label class="form-label"> Show entries </label>
-            <select v-model.number="perPage" class="form-select" @change="changePerPage">
+        <div class="grid grid-cols-12 g-3 mb-4">
+          <div class="col-span-12 md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Show entries </label>
+            <select v-model.number="perPage" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" @change="changePerPage">
               <option :value="10">10</option>
               <option :value="25">25</option>
               <option :value="50">50</option>
@@ -340,9 +340,9 @@ onMounted(async () => {
             </select>
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label"> Tipe </label>
-            <select v-model="typeFilter" class="form-select" @change="changeType">
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Tipe </label>
+            <select v-model="typeFilter" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" @change="changeType">
               <option value="">Semua Tipe</option>
               <option v-for="t in typeOptions" :key="t.value" :value="t.value">
                 {{ t.label }}
@@ -350,20 +350,20 @@ onMounted(async () => {
             </select>
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label"> Status </label>
-            <select v-model="statusFilter" class="form-select" @change="changeStatus">
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Status </label>
+            <select v-model="statusFilter" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" @change="changeStatus">
               <option value="all">Semua Status</option>
               <option value="1">Aktif</option>
               <option value="0">Nonaktif</option>
             </select>
           </div>
 
-          <div class="col-md-4">
-            <label class="form-label"> Pencarian </label>
-            <div class="input-group">
-              <input v-model="searchInput" type="search" class="form-control" placeholder="Cari nama atau deskripsi kategori..." @keyup.enter="applySearch" />
-              <button type="button" class="btn btn-outline-primary" @click="applySearch">
+          <div class="col-span-12 md:col-span-4">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Pencarian </label>
+            <div class="flex w-full items-stretch">
+              <input v-model="searchInput" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Cari nama atau deskripsi kategori..." @keyup.enter="applySearch" />
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 border border-primary-600 text-primary-700 hover:bg-primary-50" @click="applySearch">
                 <i class="ti ti-search me-1"></i>
                 Cari
               </button>
@@ -372,8 +372,8 @@ onMounted(async () => {
         </div>
 
         <!-- Table -->
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
             <thead class="table-light">
               <tr>
                 <th width="60">No.</th>
@@ -388,20 +388,20 @@ onMounted(async () => {
             <tbody>
               <tr v-if="loading">
                 <td colspan="6" class="text-center py-5">
-                  <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                  <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm text-primary-600 me-2"></div>
                   Memuat data kategori...
                 </td>
               </tr>
 
               <tr v-else-if="categories.length === 0">
-                <td colspan="6" class="text-center text-muted py-5">Tidak ada data kategori.</td>
+                <td colspan="6" class="text-center text-slate-500 py-5">Tidak ada data kategori.</td>
               </tr>
 
               <tr v-for="(category, index) in categories" :key="category.id">
                 <td>{{ pageStart + index }}</td>
-                <td class="fw-semibold">{{ category.name }}</td>
+                <td class="font-semibold">{{ category.name }}</td>
                 <td>
-                  <span class="badge bg-light text-dark">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 text-dark">
                     {{ typeLabel(category.type) }}
                   </span>
                 </td>
@@ -414,13 +414,13 @@ onMounted(async () => {
                 </td>
                 <td class="text-center">
                   <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-info" title="Detail" @click="openDetail(category.id)">
+                    <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 btn-outline-info" title="Detail" @click="openDetail(category.id)">
                       <i class="ti ti-eye"></i>
                     </button>
-                    <button class="btn btn-outline-primary" title="Edit" @click="openEdit(category.id)">
+                    <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 border border-primary-600 text-primary-700 hover:bg-primary-50" title="Edit" @click="openEdit(category.id)">
                       <i class="ti ti-edit"></i>
                     </button>
-                    <button class="btn btn-outline-danger" title="Hapus" @click="deleteCategory(category)">
+                    <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 btn-outline-danger" title="Hapus" @click="deleteCategory(category)">
                       <i class="ti ti-trash"></i>
                     </button>
                   </div>
@@ -431,21 +431,21 @@ onMounted(async () => {
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
-          <div class="text-muted small">Menampilkan {{ pageStart }} sampai {{ pageEnd }} dari {{ pagination.total }} data</div>
+        <div class="flex flex-wrap justify-between items-center gap-3 mt-3">
+          <div class="text-slate-500 small">Menampilkan {{ pageStart }} sampai {{ pageEnd }} dari {{ pagination.total }} data</div>
 
-          <div class="d-flex align-items-center gap-2">
-            <span class="text-muted small">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 small">
               Halaman {{ pagination.current_page }} dari
               {{ pagination.total_pages }}
             </span>
 
-            <button class="btn btn-sm btn-outline-secondary" :disabled="!hasPrevious || loading" @click="previousPage">
+            <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-slate-300 text-slate-700 hover:bg-slate-50" :disabled="!hasPrevious || loading" @click="previousPage">
               <i class="ti ti-chevron-left"></i>
               Sebelumnya
             </button>
 
-            <button class="btn btn-sm btn-outline-secondary" :disabled="!hasNext || loading" @click="nextPage">
+            <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-slate-300 text-slate-700 hover:bg-slate-50" :disabled="!hasNext || loading" @click="nextPage">
               Berikutnya
               <i class="ti ti-chevron-right"></i>
             </button>
@@ -455,7 +455,7 @@ onMounted(async () => {
     </div>
 
     <!-- Create / Edit Modal -->
-    <div v-if="showForm" class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div v-if="showForm" class="modal fade show block" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -469,8 +469,8 @@ onMounted(async () => {
             <div class="modal-body">
               <!-- Module (readonly untuk farmasi) -->
               <div class="mb-3">
-                <label class="form-label">Module</label>
-                <input :value="form.module" type="text" class="form-control" disabled />
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Module</label>
+                <input :value="form.module" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" disabled />
                 <div class="form-text">
                   Module ditetapkan: <strong>{{ form.module }}</strong
                   >.
@@ -479,8 +479,8 @@ onMounted(async () => {
 
               <!-- Tipe -->
               <div class="mb-3">
-                <label class="form-label">Tipe <span class="text-danger">*</span></label>
-                <select v-model="form.type" class="form-select" :class="{ 'is-invalid': formErrors.type }">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Tipe <span class="text-rose-600">*</span></label>
+                <select v-model="form.type" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :class="{ 'is-invalid': formErrors.type }">
                   <option value="" disabled>Pilih tipe</option>
                   <option v-for="t in typeOptions" :key="t.value" :value="t.value">{{ t.label }} ({{ t.value }})</option>
                 </select>
@@ -491,8 +491,8 @@ onMounted(async () => {
 
               <!-- Nama -->
               <div class="mb-3">
-                <label class="form-label"> Nama Kategori <span class="text-danger">*</span> </label>
-                <input v-model="form.name" type="text" class="form-control" :class="{ 'is-invalid': formErrors.name }" maxlength="100" placeholder="Masukkan nama kategori" />
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nama Kategori <span class="text-rose-600">*</span> </label>
+                <input v-model="form.name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :class="{ 'is-invalid': formErrors.name }" maxlength="100" placeholder="Masukkan nama kategori" />
                 <div v-if="formErrors.name" class="invalid-feedback">
                   {{ formErrors.name }}
                 </div>
@@ -500,8 +500,8 @@ onMounted(async () => {
 
               <!-- Deskripsi -->
               <div class="mb-3">
-                <label class="form-label">Deskripsi</label>
-                <textarea v-model="form.description" class="form-control" :class="{ 'is-invalid': formErrors.description }" rows="3" maxlength="1000" placeholder="Deskripsi kategori"></textarea>
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Deskripsi</label>
+                <textarea v-model="form.description" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :class="{ 'is-invalid': formErrors.description }" rows="3" maxlength="1000" placeholder="Deskripsi kategori"></textarea>
                 <div v-if="formErrors.description" class="invalid-feedback">
                   {{ formErrors.description }}
                 </div>
@@ -509,7 +509,7 @@ onMounted(async () => {
 
               <!-- Status -->
               <div class="mb-3">
-                <label class="form-label d-block">Status</label>
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 block">Status</label>
                 <div class="form-check form-switch">
                   <input id="categoryActive" v-model="form.is_active" class="form-check-input" type="checkbox" :true-value="1" :false-value="0" />
                   <label class="form-check-label" for="categoryActive">
@@ -520,9 +520,9 @@ onMounted(async () => {
             </div>
 
             <div class="modal-footer">
-              <button type="button" class="btn btn-light" :disabled="saving" @click="closeForm">Batal</button>
-              <button type="submit" class="btn btn-primary" :disabled="saving">
-                <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="saving" @click="closeForm">Batal</button>
+              <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="saving">
+                <span v-if="saving" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1"></span>
                 {{ saving ? "Menyimpan..." : "Simpan" }}
               </button>
             </div>
@@ -532,7 +532,7 @@ onMounted(async () => {
     </div>
 
     <!-- Detail Modal -->
-    <div v-if="showDetail && selectedCategory" class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div v-if="showDetail && selectedCategory" class="modal fade show block" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -541,7 +541,7 @@ onMounted(async () => {
           </div>
 
           <div class="modal-body">
-            <dl class="row mb-0">
+            <dl class="grid grid-cols-12 mb-0">
               <dt class="col-4">ID</dt>
               <dd class="col-8">{{ selectedCategory.id }}</dd>
 
@@ -550,7 +550,7 @@ onMounted(async () => {
 
               <dt class="col-4">Tipe</dt>
               <dd class="col-8">
-                <span class="badge bg-light text-dark">
+                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 text-dark">
                   {{ selectedCategory.type }}
                 </span>
               </dd>
@@ -577,7 +577,7 @@ onMounted(async () => {
           </div>
 
           <div class="modal-footer">
-            <button class="btn btn-light" @click="closeDetail">Tutup</button>
+            <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="closeDetail">Tutup</button>
           </div>
         </div>
       </div>
