@@ -5,7 +5,9 @@ import { useRoute, useRouter } from "vue-router";
 import distributionService from "../services/distributionService";
 import type { DistributionOrderDetail, Delivery, DeliveryItem } from "../types/distribution";
 
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 interface DeliveryWithItems extends Delivery {
   items?: DeliveryItem[];
@@ -122,7 +124,7 @@ function deliveryStatusClass(status: string): string {
 async function loadDetail() {
   if (!Number.isInteger(orderId.value) || orderId.value <= 0) {
     detail.value = null;
-    notify.error("ID pesanan tidak valid.");
+    toast.error("ID pesanan tidak valid.");
     router.replace("/pharmacy/distribution/distribution-order");
     return;
   }
@@ -134,7 +136,7 @@ async function loadDetail() {
   } catch (error: any) {
     detail.value = null;
 
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat detail pesanan.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat detail pesanan.");
   } finally {
     loading.value = false;
   }
