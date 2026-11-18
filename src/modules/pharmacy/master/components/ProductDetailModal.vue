@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { useToast } from "@/shared/composables/useToast";
 import { useCurrencyInput } from "@/shared/composables/useCurrencyInput";
 
 import productService, { type Product, type ProductDetail } from "../services/productService";
 
 import { useMasterOptions } from "../composables/useMasterOptions";
 
-const toast = useToast();
 
 const props = defineProps<{
   product: Product;
