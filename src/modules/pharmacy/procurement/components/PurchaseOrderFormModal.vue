@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 
-import OptionSelect from "@/components/ui/OptionSelect.vue";
-import ButtonSpin from "@/components/ui/ButtonSpin.vue";
-import CurrencyInput from "@/components/ui/CurrencyInput.vue";
-import DiscountInput from "@/components/ui/DiscountInput.vue";
+import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
+import ButtonSpin from "@/shared/components/ui/form/ButtonSpin.vue";
+import CurrencyInput from "@/shared/components/ui/form/CurrencyInput.vue";
+import DiscountInput from "@/shared/components/ui/form/DiscountInput.vue";
 
-import { useDiscount, type DiscountMode } from "@/composables/useDiscount";
-import type { OptionItem } from "@/composables/useOption";
+import { useDiscount, type DiscountMode } from "@/shared/composables/useDiscount";
+import type { OptionItem } from "@/shared/composables/useOption";
 
 import type { CreatePurchaseOrderPayload, PurchaseOrder, PurchaseOrderItem } from "../types/purchaseOrder";
 
