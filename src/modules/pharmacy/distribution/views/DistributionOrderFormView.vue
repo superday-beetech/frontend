@@ -2,11 +2,13 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import api from "@/api/client";
-import { notify } from "@/utils/notification";
+import api from "@/core/api/client";
+import { useToast } from "@/shared/composables/useToast";
 
 import distributionService from "../services/distributionService";
 import type { DistributionOrderItemPayload, DistributionOrderPayload } from "../types/distribution";
+
+const toast = useToast();
 
 function generateOrderNumber(date: string): string {
   const now = new Date();
@@ -128,7 +130,7 @@ async function loadMasterData() {
     customers.value = normalizeList<CustomerOption>(customerResponse);
     products.value = normalizeList<ProductOption>(productResponse);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat data pelanggan dan produk.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat data pelanggan dan produk.");
   } finally {
     loadingMaster.value = false;
   }
@@ -146,7 +148,7 @@ function addItem() {
 
 function removeItem(index: number) {
   if (items.value.length === 1) {
-    notify.warning("Pesanan minimal harus memiliki satu produk.");
+    toast.warning("Pesanan minimal harus memiliki satu produk.");
     return;
   }
 
@@ -167,22 +169,22 @@ function lineSubtotal(item: OrderItemForm): number {
 
 function validateForm(): boolean {
   if (!form.value.order_number.trim()) {
-    notify.warning("Nomor pesanan wajib diisi.");
+    toast.warning("Nomor pesanan wajib diisi.");
     return false;
   }
 
   if (!form.value.customer_id) {
-    notify.warning("Pilih pelanggan terlebih dahulu.");
+    toast.warning("Pilih pelanggan terlebih dahulu.");
     return false;
   }
 
   if (!form.value.order_date) {
-    notify.warning("Tanggal pesanan wajib diisi.");
+    toast.warning("Tanggal pesanan wajib diisi.");
     return false;
   }
 
   if (items.value.length === 0) {
-    notify.warning("Tambahkan minimal satu produk.");
+    toast.warning("Tambahkan minimal satu produk.");
     return false;
   }
 
@@ -190,28 +192,28 @@ function validateForm(): boolean {
     const item = items.value[index];
 
     if (!item.product_id) {
-      notify.warning(`Pilih produk pada baris ${index + 1}.`);
+      toast.warning(`Pilih produk pada baris ${index + 1}.`);
       return false;
     }
 
     if (!Number.isFinite(item.quantity) || item.quantity <= 0) {
-      notify.warning(`Kuantitas baris ${index + 1} tidak valid.`);
+      toast.warning(`Kuantitas baris ${index + 1} tidak valid.`);
       return false;
     }
 
     if (!Number.isFinite(item.unit_price) || item.unit_price < 0) {
-      notify.warning(`Harga baris ${index + 1} tidak valid.`);
+      toast.warning(`Harga baris ${index + 1} tidak valid.`);
       return false;
     }
 
     if (!Number.isFinite(item.discount_amount) || item.discount_amount < 0 || item.discount_amount > item.quantity * item.unit_price) {
-      notify.warning(`Diskon baris ${index + 1} tidak valid.`);
+      toast.warning(`Diskon baris ${index + 1} tidak valid.`);
       return false;
     }
   }
 
   if (form.value.discount_amount < 0 || form.value.tax_amount < 0 || totalAmount.value < 0) {
-    notify.warning("Periksa kembali diskon, pajak, dan total pesanan.");
+    toast.warning("Periksa kembali diskon, pajak, dan total pesanan.");
     return false;
   }
 
@@ -245,14 +247,14 @@ async function saveOrder() {
   try {
     const id = await distributionService.createOrder(payload);
 
-    notify.success("Pesanan distribusi berhasil dibuat.");
+    toast.success("Pesanan distribusi berhasil dibuat.");
 
     router.push({
       path: "/pharmacy/distribution/distribution-order-detail",
       query: { id: String(id) },
     });
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal membuat pesanan distribusi.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal membuat pesanan distribusi.");
   } finally {
     saving.value = false;
   }
