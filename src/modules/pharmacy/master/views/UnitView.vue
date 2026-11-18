@@ -176,44 +176,44 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="w-full">
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-between items-center mb-4">
       <div>
         <h4 class="mb-1">Satuan</h4>
-        <p class="text-muted mb-0">Kelola satuan produk apotek.</p>
+        <p class="text-slate-500 mb-0">Kelola satuan produk apotek.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="openCreateForm">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreateForm">
         <i class="ti ti-plus me-1"></i>
         Tambah Satuan
       </button>
     </div>
 
     <!-- Table Card -->
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <label class="text-muted">Tampilkan</label>
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+          <div class="flex items-center gap-2">
+            <label class="text-slate-500">Tampilkan</label>
 
-            <select v-model.number="perPage" class="form-select form-select-sm" style="width: 80px">
+            <select v-model.number="perPage" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-select-sm" style="width: 80px">
               <option :value="10">10</option>
               <option :value="25">25</option>
               <option :value="50">50</option>
               <option :value="100">100</option>
             </select>
 
-            <span class="text-muted">data</span>
+            <span class="text-slate-500">data</span>
           </div>
 
           <div style="width: 260px">
-            <input v-model="search" type="search" class="form-control form-control-sm" placeholder="Cari satuan..." />
+            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-control-sm" placeholder="Cari satuan..." />
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
             <thead>
               <tr>
                 <th style="width: 70px">No.</th>
@@ -226,13 +226,13 @@ onMounted(() => {
             <tbody>
               <tr v-if="loading">
                 <td colspan="4" class="text-center py-4">
-                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-2"></span>
                   Memuat data...
                 </td>
               </tr>
 
               <tr v-else-if="units.length === 0">
-                <td colspan="4" class="text-center text-muted py-4">Data satuan tidak ditemukan.</td>
+                <td colspan="4" class="text-center text-slate-500 py-4">Data satuan tidak ditemukan.</td>
               </tr>
 
               <tr v-for="(unit, index) in units" :key="unit.id">
@@ -240,27 +240,27 @@ onMounted(() => {
                   {{ (currentPage - 1) * perPage + index + 1 }}
                 </td>
 
-                <td class="fw-semibold">
+                <td class="font-semibold">
                   {{ unit.name }}
                 </td>
 
                 <td>
-                  <span class="badge bg-light text-dark">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 text-dark">
                     {{ unit.abbreviation }}
                   </span>
                 </td>
 
                 <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-sm btn-light" title="Detail" @click="openDetail(unit)">
+                  <div class="flex justify-center gap-1">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Detail" @click="openDetail(unit)">
                       <i class="ti ti-eye"></i>
                     </button>
 
-                    <button type="button" class="btn btn-sm btn-light" title="Ubah" @click="openEditForm(unit)">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Ubah" @click="openEditForm(unit)">
                       <i class="ti ti-edit"></i>
                     </button>
 
-                    <button type="button" class="btn btn-sm btn-light text-danger" title="Hapus" @click="deleteUnit(unit)">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600" title="Hapus" @click="deleteUnit(unit)">
                       <i class="ti ti-trash"></i>
                     </button>
                   </div>
@@ -271,8 +271,8 @@ onMounted(() => {
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
-          <div class="text-muted small">
+        <div class="flex flex-wrap justify-between items-center gap-2 mt-3">
+          <div class="text-slate-500 small">
             Menampilkan
             {{ units.length ? (currentPage - 1) * perPage + 1 : 0 }}
             sampai
