@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import categoryService, { type Category, type CategoryPayload, type CategoryPagination } from "@/modules/pharmacy/master/services/categoryService";
-import { notify } from "@/utils/notification";
-import { env } from "@/config/env";
+import { useToast } from "@/shared/composables/useToast";
+import { env } from "@/core/config/env";
 import { useCategoryTypes } from "../composables/useCategoryTypes";
 import type { CategoryTypeOption } from "../services/categoryTypeService";
+
+const toast = useToast();
 
 const { load: loadCategoryTypes } = useCategoryTypes();
 const typeOptions = ref<CategoryTypeOption[]>([]);
@@ -249,7 +251,7 @@ async function saveCategory() {
     }
 
     showForm.value = false;
-    notify.success(isEditing.value ? "Kategori berhasil diperbarui." : "Kategori berhasil ditambahkan.");
+    toast.success(isEditing.value ? "Kategori berhasil diperbarui." : "Kategori berhasil ditambahkan.");
 
     await loadCategories(isEditing.value ? pagination.value.current_page : 1);
   } catch (error) {
@@ -272,7 +274,7 @@ async function deleteCategory(category: Category) {
       throw new Error(typeof response.message === "string" ? response.message : "Gagal menghapus kategori.");
     }
 
-    notify.success("Kategori berhasil dihapus.");
+    toast.success("Kategori berhasil dihapus.");
 
     const currentPage = pagination.value.current_page;
     const nextPageNumber = categories.value.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
