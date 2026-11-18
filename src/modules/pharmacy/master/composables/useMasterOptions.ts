@@ -33,7 +33,7 @@ async function load(force = false): Promise<void> {
   error.value = "";
 
   try {
-    const [catRes, unitRes] = await Promise.all([categoryService.getAll({ page: 1, per_page: 100, module: env.isModule }), unitService.getAll({ page: 1, per_page: 100 })]);
+    const [catRes, unitRes] = await Promise.all([categoryService.getAll({ page: 1, per_page: 100, module: "pharmacy" }), unitService.getAll({ page: 1, per_page: 100 })]);
 
     // category: response.data = CategoryListData
     const catData = catRes.data;
