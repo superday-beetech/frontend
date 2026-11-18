@@ -50,13 +50,13 @@ export function usePosSections() {
   }
 
   return {
-    barcodeSection,
-    customerSection,
-    cartSection,
-    discountSection,
-    chargesSection,
-    paymentSection,
-    paymentInput,
+    setBarcodeSection,
+    setCustomerSection,
+    setCartSection,
+    setDiscountSection,
+    setChargesSection,
+    setPaymentSection,
+    setPaymentInput,
 
     adjustTab,
     adjustTabItems,
