@@ -6,10 +6,12 @@ import supplierService, { type Supplier, type SupplierPagination } from "../serv
 import SupplierFormModal from "../components/SupplierFormModal.vue";
 import SupplierDetailModal from "../components/SupplierDetailModal.vue";
 
-import { useModalStore } from "@/composables/useModal";
-import { notify } from "@/utils/notification";
+import { useModal } from "@/shared/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
 
-const modalStore = useModalStore();
+const toast = useToast();
+
+const modalStore = useModal();
 
 const suppliers = ref<Supplier[]>([]);
 const loading = ref(false);
@@ -71,7 +73,7 @@ async function loadSuppliers(page = currentPage.value) {
     pagination.value = result.data.pagination;
     currentPage.value = result.data.pagination.current_page;
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal mengambil data supplier.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal mengambil data supplier.");
   } finally {
     loading.value = false;
   }
@@ -140,13 +142,13 @@ async function deleteSupplier(supplier: Supplier) {
       throw new Error(Array.isArray(result.message) ? result.message.join(", ") : result.message || "Gagal menghapus supplier.");
     }
 
-    notify.success("Supplier berhasil dihapus.");
+    toast.success("Supplier berhasil dihapus.");
 
     const nextPage = suppliers.value.length === 1 && currentPage.value > 1 ? currentPage.value - 1 : currentPage.value;
 
     await loadSuppliers(nextPage);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal menghapus supplier.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal menghapus supplier.");
   }
 }
 
