@@ -45,9 +45,9 @@ const sectionOptions: { label: string; value: MenuSection }[] = [
 
 // ── State ──
 const treeContainer = ref<HTMLElement | null>(null)
-const menuCount = computed(() => store.menus?.length ?? 0)
-// ✨ FIX: Tambahkan anotasi tipe eksplisit pada parameter 'menu'
-const activeCount = computed(() => store.menus?.filter((menu: NavigationMenu) => menu.is_active === '1').length ?? 0)
+const menuItems = computed<NavigationMenu[]>(() => Array.isArray(store.menus) ? store.menus : [])
+const menuCount = computed(() => menuItems.value.length)
+const activeCount = computed(() => menuItems.value.filter((menu) => menu.is_active === '1').length)
 // ── Preferences ──
 function getSavedPreferences(): NavigationPreferences {
   const defaults: NavigationPreferences = { position: 'sidebar', section: 'backend' }
@@ -102,7 +102,7 @@ function serializeTree(): MenuHierarchy[] | null {
 }
 
 function applyHierarchyToStore(tree: MenuHierarchy[]) {
-  const menuMap = new Map<string, NavigationMenu>(store.menus.map((menu: NavigationMenu) => [String(menu.id), menu]))
+  const menuMap = new Map<string, NavigationMenu>(menuItems.value.map((menu) => [String(menu.id), menu]))
   const flattened: NavigationMenu[] = []
 
   function walk(nodes: MenuHierarchy[]) {
@@ -169,7 +169,7 @@ function openMenuForm(menuOrParent: NavigationMenu | null = null, mode: 'add' | 
 
   if (mode === 'edit' && menuOrParent) collectDescendants(menuOrParent)
 
-  const validParents = store.menus.filter((item: NavigationMenu) => !excluded.has(item.id))
+  const validParents = menuItems.value.filter((item) => !excluded.has(item.id))
   const menuData = mode === 'edit' ? menuOrParent : null
   const initialParentId = mode === 'add-child' && menuOrParent ? menuOrParent.id : null
 
