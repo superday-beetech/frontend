@@ -255,7 +255,7 @@ async function loadCustomerById(id: number): Promise<void> {
 
     if (currentSequence !== requestSequence) return;
 
-    const customer = response.data.data;
+    const customer = response;
 
     selectedCustomer.value = customer && Number(customer.is_active) === 1 ? customer : null;
   } catch {
