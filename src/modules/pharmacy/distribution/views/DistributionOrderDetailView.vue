@@ -182,39 +182,39 @@ onMounted(loadDetail);
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="w-full">
     <!-- Loading -->
-    <div v-if="loading" class="card">
-      <div class="card-body text-center py-5">
-        <div class="spinner-border text-primary"></div>
-        <p class="text-muted mt-2 mb-0">Memuat detail pesanan...</p>
+    <div v-if="loading" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600"></div>
+        <p class="text-slate-500 mt-2 mb-0">Memuat detail pesanan...</p>
       </div>
     </div>
 
     <template v-else-if="detail">
       <!-- Header -->
-      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
         <div>
-          <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+          <div class="flex flex-wrap items-center gap-2 mb-1">
             <h4 class="mb-0">
               {{ detail.order.order_number }}
             </h4>
 
-            <span class="badge" :class="orderStatusClass(detail.order.status)">
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="orderStatusClass(detail.order.status)">
               {{ orderStatusLabel(detail.order.status) }}
             </span>
           </div>
 
-          <p class="text-muted mb-0">Detail pesanan distribusi</p>
+          <p class="text-slate-500 mb-0">Detail pesanan distribusi</p>
         </div>
 
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-light" @click="goBack">
+        <div class="flex gap-2">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="goBack">
             <i class="ti ti-arrow-left me-1"></i>
             Kembali
           </button>
 
-          <button type="button" class="btn btn-primary" :disabled="!canCreateDelivery" @click="createDelivery">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="!canCreateDelivery" @click="createDelivery">
             <i class="ti ti-truck-delivery me-1"></i>
             Buat Pengiriman
           </button>
@@ -222,11 +222,11 @@ onMounted(loadDetail);
       </div>
 
       <!-- Summary -->
-      <div class="row g-3 mb-4">
+      <div class="grid grid-cols-12 g-3 mb-4">
         <div class="col-sm-6 col-xl-3">
-          <div class="card h-100">
-            <div class="card-body">
-              <p class="text-muted mb-1">Total Pesanan</p>
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 h-full">
+            <div class="p-5">
+              <p class="text-slate-500 mb-1">Total Pesanan</p>
 
               <h4 class="mb-0">
                 {{ formatNumber(totalOrderedQuantity) }}
@@ -236,11 +236,11 @@ onMounted(loadDetail);
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <div class="card h-100">
-            <div class="card-body">
-              <p class="text-muted mb-1">Total Terkirim</p>
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 h-full">
+            <div class="p-5">
+              <p class="text-slate-500 mb-1">Total Terkirim</p>
 
-              <h4 class="mb-0 text-success">
+              <h4 class="mb-0 text-emerald-600">
                 {{ formatNumber(totalDeliveredQuantity) }}
               </h4>
             </div>
@@ -248,9 +248,9 @@ onMounted(loadDetail);
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <div class="card h-100">
-            <div class="card-body">
-              <p class="text-muted mb-1">Sisa Pengiriman</p>
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 h-full">
+            <div class="p-5">
+              <p class="text-slate-500 mb-1">Sisa Pengiriman</p>
 
               <h4 class="mb-0 text-warning">
                 {{ formatNumber(remainingQuantity) }}
@@ -260,9 +260,9 @@ onMounted(loadDetail);
         </div>
 
         <div class="col-sm-6 col-xl-3">
-          <div class="card h-100">
-            <div class="card-body">
-              <p class="text-muted mb-1">Nilai Pesanan</p>
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 h-full">
+            <div class="p-5">
+              <p class="text-slate-500 mb-1">Nilai Pesanan</p>
 
               <h5 class="mb-0">
                 {{ formatCurrency(detail.order.total_amount) }}
@@ -273,47 +273,47 @@ onMounted(loadDetail);
       </div>
 
       <!-- Order Information -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Informasi Pesanan</h5>
         </div>
 
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="text-muted small"> Nomor Pesanan </label>
+        <div class="p-5">
+          <div class="grid grid-cols-12 g-3">
+            <div class="col-span-12 md:col-span-6">
+              <label class="text-slate-500 small"> Nomor Pesanan </label>
 
-              <div class="fw-semibold">
+              <div class="font-semibold">
                 {{ detail.order.order_number }}
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="text-muted small"> Pelanggan </label>
+            <div class="col-span-12 md:col-span-6">
+              <label class="text-slate-500 small"> Pelanggan </label>
 
-              <div class="fw-semibold">
+              <div class="font-semibold">
                 {{ detail.order.customer_name || `Pelanggan #${detail.order.customer_id}` }}
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="text-muted small"> Tanggal Pesanan </label>
+            <div class="col-span-12 md:col-span-6">
+              <label class="text-slate-500 small"> Tanggal Pesanan </label>
 
               <div>
                 {{ formatDate(detail.order.order_date) }}
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="text-muted small"> Rencana Pengiriman </label>
+            <div class="col-span-12 md:col-span-6">
+              <label class="text-slate-500 small"> Rencana Pengiriman </label>
 
               <div>
                 {{ formatDate(detail.order.requested_delivery_date) }}
               </div>
             </div>
 
-            <div class="col-12">
-              <label class="text-muted small"> Catatan </label>
+            <div class="col-span-12">
+              <label class="text-slate-500 small"> Catatan </label>
 
               <div>
                 {{ detail.order.notes || "-" }}
@@ -324,81 +324,81 @@ onMounted(loadDetail);
       </div>
 
       <!-- Product Items -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Detail Produk Pesanan</h5>
         </div>
 
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
+        <div class="p-5">
+          <div class="w-full overflow-x-auto">
+            <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
               <thead>
                 <tr>
                   <th>Produk</th>
-                  <th class="text-end">Kuantitas</th>
-                  <th class="text-end">Harga Satuan</th>
-                  <th class="text-end">Diskon</th>
-                  <th class="text-end">Subtotal</th>
+                  <th class="text-right">Kuantitas</th>
+                  <th class="text-right">Harga Satuan</th>
+                  <th class="text-right">Diskon</th>
+                  <th class="text-right">Subtotal</th>
                 </tr>
               </thead>
 
               <tbody>
                 <tr v-for="item in orderItems" :key="String(item.id)">
                   <td>
-                    <div class="fw-semibold">
+                    <div class="font-semibold">
                       {{ item.product_name || `Produk #${item.product_id}` }}
                     </div>
 
-                    <small class="text-muted">
+                    <small class="text-slate-500">
                       {{ item.sku || "-" }}
                     </small>
                   </td>
 
-                  <td class="text-end">
+                  <td class="text-right">
                     {{ formatNumber(item.quantity) }}
                   </td>
 
-                  <td class="text-end">
+                  <td class="text-right">
                     {{ formatCurrency(item.unit_price) }}
                   </td>
 
-                  <td class="text-end">
+                  <td class="text-right">
                     {{ formatCurrency(item.discount_amount) }}
                   </td>
 
-                  <td class="text-end fw-semibold">
+                  <td class="text-right font-semibold">
                     {{ formatCurrency(item.subtotal) }}
                   </td>
                 </tr>
 
                 <tr v-if="orderItems.length === 0">
-                  <td colspan="5" class="text-center text-muted py-4">Belum ada detail produk.</td>
+                  <td colspan="5" class="text-center text-slate-500 py-4">Belum ada detail produk.</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <!-- Order Totals -->
-          <div class="row justify-content-end">
-            <div class="col-md-6 col-lg-4">
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Subtotal</span>
+          <div class="grid grid-cols-12 justify-end">
+            <div class="col-span-12 md:col-span-6 col-span-12 lg:col-span-4">
+              <div class="flex justify-between mb-2">
+                <span class="text-slate-500">Subtotal</span>
 
                 <span>
                   {{ formatCurrency(detail.order.subtotal) }}
                 </span>
               </div>
 
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Diskon</span>
+              <div class="flex justify-between mb-2">
+                <span class="text-slate-500">Diskon</span>
 
                 <span>
                   {{ formatCurrency(detail.order.discount_amount) }}
                 </span>
               </div>
 
-              <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Pajak</span>
+              <div class="flex justify-between mb-2">
+                <span class="text-slate-500">Pajak</span>
 
                 <span>
                   {{ formatCurrency(detail.order.tax_amount) }}
@@ -407,10 +407,10 @@ onMounted(loadDetail);
 
               <hr />
 
-              <div class="d-flex justify-content-between">
+              <div class="flex justify-between">
                 <strong>Total</strong>
 
-                <strong class="text-primary">
+                <strong class="text-primary-600">
                   {{ formatCurrency(detail.order.total_amount) }}
                 </strong>
               </div>
@@ -420,22 +420,22 @@ onMounted(loadDetail);
       </div>
 
       <!-- Delivery History -->
-      <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
+        <div class="card-header flex justify-between items-center">
           <h5 class="mb-0">Riwayat Pengiriman</h5>
 
-          <span class="badge bg-light text-secondary"> {{ deliveries.length }} Dokumen </span>
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 text-secondary"> {{ deliveries.length }} Dokumen </span>
         </div>
 
-        <div class="card-body">
+        <div class="p-5">
           <div v-if="deliveries.length === 0" class="text-center py-4">
-            <i class="ti ti-truck-off fs-1 text-muted"></i>
+            <i class="ti ti-truck-off fs-1 text-slate-500"></i>
 
-            <p class="text-muted mt-2 mb-0">Belum ada dokumen pengiriman untuk pesanan ini.</p>
+            <p class="text-slate-500 mt-2 mb-0">Belum ada dokumen pengiriman untuk pesanan ini.</p>
           </div>
 
-          <div v-else class="table-responsive">
-            <table class="table table-hover align-middle">
+          <div v-else class="w-full overflow-x-auto">
+            <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
               <thead>
                 <tr>
                   <th>Nomor Pengiriman</th>
@@ -448,7 +448,7 @@ onMounted(loadDetail);
 
               <tbody>
                 <tr v-for="delivery in deliveries" :key="String(delivery.id)">
-                  <td class="fw-semibold">
+                  <td class="font-semibold">
                     {{ delivery.delivery_number }}
                   </td>
 
@@ -461,13 +461,13 @@ onMounted(loadDetail);
                   </td>
 
                   <td>
-                    <span class="badge" :class="deliveryStatusClass(delivery.status)">
+                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="deliveryStatusClass(delivery.status)">
                       {{ deliveryStatusLabel(delivery.status) }}
                     </span>
                   </td>
 
                   <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-light" @click="openDelivery(delivery)">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" @click="openDelivery(delivery)">
                       <i class="ti ti-eye me-1"></i>
                       Detail
                     </button>
@@ -481,13 +481,13 @@ onMounted(loadDetail);
     </template>
 
     <!-- Empty State -->
-    <div v-else class="card">
-      <div class="card-body text-center py-5">
-        <i class="ti ti-file-off fs-1 text-muted"></i>
+    <div v-else class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <i class="ti ti-file-off fs-1 text-slate-500"></i>
 
         <h6 class="mt-3">Data pesanan tidak tersedia</h6>
 
-        <button type="button" class="btn btn-light mt-2" @click="goBack">Kembali ke Daftar Pesanan</button>
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 mt-2" @click="goBack">Kembali ke Daftar Pesanan</button>
       </div>
     </div>
   </div>
