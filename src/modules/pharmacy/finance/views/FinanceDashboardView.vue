@@ -193,125 +193,125 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div class="w-full>
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-2>
       <div>
-        <h4 class="mb-1">Finance Dashboard</h4>
-        <p class="text-muted mb-0">Ringkasan pembayaran, pengeluaran, dan arus kas apotek.</p>
+        <h4 class="mb-1>Finance Dashboard</h4>
+        <p class="text-slate-500 mb-0>Ringkasan pembayaran, pengeluaran, dan arus kas apotek.</p>
       </div>
 
-      <button type="button" class="btn btn-light" :disabled="loading" @click="loadDashboard">
-        <i class="ti ti-refresh me-1"></i>
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 :disabled="loading" @click="loadDashboard">
+        <i class="ti ti-refresh me-1></i>
         Refresh
       </button>
     </div>
 
     <!-- Date filter -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-4">
-            <label class="form-label">Dari Tanggal</label>
-            <input v-model="filters.date_from" type="date" class="form-control" />
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm mb-4>
+      <div class="p-5>
+        <div class="grid grid-cols-12 g-3 items-end>
+          <div class="col-span-12 md:col-span-4>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300>Dari Tanggal</label>
+            <input v-model="filters.date_from" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 />
           </div>
 
-          <div class="col-md-4">
-            <label class="form-label">Sampai Tanggal</label>
-            <input v-model="filters.date_to" type="date" class="form-control" :min="filters.date_from || undefined" />
+          <div class="col-span-12 md:col-span-4>
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300>Sampai Tanggal</label>
+            <input v-model="filters.date_to" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 :min="filters.date_from || undefined" />
           </div>
 
-          <div class="col-md-2">
-            <button type="button" class="btn btn-primary w-100" :disabled="loading" @click="loadDashboard">Terapkan</button>
+          <div class="col-span-12 md:col-span-2>
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700 w-full :disabled="loading" @click="loadDashboard">Terapkan</button>
           </div>
 
-          <div class="col-md-2">
-            <button type="button" class="btn btn-light w-100" :disabled="loading" @click="resetFilters">Reset</button>
+          <div class="col-span-12 md:col-span-2>
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 w-full :disabled="loading" @click="resetFilters">Reset</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Payment summary -->
-    <h5 class="mb-3">Ringkasan Pembayaran</h5>
+    <h5 class="mb-3>Ringkasan Pembayaran</h5>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-6 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="text-muted">Pembayaran Supplier</span>
-              <i class="ti ti-truck-delivery fs-5 text-danger"></i>
+    <div class="grid grid-cols-12 g-3 mb-4>
+      <div class="col-span-12 md:col-span-6 col-xl-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="flex justify-between items-center mb-3>
+              <span class="text-slate-500>Pembayaran Supplier</span>
+              <i class="ti ti-truck-delivery fs-5 text-rose-600></i>
             </div>
-            <h4 class="mb-2">
+            <h4 class="mb-2>
               {{ formatCurrency(totalSupplierPayments) }}
             </h4>
-            <small class="text-muted"> {{ supplierPayments.length }} transaksi </small>
+            <small class="text-slate-500> {{ supplierPayments.length }} transaksi </small>
           </div>
         </div>
       </div>
 
-      <div class="col-md-6 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="text-muted">Pembayaran Pelanggan</span>
-              <i class="ti ti-users fs-5 text-success"></i>
+      <div class="col-span-12 md:col-span-6 col-xl-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="flex justify-between items-center mb-3>
+              <span class="text-slate-500>Pembayaran Pelanggan</span>
+              <i class="ti ti-users fs-5 text-emerald-600></i>
             </div>
-            <h4 class="mb-2">
+            <h4 class="mb-2>
               {{ formatCurrency(totalCustomerPayments) }}
             </h4>
-            <small class="text-muted"> {{ customerPayments.length }} transaksi </small>
+            <small class="text-slate-500> {{ customerPayments.length }} transaksi </small>
           </div>
         </div>
       </div>
 
-      <div class="col-md-6 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="text-muted">Pengeluaran Operasional</span>
-              <i class="ti ti-receipt fs-5 text-warning"></i>
+      <div class="col-span-12 md:col-span-6 col-xl-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="flex justify-between items-center mb-3>
+              <span class="text-slate-500>Pengeluaran Operasional</span>
+              <i class="ti ti-receipt fs-5 text-warning></i>
             </div>
-            <h4 class="mb-2">
+            <h4 class="mb-2>
               {{ formatCurrency(totalExpenses) }}
             </h4>
-            <small class="text-muted"> {{ expenses.length }} transaksi </small>
+            <small class="text-slate-500> {{ expenses.length }} transaksi </small>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Cash summary -->
-    <h5 class="mb-3">Ringkasan Arus Kas</h5>
+    <h5 class="mb-3>Ringkasan Arus Kas</h5>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Kas Masuk</div>
-            <h4 class="text-success mb-0">
+    <div class="grid grid-cols-12 g-3 mb-4>
+      <div class="col-span-12 md:col-span-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="text-slate-500 mb-2>Kas Masuk</div>
+            <h4 class="text-emerald-600 mb-0>
               {{ formatCurrency(totalCashIn) }}
             </h4>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Kas Keluar</div>
-            <h4 class="text-danger mb-0">
+      <div class="col-span-12 md:col-span-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="text-slate-500 mb-2>Kas Keluar</div>
+            <h4 class="text-rose-600 mb-0>
               {{ formatCurrency(totalCashOut) }}
             </h4>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Selisih Kas Periode</div>
-            <h4 class="mb-0" :class="netCash >= 0 ? 'text-success' : 'text-danger'">
+      <div class="col-span-12 md:col-span-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="text-slate-500 mb-2>Selisih Kas Periode</div>
+            <h4 class="mb-0 :class="netCash >= 0 ? 'text-success' : 'text-danger'">
               {{ formatCurrency(netCash) }}
             </h4>
           </div>
@@ -320,17 +320,17 @@ onMounted(() => {
     </div>
 
     <!-- Recent transactions -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-body">
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm>
+      <div class="p-5>
+        <div class="flex flex-wrap justify-between items-center mb-3 gap-2>
           <div>
-            <h5 class="mb-1">Transaksi Kas Terbaru</h5>
-            <small class="text-muted"> Maksimal 10 transaksi terbaru dari data yang dimuat. </small>
+            <h5 class="mb-1>Transaksi Kas Terbaru</h5>
+            <small class="text-slate-500> Maksimal 10 transaksi terbaru dari data yang dimuat. </small>
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
+        <div class="w-full overflow-x-auto>
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0>
             <thead>
               <tr>
                 <th>Tanggal</th>
@@ -338,30 +338,30 @@ onMounted(() => {
                 <th>Referensi</th>
                 <th>Deskripsi</th>
                 <th>Jenis</th>
-                <th class="text-end">Jumlah</th>
+                <th class="text-right>Jumlah</th>
               </tr>
             </thead>
 
             <tbody>
               <tr v-if="loading">
-                <td colspan="6" class="text-center py-4">Memuat ringkasan Finance...</td>
+                <td colspan="6" class="text-center py-4>Memuat ringkasan Finance...</td>
               </tr>
 
               <tr v-else-if="recentTransactions.length === 0">
-                <td colspan="6" class="text-center text-muted py-4">Belum ada transaksi kas.</td>
+                <td colspan="6" class="text-center text-slate-500 py-4>Belum ada transaksi kas.</td>
               </tr>
 
               <tr v-for="item in recentTransactions" :key="item.id">
                 <td>{{ formatDate(item.date) }}</td>
-                <td class="fw-semibold">{{ item.number }}</td>
+                <td class="font-semibold>{{ item.number }}</td>
                 <td>{{ formatReference(item.referenceType) }}</td>
                 <td>{{ item.description }}</td>
                 <td>
-                  <span class="badge" :class="item.type === 'in' ? 'bg-light-success text-success' : 'bg-light-danger text-danger'">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium :class="item.type === 'in' ? 'bg-light-success text-success' : 'bg-light-danger text-danger'">
                     {{ item.type === "in" ? "Kas Masuk" : "Kas Keluar" }}
                   </span>
                 </td>
-                <td class="text-end fw-semibold" :class="item.type === 'in' ? 'text-success' : 'text-danger'">
+                <td class="text-right font-semibold :class="item.type === 'in' ? 'text-success' : 'text-danger'">
                   {{ item.type === "in" ? "+" : "-" }}
                   {{ formatCurrency(item.amount) }}
                 </td>
