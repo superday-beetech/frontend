@@ -46,7 +46,8 @@ const panelClass = computed(() => [
   <Teleport to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex overflow-y-auto bg-slate-950/50 p-4 backdrop-blur-[1px]"
+      class="fixed inset-0 flex overflow-y-auto bg-slate-950/50 p-4 backdrop-blur-[1px]"
+      :style="{ zIndex: 10000 }"
       :class="centered ? 'items-center' : 'items-start'"
       @click.self="emit('close')"
     >
