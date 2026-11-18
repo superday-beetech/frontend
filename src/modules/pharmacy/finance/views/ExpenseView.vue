@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { useToast } from "@/shared/composables/useToast";
 import { useModal } from "@/shared/composables/useModal";
 
-import finance.api from "../api/finance.api";
+import financeService from "../api/finance.api";
 import type { ExpensePayload } from "../types/finance";
 
 import ExpenseFormModal from "./ExpenseFormModal.vue";

@@ -4,7 +4,7 @@ import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 import { useModal } from "@/shared/composables/useModal";
 
-import finance.api from "../api/finance.api";
+import financeService from "../api/finance.api";
 import type { CustomerPaymentPayload } from "../types/finance";
 
 import CustomerPaymentFormModal, { type CustomerOption } from "./CustomerPaymentFormModal.vue";
