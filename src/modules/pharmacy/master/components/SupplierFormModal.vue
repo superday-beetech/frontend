@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import supplierService, { type Supplier, type SupplierPayload } from "../services/supplierService";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const props = defineProps<{
   supplier?: Supplier | null;
@@ -43,7 +45,7 @@ async function submitForm() {
   if (loading.value) return;
 
   if (!form.code.trim() || !form.name.trim()) {
-    notify.warning("Kode dan nama supplier wajib diisi.");
+    toast.warning("Kode dan nama supplier wajib diisi.");
     return;
   }
 
@@ -67,14 +69,14 @@ async function submitForm() {
       throw new Error(Array.isArray(result.message) ? result.message.join(", ") : result.message || "Gagal menyimpan supplier.");
     }
 
-    notify.success(isEdit.value ? "Supplier berhasil diperbarui." : "Supplier berhasil ditambahkan.");
+    toast.success(isEdit.value ? "Supplier berhasil diperbarui." : "Supplier berhasil ditambahkan.");
 
     emit("select", result.data);
     emit("close");
   } catch (error: any) {
     const message = error?.response?.data?.message || error?.message || "Terjadi kesalahan saat menyimpan supplier.";
 
-    notify.error(Array.isArray(message) ? message.join(", ") : message);
+    toast.error(Array.isArray(message) ? message.join(", ") : message);
   } finally {
     loading.value = false;
   }
