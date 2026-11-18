@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import api from "@/api/client";
+import api from "@/core/api/client";
 
 interface Delivery {
   id: number;
