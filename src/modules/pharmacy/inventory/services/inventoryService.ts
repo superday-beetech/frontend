@@ -1,5 +1,5 @@
-import api from "@/api/client";
-import type { ApiResponse } from "@/types/types";
+import api from "@/core/api/client";
+import type { ApiResponse } from "@/core/api/types";
 import type { InventoryListParams, PaginatedData, ProductBatch, StockMovement, StockOpname, StockOpnameDetail, StockOverview, CreateStockOpnamePayload, StockOpnameResult, SaveStockOpnameCountsPayload } from "../types/inventory";
 
 const BASE_URL = "/pharmacy/inventory-api";
