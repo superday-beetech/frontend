@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import { useToast } from "@/shared/composables/useToast";
 import { useModal } from "@/shared/composables/useModal";
 
-import goods-receipt.api from "../api/goods-receipt.api";
+import goodsReceiptService from "../api/goods-receipt.api";
 import GoodsReceiptFormModal from "../components/GoodsReceiptFormModal.vue";
 import GoodsReceiptDetailModal from "../components/GoodsReceiptDetailModal.vue";
 

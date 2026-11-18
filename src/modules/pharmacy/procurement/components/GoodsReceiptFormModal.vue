@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 
-import purchase-order.api from "../api/purchase-order.api";
+import purchaseOrderService from "../api/purchase-order.api";
 import type { PurchaseOrder } from "../types/purchaseOrder";
 import type { GoodsReceiptPayload } from "../types/goodsReceipt";
 
