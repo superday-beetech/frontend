@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 
-import { notify } from "@/utils/notification";
-import { useModalStore } from "@/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
+import { useModal } from "@/shared/composables/useModal";
 import { useMasterOptions } from "@/modules/pharmacy/master/composables/useMasterOptions";
 
 import productService, { type Product, type ProductPagination } from "../services/productService";
 
 import ProductFormModal from "../components/ProductFormModal.vue";
 import ProductDetailModal from "../components/ProductDetailModal.vue";
-import OptionSelect from "@/components/ui/OptionSelect.vue";
-import type { OptionItem } from "@/composables/useOption";
+import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
+import type { OptionItem } from "@/shared/composables/useOption";
 
-const modalStore = useModalStore();
+const toast = useToast();
+
+const modalStore = useModal();
 const masterOptions = useMasterOptions();
 
 const products = ref<Product[]>([]);
@@ -97,7 +99,7 @@ async function loadProducts(page = currentPage.value): Promise<void> {
     pagination.value = result.data.pagination;
     currentPage.value = result.data.pagination.current_page;
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   } finally {
     loading.value = false;
   }
@@ -152,7 +154,7 @@ async function openDetail(product: Product): Promise<void> {
       },
     });
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   }
 }
 
@@ -168,12 +170,12 @@ async function deleteProduct(product: Product): Promise<void> {
       throw new Error(typeof result.message === "string" ? result.message : "Gagal menghapus produk.");
     }
 
-    notify.success("Produk berhasil dihapus.");
+    toast.success("Produk berhasil dihapus.");
 
     const nextPage = products.value.length === 1 && currentPage.value > 1 ? currentPage.value - 1 : currentPage.value;
     await loadProducts(nextPage);
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   }
 }
 
