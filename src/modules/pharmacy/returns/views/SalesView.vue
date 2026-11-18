@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import api from "@/api/client";
-import { notify } from "@/utils/notification";
+import api from "@/core/api/client";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 interface SalesReturn {
   id: number;
@@ -79,7 +81,7 @@ const loadReturns = async () => {
 
     returns.value = response.data.data?.items ?? [];
   } catch (error: any) {
-    notify.error(error.response?.data?.message ?? "Gagal memuat daftar sales return.", "error");
+    toast.error(error.response?.data?.message ?? "Gagal memuat daftar sales return.", "error");
   } finally {
     loading.value = false;
   }
@@ -94,7 +96,7 @@ const showDetail = async (id: number) => {
 
     selected.value = response.data.data;
   } catch (error: any) {
-    notify.error(error.response?.data?.message ?? "Gagal memuat detail sales return.", "error");
+    toast.error(error.response?.data?.message ?? "Gagal memuat detail sales return.", "error");
   } finally {
     detailLoading.value = false;
   }
@@ -110,12 +112,12 @@ const postReturn = async (id: number) => {
   try {
     const response = await api.post(`/pharmacy/returns-api/post-sales/${id}`);
 
-    notify.success(response.data.message ?? "Sales return berhasil diposting.", "success");
+    toast.success(response.data.message ?? "Sales return berhasil diposting.", "success");
 
     await loadReturns();
     await showDetail(id);
   } catch (error: any) {
-    notify.error(error.response?.data?.message ?? "Gagal posting sales return.", "error");
+    toast.error(error.response?.data?.message ?? "Gagal posting sales return.", "error");
   } finally {
     postingId.value = null;
   }
