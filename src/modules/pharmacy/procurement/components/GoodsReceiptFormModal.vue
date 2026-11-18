@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 
-import purchaseOrderService from "../services/purchaseOrderService";
+import purchase-order.api from "../api/purchase-order.api";
 import type { PurchaseOrder } from "../types/purchaseOrder";
 import type { GoodsReceiptPayload } from "../types/goodsReceipt";
 
@@ -56,7 +56,7 @@ async function loadPurchaseOrders() {
   loadingOrders.value = true;
 
   try {
-    const response = await purchaseOrderService.getAll({
+    const response = await purchase-order.api.getAll({
       page: 1,
       per_page: 100,
     });
@@ -87,7 +87,7 @@ async function selectPurchaseOrder() {
   loadingOrderDetail.value = true;
 
   try {
-    const response = await purchaseOrderService.getById(form.purchase_order_id);
+    const response = await purchase-order.api.getById(form.purchase_order_id);
 
     const order = response.data;
 

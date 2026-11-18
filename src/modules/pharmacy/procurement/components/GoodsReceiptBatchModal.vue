@@ -2,7 +2,7 @@
 import { computed, reactive } from "vue";
 
 import type { GoodsReceiptItem } from "../types/goodsReceipt";
-import type { GoodsReceiptPostPayload, GoodsReceiptBatchRow } from "../services/goodsReceiptService";
+import type { GoodsReceiptPostPayload, GoodsReceiptBatchRow } from "../api/goods-receipt.api";
 
 const props = defineProps<{
   items: GoodsReceiptItem[];

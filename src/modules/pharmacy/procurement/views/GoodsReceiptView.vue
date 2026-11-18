@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import { useToast } from "@/shared/composables/useToast";
 import { useModal } from "@/shared/composables/useModal";
 
-import goodsReceiptService from "../services/goodsReceiptService";
+import goods-receipt.api from "../api/goods-receipt.api";
 import GoodsReceiptFormModal from "../components/GoodsReceiptFormModal.vue";
 import GoodsReceiptDetailModal from "../components/GoodsReceiptDetailModal.vue";
 
@@ -47,7 +47,7 @@ async function loadReceipts(page = 1) {
   loading.value = true;
 
   try {
-    const result = await goodsReceiptService.getAll({
+    const result = await goods-receipt.api.getAll({
       page,
       per_page: pagination.value.per_page,
       search: search.value.trim() || undefined,
@@ -99,7 +99,7 @@ function openCreateModal() {
 
 async function createReceipt(payload: GoodsReceiptPayload) {
   try {
-    await goodsReceiptService.create(payload);
+    await goods-receipt.api.create(payload);
 
     toast.success("Goods Receipt berhasil dibuat sebagai draft.");
 

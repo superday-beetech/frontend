@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 
-import supplierService, { type Supplier, type SupplierPagination } from "../services/supplierService";
+import supplier.api, { type Supplier, type SupplierPagination } from "../api/supplier.api";
 
 import SupplierFormModal from "../components/SupplierFormModal.vue";
 import SupplierDetailModal from "../components/SupplierDetailModal.vue";
@@ -58,7 +58,7 @@ async function loadSuppliers(page = currentPage.value) {
   loading.value = true;
 
   try {
-    const response = await supplierService.getAll({
+    const response = await supplier.api.getAll({
       page,
       per_page: perPage.value,
       search: search.value.trim(),
@@ -141,7 +141,7 @@ async function deleteSupplier(supplier: Supplier) {
   if (!confirmed) return;
 
   try {
-    const response = await supplierService.delete(supplier.id);
+    const response = await supplier.api.delete(supplier.id);
     const result = response.data;
 
     if (result.error) {
