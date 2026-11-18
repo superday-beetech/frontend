@@ -67,13 +67,13 @@ const { shortcutHelp, toggleShortcutHelp, setShortcutHelp } = usePosShortcutHelp
 /* SEKSI HALAMAN & FOKUS */
 
 const {
-  barcodeSection,
-  customerSection,
-  cartSection,
-  discountSection,
-  chargesSection,
-  paymentSection,
-  paymentInput,
+  setBarcodeSection,
+  setCustomerSection,
+  setCartSection,
+  setDiscountSection,
+  setChargesSection,
+  setPaymentSection,
+  setPaymentInput,
   adjustTab,
   adjustTabItems,
   onTabKeydown,
@@ -453,14 +453,14 @@ usePosLifecycle({
         </div>
 
         <div class="pos-entry">
-          <PosProductSearch :ref="barcodeSection" v-model:keyword="keyword" :results="searchResults" :loading="loadingSearch" :disabled="transactionLocked || processing" @search="handleSearch" @enter="handleBarcodeEnter" @select="handleAddProduct" />
-          <div :ref="customerSection" class="pos-customer">
+          <PosProductSearch :ref="setBarcodeSection" v-model:keyword="keyword" :results="searchResults" :loading="loadingSearch" :disabled="transactionLocked || processing" @search="handleSearch" @enter="handleBarcodeEnter" @select="handleAddProduct" />
+          <div :ref="setCustomerSection" class="pos-customer">
             <label class="pos-field-label"><PosIcon name="user" />Pelanggan<kbd>F2</kbd></label>
             <CustomerAutocomplete :model-value="selectedCustomerId" :disabled="transactionLocked || processing" @update:model-value="handleCustomerChange" />
           </div>
         </div>
 
-        <PosCart :ref="cartSection" class="pos-cart" :class="{ 'is-flash': cartFlash }" :items="cart" :subtotal="subtotal" :disabled="transactionLocked || processing" shortcut="F3" @quantity-change="handleQuantityChange" @price-change="handlePriceChange" @discount-mode-change="handleDiscountModeChange" @discount-change="handleDiscountChange" @note-change="handleItemNoteChange" @remove="handleRemoveProduct" @clear="handleClearCart" />
+        <PosCart :ref="setCartSection" class="pos-cart" :class="{ 'is-flash': cartFlash }" :items="cart" :subtotal="subtotal" :disabled="transactionLocked || processing" shortcut="F3" @quantity-change="handleQuantityChange" @price-change="handlePriceChange" @discount-mode-change="handleDiscountModeChange" @discount-change="handleDiscountChange" @note-change="handleItemNoteChange" @remove="handleRemoveProduct" @clear="handleClearCart" />
       </section>
 
       <section class="pos-middle">
@@ -476,10 +476,10 @@ usePosLifecycle({
             </button>
           </div>
           <div class="pos-adjust-body">
-            <div v-show="adjustTab === 'discount'" id="pos-tabpanel-discount" :ref="discountSection" role="tabpanel" aria-labelledby="pos-tab-discount">
+            <div v-show="adjustTab === 'discount'" id="pos-tabpanel-discount" :ref="setDiscountSection" role="tabpanel" aria-labelledby="pos-tab-discount">
               <PosDiscountInput :mode="transactionDiscountMode" :value="transactionDiscountValue" :base-amount="Math.max(0, subtotal - itemDiscount)" :disabled="transactionLocked || processing" @update:mode="handleTransactionDiscountMode" @update:value="handleTransactionDiscountValue" />
             </div>
-            <div v-show="adjustTab === 'charges'" id="pos-tabpanel-charges" :ref="chargesSection" role="tabpanel" aria-labelledby="pos-tab-charges">
+            <div v-show="adjustTab === 'charges'" id="pos-tabpanel-charges" :ref="setChargesSection" role="tabpanel" aria-labelledby="pos-tab-charges">
               <PosAdditionalCharges :charges="additionalCharges" :disabled="transactionLocked || processing" @add="addCharge" @update="updateCharge" @remove="removeCharge" />
             </div>
             <div v-show="adjustTab === 'notes'" id="pos-tabpanel-notes" class="h-full" role="tabpanel" aria-labelledby="pos-tab-notes">
@@ -502,8 +502,8 @@ usePosLifecycle({
 
       <aside class="pos-right">
         <div class="pos-right-scroll">
-          <PosPanel :ref="paymentSection" title="Pembayaran" icon="wallet" tone="primary" shortcut="F6">
-            <div :ref="paymentInput">
+          <PosPanel :ref="setPaymentSection" title="Pembayaran" icon="wallet" tone="primary" shortcut="F6">
+            <div :ref="setPaymentInput">
               <PosPayment :mode="settlementMode" :payment-method="paymentMethod" :payment-amount="paymentAmount" :total="payableTotal" :due-date="dueDate" :due-date-error="dueDateError" :reference-number="paymentReferenceNumber" :payment-confirmed="paymentConfirmed" :disabled="processing || isPosted" :bank-name="paymentInfo.bankName" :account-number="paymentInfo.accountNumber" :account-holder="paymentInfo.accountHolder" :qris-image-url="paymentInfo.qrisImageUrl" @update:mode="handleSettlementMode" @update:payment-method="handlePaymentMethod" @update:payment-amount="handlePaymentAmount" @update:due-date="handleDueDate" @update:reference-number="handleReferenceNumber" @update:payment-confirmed="handlePaymentConfirmation" @exact="handleExactPayment" @reset="handleResetPayment" />
               <PosCreditBuyer v-if="needsBuyerInfo" v-model:buyerName="buyerName" v-model:buyerPhone="buyerPhone" v-model:collateralNote="collateralNote" :disabled="processing || isPosted" />
             </div>
