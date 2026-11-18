@@ -1,5 +1,5 @@
 
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 
 import type {
   CreateDeliveryPayload,
