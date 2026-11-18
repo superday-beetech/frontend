@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
+import PosIcon from "./PosIcon.vue";
 import customerService from '../../services/customer.service'
 import type { Customer } from '../../types/customer'
 
@@ -293,170 +294,41 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="customer-autocomplete">
-    <label class="form-label fw-semibold">
-      {{ label }}
-      <span v-if="required" class="text-danger">*</span>
-    </label>
-
-    <div v-if="hasSelection && selectedCustomer" class="customer-selected border rounded p-3">
-      <div class="d-flex align-items-start justify-content-between gap-2">
-        <div class="d-flex align-items-start gap-2">
-          <div class="customer-avatar">
-            <i class="ti ti-user"></i>
-          </div>
-
-          <div>
-            <div class="fw-semibold">
-              {{ selectedCustomer.name }}
-
-              <span class="badge mt-2" :class="selectedCustomer.member_number ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
-                {{ getCustomerType(selectedCustomer) }}
-              </span>
-
-              <div class="small text-muted">
-                {{ getCustomerIdentifier(selectedCustomer) }}
-              </div>
-            </div>
+  <div class="customer-autocomplete relative w-full">
+    <label class="pos-label">{{ label }}<span v-if="required" class="text-rose-600">*</span></label>
+    <div v-if="hasSelection && selectedCustomer" class="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 dark:border-emerald-900 dark:bg-emerald-950/20">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex min-w-0 items-start gap-2">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200"><PosIcon name="user" /></div>
+          <div class="min-w-0">
+            <div class="font-semibold text-slate-800 dark:text-slate-100">{{ selectedCustomer.name }}</div>
+            <span class="pos-badge mt-1" :class="selectedCustomer.member_number ? 'pos-badge-success' : 'pos-badge-neutral'">{{ getCustomerType(selectedCustomer) }}</span>
+            <div class="mt-1 text-[11px] text-slate-500">{{ getCustomerIdentifier(selectedCustomer) }}</div>
           </div>
         </div>
-
-        <div class="d-flex gap-1">
-          <button type="button" class="btn btn-sm btn-light" :disabled="disabled" title="Ganti pelanggan" @click="clearSelection">
-            <i class="ti ti-refresh"></i>
-          </button>
-
-          <button v-if="allowClear" type="button" class="btn btn-sm btn-light text-danger" :disabled="disabled" title="Hapus pelanggan" @click="clearSelection">
-            <i class="ti ti-x"></i>
-          </button>
+        <div class="flex gap-1">
+          <button type="button" class="pos-icon-button" :disabled="disabled" title="Ganti pelanggan" @click="clearSelection"><PosIcon name="refresh-cw" :size="15" /></button>
+          <button v-if="allowClear" type="button" class="pos-icon-button text-rose-600" :disabled="disabled" title="Hapus pelanggan" @click="clearSelection"><PosIcon name="x" :size="15" /></button>
         </div>
       </div>
     </div>
-
-    <div v-else class="position-relative">
-      <div class="input-group">
-        <span class="input-group-text">
-          <i class="ti ti-user-search"></i>
-        </span>
-
-        <input
-          v-model="keyword"
-          type="text"
-          class="form-control"
-          :placeholder="placeholder"
-          :disabled="disabled"
-          autocomplete="off"
-          @input="handleInput"
-          @keydown.enter.prevent="handleEnter"
-          @focus="handleFocus"
-          @keydown.esc="closeDropdown"
-        />
-
-        <button v-if="keyword" type="button" class="btn btn-outline-secondary" :disabled="disabled" @click="clearSelection">
-          <i class="ti ti-x"></i>
-        </button>
-
-        <span v-if="loading" class="input-group-text">
-          <span class="spinner-border spinner-border-sm" role="status"></span>
-        </span>
+    <div v-else class="relative">
+      <div class="pos-input-group">
+        <span class="pos-input-addon"><PosIcon name="user-round-search" /></span>
+        <input v-model="keyword" type="text" class="pos-input rounded-none" :placeholder="placeholder" :disabled="disabled" autocomplete="off" @input="handleInput" @keydown.enter.prevent="handleEnter" @focus="handleFocus" @keydown.esc="closeDropdown" />
+        <button v-if="keyword" type="button" class="pos-icon-button rounded-l-none border border-l-0 border-slate-300 dark:border-slate-700" :disabled="disabled" @click="clearSelection"><PosIcon name="x" /></button>
+        <span v-if="loading" class="pos-input-addon rounded-l-none border-l-0"><span class="pos-spinner pos-spinner-sm" role="status"></span></span>
       </div>
-
-      <div v-if="dropdownOpen && results.length > 0" class="customer-results shadow">
-        <button v-for="customer in results" :key="customer.id" type="button" class="customer-result-item" @click="selectCustomer(customer)">
-          <div class="d-flex align-items-center gap-2">
-            <div class="customer-avatar">
-              <i class="ti ti-user"></i>
-            </div>
-
-            <div class="flex-grow-1 text-start">
-              <div class="fw-semibold">
-                {{ customer.name }}
-              </div>
-
-              <div class="small text-muted">
-                {{ getCustomerIdentifier(customer) }}
-              </div>
-            </div>
-
-            <span class="badge" :class="customer.member_number ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
-              {{ getCustomerType(customer) }}
-            </span>
-          </div>
+      <div v-if="dropdownOpen && results.length > 0" class="customer-results absolute left-0 right-0 top-full z-50 mt-1 max-h-80 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-900">
+        <button v-for="customer in results" :key="customer.id" type="button" class="customer-result-item flex w-full items-center gap-2 rounded-lg p-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none dark:hover:bg-slate-800 dark:focus:bg-slate-800" @click="selectCustomer(customer)">
+          <div class="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800"><PosIcon name="user" /></div>
+          <div class="min-w-0 flex-1"><div class="font-semibold text-slate-800 dark:text-slate-100">{{ customer.name }}</div><div class="text-[11px] text-slate-500">{{ getCustomerIdentifier(customer) }}</div></div>
+          <span class="pos-badge" :class="customer.member_number ? 'pos-badge-success' : 'pos-badge-neutral'">{{ getCustomerType(customer) }}</span>
         </button>
       </div>
     </div>
-
-    <div v-if="errorMessage" class="small text-danger mt-2" role="alert">
-      <i class="ti ti-alert-circle me-1"></i>
-      {{ errorMessage }}
-    </div>
-
-    <div v-else-if="infoMessage" class="small text-muted mt-2" role="status">
-      <i class="ti ti-info-circle me-1"></i>
-      {{ infoMessage }}
-    </div>
-
-    <div v-else-if="!hasSelection" class="form-text">Ketik minimal {{ minCharacters }} karakter atau scan barcode pelanggan.</div>
+    <div v-if="errorMessage" class="mt-2 flex items-center gap-1 text-xs text-rose-600" role="alert"><PosIcon name="circle-alert" :size="14" />{{ errorMessage }}</div>
+    <div v-else-if="infoMessage" class="mt-2 flex items-center gap-1 text-xs text-slate-500" role="status"><PosIcon name="info" :size="14" />{{ infoMessage }}</div>
+    <div v-else-if="!hasSelection" class="mt-1 text-[11px] text-slate-500">Ketik minimal {{ minCharacters }} karakter atau scan barcode pelanggan.</div>
   </div>
 </template>
-
-<style scoped>
-.customer-autocomplete {
-  position: relative;
-  width: 100%;
-}
-
-.customer-avatar {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--bs-tertiary-bg, #f1f3f5);
-  color: var(--bs-secondary-color, #6c757d);
-  font-size: 18px;
-}
-
-.customer-selected {
-  background: var(--bs-body-bg);
-}
-
-.customer-results {
-  position: absolute;
-  z-index: 1055;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  max-height: 320px;
-  overflow-y: auto;
-  background: var(--bs-body-bg, #fff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
-  border-radius: 8px;
-}
-
-.customer-result-item {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  border: 0;
-  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
-  background: transparent;
-  color: var(--bs-body-color);
-}
-
-.customer-result-item:last-child {
-  border-bottom: 0;
-}
-
-.customer-result-item:hover,
-.customer-result-item:focus {
-  background: var(--bs-tertiary-bg, #f8f9fa);
-  outline: none;
-}
-
-.customer-result-item:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--bs-primary);
-}
-</style>

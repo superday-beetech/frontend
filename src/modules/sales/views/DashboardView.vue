@@ -1,343 +1,105 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { RouterLink } from "vue-router";
+import { computed } from "vue"
+import { RouterLink } from "vue-router"
+import PosIcon from "../components/pos/PosIcon.vue"
 
-const today = computed(() =>
-  new Intl.DateTimeFormat("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date()),
-);
+const today = computed(() => new Intl.DateTimeFormat("id-ID", {
+  weekday: "long", day: "numeric", month: "long", year: "numeric",
+}).format(new Date()))
 
-// Data akan dihubungkan ke API dashboard POS.
 const statistics = [
-  {
-    label: "Penjualan Hari Ini",
-    value: "—",
-    description: "Total nilai penjualan",
-    icon: "ti ti-cash",
-    color: "primary",
-  },
-  {
-    label: "Transaksi Hari Ini",
-    value: "—",
-    description: "Jumlah transaksi berhasil",
-    icon: "ti ti-receipt",
-    color: "success",
-  },
-  {
-    label: "Transaksi Draft",
-    value: "—",
-    description: "Menunggu penyelesaian",
-    icon: "ti ti-clock",
-    color: "warning",
-  },
-  {
-    label: "Rata-rata Transaksi",
-    value: "—",
-    description: "Nilai rata-rata penjualan",
-    icon: "ti ti-chart-bar",
-    color: "info",
-  },
-];
-
+  { label: "Penjualan Hari Ini", value: "—", description: "Total nilai penjualan", icon: "banknote", tone: "primary" },
+  { label: "Transaksi Hari Ini", value: "—", description: "Jumlah transaksi berhasil", icon: "receipt", tone: "success" },
+  { label: "Transaksi Draft", value: "—", description: "Menunggu penyelesaian", icon: "clock-3", tone: "warning" },
+  { label: "Rata-rata Transaksi", value: "—", description: "Nilai rata-rata penjualan", icon: "chart-column", tone: "info" },
+]
 const shortcuts = [
-  {
-    title: "Transaksi Baru",
-    description: "Mulai melayani pelanggan.",
-    icon: "ti ti-shopping-cart",
-    path: "/sales/pos",
-    color: "primary",
-  },
-  {
-    title: "Riwayat Penjualan",
-    description: "Lihat transaksi penjualan.",
-    icon: "ti ti-receipt",
-    path: "/sales/history",
-    color: "success",
-  },
-  {
-    title: "Daftar Produk",
-    description: "Cari informasi produk.",
-    icon: "ti ti-package",
-    path: "/pharmacy/master/products",
-    color: "info",
-  },
-  {
-    title: "Laporan Penjualan",
-    description: "Lihat laporan penjualan.",
-    icon: "ti ti-chart-line",
-    path: "/pharmacy/reports/sales",
-    color: "warning",
-  },
-];
+  { title: "Transaksi Baru", description: "Mulai melayani pelanggan.", icon: "shopping-cart", path: "/sales/pos", tone: "primary" },
+  { title: "Riwayat Penjualan", description: "Lihat transaksi penjualan.", icon: "receipt", path: "/sales/history", tone: "success" },
+  { title: "Daftar Produk", description: "Cari informasi produk.", icon: "package", path: "/pharmacy/master/products", tone: "info" },
+  { title: "Laporan Penjualan", description: "Lihat laporan penjualan.", icon: "chart-line", path: "/pharmacy/reports/sales", tone: "warning" },
+]
 </script>
 
 <template>
-  <div class="pos-dashboard">
-    <!-- HEADER -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div class="space-y-6 pb-6">
+    <header class="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <div class="text-primary fw-semibold small mb-1">POINT OF SALE</div>
-        <h4 class="fw-bold mb-1">Dashboard POS</h4>
-        <p class="text-muted mb-0 small">Selamat datang di sistem kasir apotek.</p>
+        <div class="mb-1 text-xs font-bold tracking-[.18em] text-primary-600">POINT OF SALE</div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard POS</h1>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Selamat datang di sistem kasir apotek.</p>
       </div>
+      <div class="inline-flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400"><PosIcon name="calendar-days" :size="15" />{{ today }}</div>
+    </header>
 
-      <div class="text-muted small">
-        <i class="ti ti-calendar me-1"></i>
-        {{ today }}
-      </div>
-    </div>
-
-    <!-- WELCOME / ACTION -->
-    <div class="pos-welcome mb-4">
-      <div class="pos-welcome-content">
-        <span class="pos-welcome-label">PHARMACY POINT OF SALE</span>
-        <h3>Kelola Penjualan Lebih Mudah</h3>
-        <p>Mulai transaksi, kelola pembayaran, dan pantau aktivitas penjualan apotek dari satu tempat.</p>
-
-        <RouterLink to="/sales/pos" class="btn btn-light text-primary fw-semibold mt-2">
-          <i class="ti ti-shopping-cart me-2"></i>
-          Mulai Transaksi
-          <i class="ti ti-arrow-right ms-2"></i>
+    <section class="relative isolate flex min-h-52 items-center justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-blue-950 to-primary-700 px-6 py-8 text-white shadow-lg sm:px-9">
+      <div class="relative z-10 max-w-xl">
+        <span class="text-[10px] font-extrabold tracking-[.22em] text-blue-200">PHARMACY POINT OF SALE</span>
+        <h2 class="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">Kelola Penjualan Lebih Mudah</h2>
+        <p class="mt-2 max-w-lg text-sm leading-6 text-blue-100">Mulai transaksi, kelola pembayaran, dan pantau aktivitas penjualan apotek dari satu tempat.</p>
+        <RouterLink to="/sales/pos" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-primary-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-50">
+          <PosIcon name="shopping-cart" :size="17" />Mulai Transaksi<PosIcon name="arrow-right" :size="16" />
         </RouterLink>
       </div>
+      <PosIcon name="hospital" :size="150" class="absolute -right-2 bottom-0 z-0 text-white/10 sm:right-10" />
+    </section>
 
-      <div class="pos-welcome-icon">
-        <i class="ti ti-building-hospital"></i>
-      </div>
-    </div>
-
-    <!-- STATISTICS -->
-    <div class="row g-3 mb-4">
-      <div v-for="item in statistics" :key="item.label" class="col-12 col-sm-6 col-xl-3">
-        <div class="card pos-stat-card h-100 mb-0">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <div class="text-muted small mb-2">
-                  {{ item.label }}
-                </div>
-                <h4 class="fw-bold mb-1">{{ item.value }}</h4>
-                <small class="text-muted">
-                  {{ item.description }}
-                </small>
-              </div>
-
-              <div class="pos-stat-icon" :class="`bg-${item.color}-subtle text-${item.color}`">
-                <i :class="item.icon"></i>
-              </div>
-            </div>
+    <section class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <article v-for="item in statistics" :key="item.label" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ item.label }}</div>
+            <div class="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">{{ item.value }}</div>
+            <small class="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">{{ item.description }}</small>
           </div>
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl" :class="{
+            'bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300': item.tone === 'primary',
+            'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300': item.tone === 'success',
+            'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300': item.tone === 'warning',
+            'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300': item.tone === 'info',
+          }"><PosIcon :name="item.icon" :size="22" /></div>
         </div>
+      </article>
+    </section>
+
+    <section class="space-y-3">
+      <div><h2 class="text-base font-bold text-slate-900 dark:text-white">Akses Cepat</h2><p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Pilih aktivitas yang ingin dilakukan.</p></div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <RouterLink v-for="item in shortcuts" :key="item.title" :to="item.path" class="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-800">
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl" :class="{
+            'bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300': item.tone === 'primary',
+            'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300': item.tone === 'success',
+            'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300': item.tone === 'info',
+            'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300': item.tone === 'warning',
+          }"><PosIcon :name="item.icon" :size="20" /></div>
+          <div class="min-w-0 flex-1"><h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">{{ item.title }}</h3><p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ item.description }}</p></div>
+          <PosIcon name="chevron-right" class="text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-primary-600" />
+        </RouterLink>
       </div>
-    </div>
+    </section>
 
-    <!-- QUICK ACCESS -->
-    <div class="mb-4">
-      <div class="mb-3">
-        <h5 class="fw-bold mb-1">Akses Cepat</h5>
-        <p class="text-muted small mb-0">Pilih aktivitas yang ingin dilakukan.</p>
-      </div>
-
-      <div class="row g-3">
-        <div v-for="item in shortcuts" :key="item.title" class="col-12 col-sm-6 col-xl-3">
-          <RouterLink :to="item.path" class="pos-shortcut-card">
-            <div class="pos-shortcut-icon" :class="`bg-${item.color}-subtle text-${item.color}`">
-              <i :class="item.icon"></i>
-            </div>
-
-            <div class="flex-grow-1">
-              <h6 class="fw-bold mb-1">{{ item.title }}</h6>
-              <p class="text-muted small mb-0">
-                {{ item.description }}
-              </p>
-            </div>
-
-            <i class="ti ti-chevron-right text-muted"></i>
-          </RouterLink>
+    <section class="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.7fr)_minmax(280px,1fr)]">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-center justify-between gap-3">
+          <div><h2 class="text-base font-bold text-slate-900 dark:text-white">Aktivitas Penjualan</h2><p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Ringkasan aktivitas transaksi terbaru.</p></div>
+          <PosIcon name="activity" :size="22" class="text-primary-600" />
         </div>
-      </div>
-    </div>
-
-    <!-- BOTTOM CONTENT -->
-    <div class="row g-3">
-      <div class="col-12 col-xl-8">
-        <div class="card h-100 mb-0">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <h5 class="fw-bold mb-1">Aktivitas Penjualan</h5>
-                <p class="text-muted small mb-0">Ringkasan aktivitas transaksi terbaru.</p>
-              </div>
-              <i class="ti ti-activity fs-4 text-primary"></i>
-            </div>
-
-            <div class="pos-empty-state">
-              <i class="ti ti-receipt"></i>
-              <h6>Belum ada data aktivitas</h6>
-              <p>Aktivitas penjualan akan ditampilkan setelah data transaksi dihubungkan.</p>
-            </div>
-          </div>
+        <div class="flex min-h-48 flex-col items-center justify-center py-8 text-center">
+          <PosIcon name="receipt" :size="36" class="mb-3 text-slate-300 dark:text-slate-600" />
+          <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Belum ada data aktivitas</h3>
+          <p class="mt-1 max-w-xs text-xs text-slate-500 dark:text-slate-400">Aktivitas penjualan akan ditampilkan setelah data transaksi dihubungkan.</p>
         </div>
-      </div>
-
-      <div class="col-12 col-xl-4">
-        <div class="card h-100 mb-0">
-          <div class="card-body">
-            <h5 class="fw-bold mb-1">Transaksi Ditahan</h5>
-            <p class="text-muted small mb-3">Draft yang belum diselesaikan.</p>
-
-            <div class="pos-empty-state">
-              <i class="ti ti-clock"></i>
-              <h6>Belum ada transaksi ditahan</h6>
-              <p>Transaksi draft akan muncul di bagian ini.</p>
-            </div>
-
-            <RouterLink to="/pharmacy/sales/pos" class="btn btn-outline-primary btn-sm w-100"> Buka Kasir </RouterLink>
-          </div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="text-base font-bold text-slate-900 dark:text-white">Transaksi Ditahan</h2>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Draft yang belum diselesaikan.</p>
+        <div class="flex min-h-36 flex-col items-center justify-center py-6 text-center">
+          <PosIcon name="clock-3" :size="32" class="mb-3 text-slate-300 dark:text-slate-600" />
+          <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200">Belum ada transaksi ditahan</h3>
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Transaksi draft akan muncul di bagian ini.</p>
         </div>
-      </div>
-    </div>
+        <RouterLink to="/pharmacy/sales/pos" class="mt-2 inline-flex w-full items-center justify-center rounded-xl border border-primary-200 px-3 py-2 text-xs font-bold text-primary-700 transition hover:bg-primary-50 dark:border-primary-900 dark:text-primary-300 dark:hover:bg-primary-500/10">Buka Kasir</RouterLink>
+      </article>
+    </section>
   </div>
 </template>
-
-<style scoped>
-.pos-dashboard {
-  padding-bottom: 24px;
-}
-
-.pos-welcome {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 210px;
-  padding: 30px 36px;
-  border-radius: 12px;
-  color: white;
-  background: linear-gradient(115deg, #172554, #2563eb);
-}
-
-.pos-welcome-content {
-  position: relative;
-  z-index: 1;
-  max-width: 570px;
-}
-
-.pos-welcome-label {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: #bfdbfe;
-}
-
-.pos-welcome h3 {
-  font-size: 26px;
-  font-weight: 750;
-  margin: 12px 0 8px;
-}
-
-.pos-welcome p {
-  color: #dbeafe;
-  font-size: 13px;
-  margin: 0;
-  max-width: 480px;
-  line-height: 1.7;
-}
-
-.pos-welcome-icon {
-  position: absolute;
-  right: 65px;
-  font-size: 150px;
-  color: rgb(255 255 255 / 12%);
-}
-
-.pos-stat-card,
-.pos-shortcut-card {
-  border: 1px solid var(--bs-border-color);
-  border-radius: 10px;
-  transition: 0.2s ease;
-}
-
-.pos-stat-card:hover,
-.pos-shortcut-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 18px rgb(0 0 0 / 5%);
-}
-
-.pos-stat-icon,
-.pos-shortcut-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  font-size: 23px;
-}
-
-.pos-shortcut-card {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  height: 100%;
-  padding: 17px;
-  background: var(--bs-card-bg);
-  text-decoration: none;
-  color: var(--bs-body-color);
-}
-
-.pos-shortcut-icon {
-  width: 42px;
-  height: 42px;
-  font-size: 20px;
-}
-
-.pos-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 190px;
-  text-align: center;
-  padding: 20px;
-}
-
-.pos-empty-state > i {
-  font-size: 38px;
-  color: var(--bs-secondary-color);
-  margin-bottom: 12px;
-}
-
-.pos-empty-state h6 {
-  font-weight: 700;
-}
-
-.pos-empty-state p {
-  max-width: 300px;
-  color: var(--bs-secondary-color);
-  font-size: 12px;
-  margin-bottom: 0;
-}
-
-@media (max-width: 767px) {
-  .pos-welcome {
-    padding: 24px;
-  }
-
-  .pos-welcome h3 {
-    font-size: 21px;
-  }
-
-  .pos-welcome-icon {
-    right: 15px;
-    font-size: 90px;
-    opacity: 0.5;
-  }
-}
-</style>
