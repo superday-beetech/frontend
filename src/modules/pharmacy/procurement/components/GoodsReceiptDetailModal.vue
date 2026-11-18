@@ -6,7 +6,9 @@ import goodsReceiptService, { type GoodsReceiptPostPayload } from "../services/g
 
 import type { GoodsReceipt } from "../types/goodsReceipt";
 
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const props = defineProps<{
   receiptId: number;
@@ -30,7 +32,7 @@ async function loadDetail() {
   try {
     receipt.value = (await goodsReceiptService.getById(props.receiptId)) ?? null;
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat detail Goods Receipt.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat detail Goods Receipt.");
   } finally {
     loading.value = false;
   }
@@ -54,7 +56,7 @@ async function handleBatchPosting(payload: GoodsReceiptPostPayload) {
   try {
     await goodsReceiptService.post(props.receiptId, payload);
 
-    notify.success("Goods Receipt berhasil diposting.");
+    toast.success("Goods Receipt berhasil diposting.");
 
     showBatchForm.value = false;
 
@@ -62,7 +64,7 @@ async function handleBatchPosting(payload: GoodsReceiptPostPayload) {
 
     emit("select", props.receiptId);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal mem-posting Goods Receipt.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal mem-posting Goods Receipt.");
   } finally {
     posting.value = false;
   }
