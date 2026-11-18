@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import {
-  AlertTriangle,
   Check,
   ChevronRight,
   Code2,
@@ -26,7 +25,7 @@ import BaseSwitch from '@/shared/components/ui/form/BaseSwitch.vue'
 import BaseTextarea from '@/shared/components/ui/form/BaseTextarea.vue'
 import BaseModal from '@/shared/components/ui/overlay/BaseModal.vue'
 import { useSettings } from '../composables/useSettings'
-import type { SettingFieldOption, SettingRow } from '../types/settings'
+import type { SettingFieldOption, SettingRow, SettingType } from '../types/settings'
 
 const {
   groups,
@@ -319,7 +318,8 @@ onMounted(() => {
               <div class="min-w-0">
                 <label class="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:hidden">Type</label>
                 <BaseSelect
-                  v-model="row.type"
+                  :model-value="row.type"
+                  @update:model-value="row.type = $event as SettingType"
                   :options="[
                     { label: 'String', value: 'string' },
                     { label: 'Integer', value: 'integer' },
@@ -378,17 +378,17 @@ onMounted(() => {
                 </div>
 
                 <div v-else-if="fieldFor(row).input === 'checkbox-group'" class="flex flex-wrap gap-2">
-                  <label
+                  <div
                     v-for="option in fieldFor(row).options ?? []"
                     :key="String(option.value)"
-                    class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:border-slate-700 dark:hover:border-primary-500/40 dark:hover:bg-primary-500/5"
+                    class="rounded-xl border border-slate-200 px-3 py-2 transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:border-slate-700 dark:hover:border-primary-500/40 dark:hover:bg-primary-500/5"
                   >
                     <BaseCheckbox
                       :model-value="checkboxGroupValues(row).includes(String(option.value))"
                       :label="option.label"
                       @update:model-value="toggleCheckboxGroup(row, String(option.value), $event)"
                     />
-                  </label>
+                  </div>
                 </div>
 
                 <BaseCheckbox
@@ -527,7 +527,8 @@ onMounted(() => {
               required
             />
             <BaseSelect
-              v-model="newClass.type"
+              :model-value="newClass.type"
+              @update:model-value="newClass.type = $event as SettingType"
               label="Tipe Data"
               :options="[
                 { label: 'String', value: 'string' },
