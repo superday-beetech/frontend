@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
