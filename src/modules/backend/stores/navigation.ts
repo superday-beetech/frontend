@@ -7,6 +7,7 @@ import { navigationApi } from '../api/navigation.api'
 
 import type {
   NavigationMenu,
+  NavigationGroups,
   MenuPosition,
   MenuSection,
   MenuFormPayload,
