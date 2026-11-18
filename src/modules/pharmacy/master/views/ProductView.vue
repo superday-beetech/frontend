@@ -217,27 +217,27 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="w-full">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="flex justify-between items-center mb-4">
       <div>
         <h4 class="mb-1">Produk</h4>
-        <p class="text-muted mb-0">Kelola data produk apotek.</p>
+        <p class="text-slate-500 mb-0">Kelola data produk apotek.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="openCreateForm">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreateForm">
         <i class="ti ti-plus me-1"></i>
         Tambah Produk
       </button>
     </div>
 
-    <div class="card">
-      <div class="card-body">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
         <!-- Filter -->
-        <div class="row g-3 mb-3 align-items-end">
-          <div class="col-md-2">
-            <label class="form-label small mb-1">Tampilkan</label>
-            <select v-model.number="perPage" class="form-select form-select-sm">
+        <div class="grid grid-cols-12 g-3 mb-3 items-end">
+          <div class="col-span-12 md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Tampilkan</label>
+            <select v-model.number="perPage" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-select-sm">
               <option :value="10">10</option>
               <option :value="25">25</option>
               <option :value="50">50</option>
@@ -245,23 +245,23 @@ onMounted(async () => {
             </select>
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label small mb-1">Kategori</label>
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Kategori</label>
             <OptionSelect v-model="categoryId" :options="categoryFilterOptions" placeholder="Semua kategori" search-placeholder="Cari kategori..." />
           </div>
 
-          <div class="col-md-2">
-            <label class="form-label small mb-1">Status</label>
+          <div class="col-span-12 md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Status</label>
             <OptionSelect v-model="status" :options="statusOptions" placeholder="Semua status" :searchable="false" />
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label small mb-1">Pencarian</label>
-            <input v-model="search" type="search" class="form-control form-control-sm" placeholder="SKU, barcode, produk..." />
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Pencarian</label>
+            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-control-sm" placeholder="SKU, barcode, produk..." />
           </div>
 
-          <div class="col-md-2">
-            <button type="button" class="btn btn-sm btn-light w-100" @click="resetFilters">
+          <div class="col-span-12 md:col-span-2">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 w-full" @click="resetFilters">
               <i class="ti ti-refresh me-1"></i>
               Reset
             </button>
@@ -269,8 +269,8 @@ onMounted(async () => {
         </div>
 
         <!-- Tabel Produk -->
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
             <thead>
               <tr>
                 <th style="width: 60px">No.</th>
@@ -278,8 +278,8 @@ onMounted(async () => {
                 <th>SKU / Barcode</th>
                 <th>Kategori</th>
                 <th>Satuan</th>
-                <th class="text-end">Harga Beli</th>
-                <th class="text-end">Harga Jual</th>
+                <th class="text-right">Harga Beli</th>
+                <th class="text-right">Harga Jual</th>
                 <th>Status</th>
                 <th class="text-center" style="width: 130px">Aksi</th>
               </tr>
@@ -288,55 +288,55 @@ onMounted(async () => {
             <tbody>
               <tr v-if="loading">
                 <td colspan="9" class="text-center py-4">
-                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-2"></span>
                   Memuat data...
                 </td>
               </tr>
 
               <tr v-else-if="products.length === 0">
-                <td colspan="9" class="text-center text-muted py-4">Data produk tidak ditemukan.</td>
+                <td colspan="9" class="text-center text-slate-500 py-4">Data produk tidak ditemukan.</td>
               </tr>
 
               <tr v-for="(product, index) in products" :key="product.id">
                 <td>{{ (currentPage - 1) * perPage + index + 1 }}</td>
 
                 <td>
-                  <div class="fw-semibold">{{ product.name }}</div>
-                  <small class="text-muted">
+                  <div class="font-semibold">{{ product.name }}</div>
+                  <small class="text-slate-500">
                     {{ product.description || "-" }}
                   </small>
                 </td>
 
                 <td>
                   <div>{{ product.sku || "-" }}</div>
-                  <small class="text-muted">{{ product.barcode || "-" }}</small>
+                  <small class="text-slate-500">{{ product.barcode || "-" }}</small>
                 </td>
 
                 <td>{{ product.category_name || "-" }}</td>
                 <td>{{ product.unit_name || "-" }}</td>
 
-                <td class="text-end text-nowrap">
+                <td class="text-right whitespace-nowrap">
                   {{ formatCurrency(product.purchase_price) }}
                 </td>
-                <td class="text-end text-nowrap">
+                <td class="text-right whitespace-nowrap">
                   {{ formatCurrency(product.selling_price) }}
                 </td>
 
                 <td>
-                  <span class="badge" :class="Number(product.is_active) === 1 ? 'bg-success' : 'bg-secondary'">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="Number(product.is_active) === 1 ? 'bg-success' : 'bg-secondary'">
                     {{ Number(product.is_active) === 1 ? "Aktif" : "Tidak Aktif" }}
                   </span>
                 </td>
 
                 <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-sm btn-light" title="Detail" @click="openDetail(product)">
+                  <div class="flex justify-center gap-1">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Detail" @click="openDetail(product)">
                       <i class="ti ti-eye"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-light" title="Ubah" @click="openEditForm(product)">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Ubah" @click="openEditForm(product)">
                       <i class="ti ti-edit"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-light text-danger" title="Hapus" @click="deleteProduct(product)">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600" title="Hapus" @click="deleteProduct(product)">
                       <i class="ti ti-trash"></i>
                     </button>
                   </div>
@@ -347,8 +347,8 @@ onMounted(async () => {
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
-          <div class="text-muted small">
+        <div class="flex flex-wrap justify-between items-center gap-2 mt-3">
+          <div class="text-slate-500 small">
             Menampilkan
             {{ products.length ? (currentPage - 1) * perPage + 1 : 0 }}
             sampai
