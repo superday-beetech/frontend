@@ -105,22 +105,22 @@ async function save(): Promise<void> {
 <template>
   <form @submit.prevent="save">
     <div class="mb-3">
-      <label for="unit-name" class="form-label"> Nama Satuan <span class="text-danger">*</span> </label>
+      <label for="unit-name" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nama Satuan <span class="text-rose-600">*</span> </label>
 
-      <input id="unit-name" v-model="form.name" type="text" class="form-control" maxlength="60" placeholder="Contoh: Botol" :disabled="saving" required />
+      <input id="unit-name" v-model="form.name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="60" placeholder="Contoh: Botol" :disabled="saving" required />
     </div>
 
     <div class="mb-3">
-      <label for="unit-abbreviation" class="form-label"> Singkatan <span class="text-danger">*</span> </label>
+      <label for="unit-abbreviation" class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Singkatan <span class="text-rose-600">*</span> </label>
 
-      <input id="unit-abbreviation" v-model="form.abbreviation" type="text" class="form-control" maxlength="20" placeholder="Contoh: btl" :disabled="saving" required />
+      <input id="unit-abbreviation" v-model="form.abbreviation" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="20" placeholder="Contoh: btl" :disabled="saving" required />
     </div>
 
-    <div class="d-flex justify-content-end gap-2">
-      <button type="button" class="btn btn-light" :disabled="saving" @click="emit('close')">Batal</button>
+    <div class="flex justify-end gap-2">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="saving" @click="emit('close')">Batal</button>
 
-      <button type="submit" class="btn btn-primary" :disabled="saving">
-        <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+      <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="saving">
+        <span v-if="saving" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1"></span>
 
         {{ saving ? "Menyimpan..." : "Simpan" }}
       </button>
