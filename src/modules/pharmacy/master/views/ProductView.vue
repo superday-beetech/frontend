@@ -6,7 +6,7 @@ import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
 import { useMasterOptions } from "@/modules/pharmacy/master/composables/useMasterOptions";
 
-import product.api, { type Product, type ProductPagination } from "../api/product.api";
+import productService, { type Product, type ProductPagination } from "../api/product.api";
 
 import ProductFormModal from "../components/ProductFormModal.vue";
 import ProductDetailModal from "../components/ProductDetailModal.vue";
@@ -81,7 +81,7 @@ async function loadProducts(page = currentPage.value): Promise<void> {
   loading.value = true;
 
   try {
-    const response = await product.api.getAll({
+    const response = await productService.getAll({
       page,
       per_page: perPage.value,
       search: search.value.trim(),
@@ -137,7 +137,7 @@ function openEditForm(product: Product): void {
 
 async function openDetail(product: Product): Promise<void> {
   try {
-    const response = await product.api.getById(product.id);
+    const response = await productService.getById(product.id);
     const result = response.data;
 
     if (result.error || !result.data) {
@@ -170,7 +170,7 @@ async function deleteProduct(product: Product): Promise<void> {
   if (!confirmed) return;
 
   try {
-    const response = await product.api.delete(product.id);
+    const response = await productService.delete(product.id);
     const result = response.data;
 
     if (result.error) {

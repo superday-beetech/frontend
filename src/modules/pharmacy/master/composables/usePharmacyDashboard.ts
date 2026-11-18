@@ -38,9 +38,9 @@ export function usePharmacyDashboard() {
 
         try {
             const results = await Promise.allSettled([
-                dashboard.api.getOverview(params),
-                dashboard.api.getCashFlow(params),
-                dashboard.api.getTopSelling({
+                dashboardService.getOverview(params),
+                dashboardService.getCashFlow(params),
+                dashboardService.getTopSelling({
                     ...params,
                     limit: topSellingLimit.value,
                 }),

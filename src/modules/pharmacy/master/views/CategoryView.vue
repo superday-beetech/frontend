@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import category.api, { type Category, type CategoryPayload, type CategoryPagination } from "@/modules/pharmacy/master/api/category.api";
+import categoryService, { type Category, type CategoryPayload, type CategoryPagination } from "@/modules/pharmacy/master/api/category.api";
 import { useToast } from "@/shared/composables/useToast";
 import { useCategoryTypes } from "../composables/useCategoryTypes";
 import type { CategoryTypeOption } from "../api/category-type.api";
@@ -72,7 +72,7 @@ async function loadCategories(page = 1) {
   errorMessage.value = "";
 
   try {
-    const response = await category.api.getAll({
+    const response = await categoryService.getAll({
       page,
       per_page: perPage.value,
       search: search.value,
@@ -154,7 +154,7 @@ async function openEdit(id: number) {
   clearMessages();
 
   try {
-    const response = await category.api.getById(id);
+    const response = await categoryService.getById(id);
 
     if (response.error || !response.data) {
       throw new Error("Gagal mengambil detail kategori.");
@@ -179,7 +179,7 @@ async function openDetail(id: number) {
   clearMessages();
 
   try {
-    const response = await category.api.getById(id);
+    const response = await categoryService.getById(id);
 
     if (response.error || !response.data) {
       throw new Error("Gagal mengambil detail kategori.");
@@ -243,7 +243,7 @@ async function saveCategory() {
       is_active: Number(form.is_active),
     };
 
-    const response = isEditing.value && selectedCategory.value ? await category.api.update(selectedCategory.value.id, payload) : await category.api.create(payload);
+    const response = isEditing.value && selectedCategory.value ? await categoryService.update(selectedCategory.value.id, payload) : await categoryService.create(payload);
 
     if (response.error) {
       throw new Error(typeof response.message === "string" ? response.message : "Gagal menyimpan kategori.");
@@ -267,7 +267,7 @@ async function deleteCategory(category: Category) {
   clearMessages();
 
   try {
-    const response = await category.api.delete(category.id);
+    const response = await categoryService.delete(category.id);
 
     if (response.error) {
       throw new Error(typeof response.message === "string" ? response.message : "Gagal menghapus kategori.");

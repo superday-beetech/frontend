@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 
-import customer.api, { type Customer, type CustomerPagination } from "../api/customer.api";
+import customerService, { type Customer, type CustomerPagination } from "../api/customer.api";
 
 import CustomerFormModal from "../components/CustomerFormModal.vue";
 import CustomerDetailModal from "../components/CustomerDetailModal.vue";
@@ -59,7 +59,7 @@ async function loadCustomers(page = currentPage.value) {
   loading.value = true;
 
   try {
-    const response = await customer.api.getAll({
+    const response = await customerService.getAll({
       page,
       per_page: perPage.value,
       search: search.value.trim(),
@@ -138,7 +138,7 @@ async function deleteCustomer(customer: Customer) {
   if (!confirmed) return;
 
   try {
-    const response = await customer.api.delete(customer.id);
+    const response = await customerService.delete(customer.id);
     const result = response.data;
 
     if (result.error) {
