@@ -6,10 +6,12 @@ import customerService, { type Customer, type CustomerPagination } from "../serv
 import CustomerFormModal from "../components/CustomerFormModal.vue";
 import CustomerDetailModal from "../components/CustomerDetailModal.vue";
 
-import { useModalStore } from "@/composables/useModal";
-import { notify } from "@/utils/notification";
+import { useModal } from "@/shared/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
 
-const modalStore = useModalStore();
+const toast = useToast();
+
+const modalStore = useModal();
 
 const customers = ref<Customer[]>([]);
 const loading = ref(false);
@@ -73,7 +75,7 @@ async function loadCustomers(page = currentPage.value) {
     pagination.value = result.data.pagination;
     currentPage.value = result.data.pagination.current_page;
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal mengambil data customer.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal mengambil data customer.");
   } finally {
     loading.value = false;
   }
@@ -136,13 +138,13 @@ async function deleteCustomer(customer: Customer) {
       throw new Error(Array.isArray(result.message) ? result.message.join(", ") : result.message || "Gagal menghapus customer.");
     }
 
-    notify.success("Customer berhasil dihapus.");
+    toast.success("Customer berhasil dihapus.");
 
     const nextPage = customers.value.length === 1 && currentPage.value > 1 ? currentPage.value - 1 : currentPage.value;
 
     await loadCustomers(nextPage);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal menghapus customer.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal menghapus customer.");
   }
 }
 
