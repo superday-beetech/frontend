@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import distribution.api from "../api/distribution.api";
+import distributionService from "../api/distribution.api";
 import type { DistributionOrder } from "../types/distribution";
 
 import { useToast } from "@/shared/composables/useToast";

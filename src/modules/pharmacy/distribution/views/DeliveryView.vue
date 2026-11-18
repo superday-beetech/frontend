@@ -4,8 +4,8 @@ import { useRouter } from "vue-router";
 
 import { useToast } from "@/shared/composables/useToast";
 
-import distribution.api from "../api/distribution.api";
-import delivery.api from "../api/delivery.api";
+import distributionService from "../api/distribution.api";
+import deliveryService from "../api/delivery.api";
 
 import type { Delivery, DistributionOrder } from "../types/distribution";
 

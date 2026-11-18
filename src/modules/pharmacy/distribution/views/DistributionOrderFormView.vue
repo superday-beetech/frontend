@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 
-import distribution.api from "../api/distribution.api";
+import distributionService from "../api/distribution.api";
 import type { DistributionOrderItemPayload, DistributionOrderPayload } from "../types/distribution";
 
 const toast = useToast();
