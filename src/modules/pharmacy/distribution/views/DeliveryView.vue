@@ -4,8 +4,8 @@ import { useRouter } from "vue-router";
 
 import { useToast } from "@/shared/composables/useToast";
 
-import distributionService from "../services/distributionService";
-import deliveryService from "../services/deliveryService";
+import distribution.api from "../api/distribution.api";
+import delivery.api from "../api/delivery.api";
 
 import type { Delivery, DistributionOrder } from "../types/distribution";
 
@@ -96,11 +96,11 @@ async function loadDeliveries() {
 
   try {
     const [deliveryResponse, orderResponse] = await Promise.all([
-      deliveryService.getDeliveries({
+      delivery.api.getDeliveries({
         page: 1,
         per_page: 100,
       }),
-      distributionService.getOrders(),
+      distribution.api.getOrders(),
     ]);
 
     orders.value = orderResponse;

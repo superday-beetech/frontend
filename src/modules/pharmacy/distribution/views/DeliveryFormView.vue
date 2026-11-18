@@ -2,8 +2,8 @@
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import distributionService from "../services/distributionService";
-import deliveryService from "../services/deliveryService";
+import distribution.api from "../api/distribution.api";
+import delivery.api from "../api/delivery.api";
 
 import type { DistributionOrderDetail } from "../types/distribution";
 
@@ -80,7 +80,7 @@ async function loadOrder() {
   loading.value = true;
 
   try {
-    orderDetail.value = await distributionService.getOrderDetail(orderId.value);
+    orderDetail.value = await distribution.api.getOrderDetail(orderId.value);
 
     if (!orderDetail.value?.order) {
       throw new Error("Data pesanan tidak ditemukan.");
@@ -130,7 +130,7 @@ async function submit() {
   saving.value = true;
 
   try {
-    const newDeliveryId = await deliveryService.createDelivery({
+    const newDeliveryId = await delivery.api.createDelivery({
       delivery_number: form.delivery_number.trim(),
       distribution_order_id: Number(order.value.id),
       delivery_date: form.delivery_date,

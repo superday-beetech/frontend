@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 
-import distributionService from "../services/distributionService";
+import distribution.api from "../api/distribution.api";
 import type { DistributionOrderItemPayload, DistributionOrderPayload } from "../types/distribution";
 
 const toast = useToast();
@@ -245,7 +245,7 @@ async function saveOrder() {
   saving.value = true;
 
   try {
-    const id = await distributionService.createOrder(payload);
+    const id = await distribution.api.createOrder(payload);
 
     toast.success("Pesanan distribusi berhasil dibuat.");
 

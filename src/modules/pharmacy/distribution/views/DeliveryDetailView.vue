@@ -5,8 +5,8 @@ import { useRoute, useRouter } from "vue-router";
 import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 
-import distributionService from "../services/distributionService";
-import deliveryService from "../services/deliveryService";
+import distribution.api from "../api/distribution.api";
+import delivery.api from "../api/delivery.api";
 
 import type { Delivery, DeliveryAllocationPayload, DeliveryItem, DistributionOrderDetail } from "../types/distribution";
 
@@ -279,7 +279,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    const [orderResponse, deliveryResponse] = await Promise.all([distributionService.getOrderDetail(orderId.value), deliveryService.getDeliveryDetail(deliveryId.value)]);
+    const [orderResponse, deliveryResponse] = await Promise.all([distribution.api.getOrderDetail(orderId.value), delivery.api.getDeliveryDetail(deliveryId.value)]);
 
     orderDetail.value = orderResponse;
     deliveryDetail.value = deliveryResponse;
@@ -393,7 +393,7 @@ async function postDelivery() {
   posting.value = true;
 
   try {
-    await deliveryService.postDelivery(deliveryId.value, payload);
+    await delivery.api.postDelivery(deliveryId.value, payload);
 
     toast.success("Pengiriman berhasil diposting.");
 

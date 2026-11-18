@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import distributionService from "../services/distributionService";
+import distribution.api from "../api/distribution.api";
 import type { DistributionOrder } from "../types/distribution";
 
 import { useToast } from "@/shared/composables/useToast";
@@ -92,7 +92,7 @@ async function loadOrders() {
   loading.value = true;
 
   try {
-    orders.value = await distributionService.getOrders();
+    orders.value = await distribution.api.getOrders();
   } catch (error: any) {
     toast.error(error?.response?.data?.message || error?.message || "Gagal memuat pesanan distribusi.");
   } finally {

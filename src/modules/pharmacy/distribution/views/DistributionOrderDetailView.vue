@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import distributionService from "../services/distributionService";
+import distribution.api from "../api/distribution.api";
 import type { DistributionOrderDetail, Delivery, DeliveryItem } from "../types/distribution";
 
 import { useToast } from "@/shared/composables/useToast";
@@ -132,7 +132,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    detail.value = await distributionService.getOrderDetail(orderId.value);
+    detail.value = await distribution.api.getOrderDetail(orderId.value);
   } catch (error: any) {
     detail.value = null;
 
