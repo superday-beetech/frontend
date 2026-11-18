@@ -2,7 +2,9 @@
 import { onMounted, ref } from "vue";
 import { inventoryService } from "../services/inventoryService";
 import type { InventoryPagination, ProductBatch } from "../types/inventory";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const rows = ref<ProductBatch[]>([]);
 const loading = ref(false);
@@ -39,7 +41,7 @@ async function loadData(): Promise<void> {
     pagination.value = result.pagination;
   } catch (error) {
     console.error("Gagal memuat batch:", error);
-    notify.error("Gagal memuat data batch.");
+    toast.error("Gagal memuat data batch.");
   } finally {
     loading.value = false;
   }
@@ -53,7 +55,7 @@ async function showDetail(id: number): Promise<void> {
     selectedBatch.value = await inventoryService.getBatchDetail(id);
   } catch (error) {
     console.error("Gagal memuat detail batch:", error);
-    notify.error("Gagal memuat detail batch.");
+    toast.error("Gagal memuat detail batch.");
   } finally {
     detailLoading.value = false;
   }
