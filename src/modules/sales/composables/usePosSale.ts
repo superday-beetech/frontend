@@ -1,7 +1,7 @@
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import { salesService } from "../services/salesService";
 
-import type { PosCartItem, Sale, SaleItem, CreateSalePayload, DiscountMode, TaxMode, SettlementMode, PaymentMethod, PostSalePayload } from "../types/sales";
+import type { PosCartItem, Sale, SaleItem, CreateSalePayload, DiscountMode, TaxMode, PostSalePayload } from "../types/sales";
 
 import { itemDiscountAmount, roundMoney, toNumber } from "../utils/posMath";
 // =============================================================
