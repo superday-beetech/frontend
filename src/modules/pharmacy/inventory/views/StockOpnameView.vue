@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
 import { inventoryService } from "../services/inventoryService";
 import type { StockOpname, InventoryPagination, CreateStockOpnamePayload } from "../types/inventory";
+
+const toast = useToast();
 
 const router = useRouter();
 
@@ -35,7 +37,7 @@ async function loadData() {
     items.value = result.items;
     pagination.value = result.pagination;
   } catch (error: any) {
-    notify.error(error?.response?.data?.message ?? "Gagal memuat stock opname.");
+    toast.error(error?.response?.data?.message ?? "Gagal memuat stock opname.");
   } finally {
     loading.value = false;
   }
@@ -51,7 +53,7 @@ function resetForm() {
 
 async function createOpname() {
   if (!form.value.opname_number.trim() || !form.value.opname_date) {
-    notify.warning("Nomor dan tanggal stock opname wajib diisi.");
+    toast.warning("Nomor dan tanggal stock opname wajib diisi.");
     return;
   }
 
@@ -60,7 +62,7 @@ async function createOpname() {
   try {
     const result = await inventoryService.createStockOpname(form.value);
 
-    notify.success("Stock opname berhasil dibuat.");
+    toast.success("Stock opname berhasil dibuat.");
     showForm.value = false;
     resetForm();
 
@@ -71,7 +73,7 @@ async function createOpname() {
       query: { id: result.id },
     });
   } catch (error: any) {
-    notify.error(error?.response?.data?.message ?? "Gagal membuat stock opname.");
+    toast.error(error?.response?.data?.message ?? "Gagal membuat stock opname.");
   } finally {
     saving.value = false;
   }
