@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { useCurrencyInput } from "@/shared/composables/useCurrencyInput";
 
 import productService, { type Product, type ProductDetail } from "../services/productService";
 
