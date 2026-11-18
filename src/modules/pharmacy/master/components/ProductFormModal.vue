@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useToast } from "@/shared/composables/useToast";
 import { useCurrencyInput } from "@/shared/composables/useCurrencyInput";
 
-import product.api, { type Product, type ProductPayload, type ProductDetailPayload } from "../api/product.api";
+import productService, { type Product, type ProductPayload, type ProductDetailPayload } from "../api/product.api";
 
 import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
 import { useMasterOptions } from "../composables/useMasterOptions";
@@ -271,7 +271,7 @@ async function save(): Promise<void> {
 
   try {
     // 1) Simpan produk
-    const response = isEditing.value ? await product.api.update(props.product!.id, payload) : await product.api.create(payload);
+    const response = isEditing.value ? await productService.update(props.product!.id, payload) : await productService.create(payload);
 
     const result = response.data;
 
@@ -301,7 +301,7 @@ async function save(): Promise<void> {
     let detailExists = false;
     if (isEditing.value) {
       try {
-        const existing = await product.api.getDetail(productId);
+        const existing = await productService.getDetail(productId);
         detailExists = !existing.error && !!existing.data;
       } catch {
         detailExists = false;
@@ -309,9 +309,9 @@ async function save(): Promise<void> {
     }
 
     if (detailExists) {
-      await product.api.updateDetail(productId, detailPayload);
+      await productService.updateDetail(productId, detailPayload);
     } else {
-      await product.api.createDetail({
+      await productService.createDetail({
         product_id: productId,
         ...detailPayload,
       });
@@ -334,7 +334,7 @@ onMounted(async () => {
   // Kalau edit, coba load detail farmasi
   if (props.product?.id) {
     try {
-      const res = await product.api.getDetail(props.product.id);
+      const res = await productService.getDetail(props.product.id);
       if (!res.error && res.data) {
         const d = res.data;
         detailForm.value = {

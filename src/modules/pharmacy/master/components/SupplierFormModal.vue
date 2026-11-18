@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
-import supplier.api, { type Supplier, type SupplierPayload } from "../api/supplier.api";
+import supplierService, { type Supplier, type SupplierPayload } from "../api/supplier.api";
 import { useToast } from "@/shared/composables/useToast";
 
 const toast = useToast();
@@ -61,7 +61,7 @@ async function submitForm() {
       is_active: Number(form.is_active),
     };
 
-    const response = isEdit.value ? await supplier.api.update(props.supplier!.id, payload) : await supplier.api.create(payload);
+    const response = isEdit.value ? await supplierService.update(props.supplier!.id, payload) : await supplierService.create(payload);
 
     const result = response.data;
 
