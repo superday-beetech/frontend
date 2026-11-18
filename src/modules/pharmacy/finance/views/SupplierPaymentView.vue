@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 import { useModal } from "@/shared/composables/useModal";
 import { useToast } from "@/shared/composables/useToast";
 
