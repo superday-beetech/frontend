@@ -5,7 +5,7 @@ import { usePosFocus, type PosFocusTarget } from "./usePosFocus";
 
 /**
  * Semua referensi seksi di halaman POS (barcode, pelanggan, keranjang, dst.)
- * beserta aksi fokusnya. Nama ref harus sama dengan atribut `ref="..."` di template.
+ * beserta aksi fokusnya. Nama ref dipasang sebagai binding `:ref` agar terhubung ke shallowRef composable.
  */
 export function usePosSections() {
   const barcodeSection = shallowRef<PosFocusTarget>(null);

@@ -46,7 +46,6 @@ let requestSequence = 0;
 
 const hasSelection = computed(() => selectedCustomer.value !== null);
 
-const canSearch = computed(() => keyword.value.trim().length >= props.minCharacters);
 
 function normalize(value: unknown): string {
   return String(value ?? "")
