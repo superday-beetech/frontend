@@ -37,6 +37,7 @@ export interface SessionContext extends AuthUser {
   permissions: string[]
   is_superadmin: boolean
   groups: string[]
+  menus: DynamicMenu[]
 }
 
 export interface AvailableOrganization {
