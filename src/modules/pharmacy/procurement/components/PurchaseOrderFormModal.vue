@@ -187,10 +187,10 @@ const availableProducts = computed<OptionItem[]>(() =>
     })),
 );
 
-function addProduct(option: OptionItem | null): void {
-  if (!option) return;
+function addProduct(productIdValue: string | number): void {
+  if (productIdValue === '') return;
 
-  const productId = Number(option.value);
+  const productId = Number(productIdValue);
 
   if (!Number.isInteger(productId) || productId <= 0) {
     productToAdd.value = "";
@@ -447,7 +447,7 @@ function submit(): void {
         placeholder="Cari nama produk atau SKU..."
         search-placeholder="Ketik nama produk atau SKU..."
         empty-text="Produk tidak ditemukan atau sudah dipilih"
-        @change="addProduct"
+        @update:model-value="addProduct"
       />
 
       <small class="text-muted d-block mt-1"> Pilih produk untuk memasukkannya ke daftar Purchase Order. </small>
