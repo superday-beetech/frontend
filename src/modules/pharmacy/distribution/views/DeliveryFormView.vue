@@ -175,53 +175,53 @@ onMounted(loadOrder);
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
       <div>
         <h4 class="mb-1">Buat Dokumen Pengiriman</h4>
-        <p class="text-muted mb-0">Buat delivery berdasarkan pesanan distribusi.</p>
+        <p class="text-slate-500 mb-0">Buat delivery berdasarkan pesanan distribusi.</p>
       </div>
 
-      <button type="button" class="btn btn-light" @click="goBack">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="goBack">
         <i class="ti ti-arrow-left me-1"></i>
         Kembali
       </button>
     </div>
 
-    <div v-if="loading" class="card">
-      <div class="card-body text-center py-5">
-        <div class="spinner-border text-primary"></div>
-        <p class="text-muted mt-2 mb-0">Memuat data pesanan...</p>
+    <div v-if="loading" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600"></div>
+        <p class="text-slate-500 mt-2 mb-0">Memuat data pesanan...</p>
       </div>
     </div>
 
     <template v-else-if="order">
-      <div v-if="!canCreateDelivery" class="alert alert-warning">Pesanan ini sudah selesai atau dibatalkan. Dokumen pengiriman baru tidak dapat dibuat.</div>
+      <div v-if="!canCreateDelivery" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800">Pesanan ini sudah selesai atau dibatalkan. Dokumen pengiriman baru tidak dapat dibuat.</div>
 
       <!-- Order Reference -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Referensi Pesanan</h5>
         </div>
 
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="text-muted small"> Nomor Pesanan </label>
-              <div class="fw-semibold">
+        <div class="p-5">
+          <div class="grid grid-cols-12 g-3">
+            <div class="col-span-12 md:col-span-4">
+              <label class="text-slate-500 small"> Nomor Pesanan </label>
+              <div class="font-semibold">
                 {{ order.order_number }}
               </div>
             </div>
 
-            <div class="col-md-4">
-              <label class="text-muted small"> Pelanggan </label>
-              <div class="fw-semibold">
+            <div class="col-span-12 md:col-span-4">
+              <label class="text-slate-500 small"> Pelanggan </label>
+              <div class="font-semibold">
                 {{ order.customer_name || `Pelanggan #${order.customer_id}` }}
               </div>
             </div>
 
-            <div class="col-md-4">
-              <label class="text-muted small"> Tanggal Pesanan </label>
+            <div class="col-span-12 md:col-span-4">
+              <label class="text-slate-500 small"> Tanggal Pesanan </label>
               <div>{{ order.order_date }}</div>
             </div>
           </div>
@@ -229,49 +229,49 @@ onMounted(loadOrder);
       </div>
 
       <!-- Order Items -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Produk dalam Pesanan</h5>
         </div>
 
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
+        <div class="p-5">
+          <div class="w-full overflow-x-auto">
+            <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
               <thead>
                 <tr>
                   <th>Produk</th>
-                  <th class="text-end">Kuantitas Pesanan</th>
-                  <th class="text-end">Harga Satuan</th>
-                  <th class="text-end">Subtotal</th>
+                  <th class="text-right">Kuantitas Pesanan</th>
+                  <th class="text-right">Harga Satuan</th>
+                  <th class="text-right">Subtotal</th>
                 </tr>
               </thead>
 
               <tbody>
                 <tr v-for="item in items" :key="String(item.id)">
                   <td>
-                    <div class="fw-semibold">
+                    <div class="font-semibold">
                       {{ item.product_name || `Produk #${item.product_id}` }}
                     </div>
-                    <small class="text-muted">
+                    <small class="text-slate-500">
                       {{ item.sku || "-" }}
                     </small>
                   </td>
 
-                  <td class="text-end">
+                  <td class="text-right">
                     {{ formatNumber(item.quantity) }}
                   </td>
 
-                  <td class="text-end">
+                  <td class="text-right">
                     {{ formatCurrency(item.unit_price) }}
                   </td>
 
-                  <td class="text-end">
+                  <td class="text-right">
                     {{ formatCurrency(item.subtotal) }}
                   </td>
                 </tr>
 
                 <tr v-if="items.length === 0">
-                  <td colspan="4" class="text-center text-muted py-3">Tidak ada item pesanan.</td>
+                  <td colspan="4" class="text-center text-slate-500 py-3">Tidak ada item pesanan.</td>
                 </tr>
               </tbody>
             </table>
@@ -280,64 +280,64 @@ onMounted(loadOrder);
       </div>
 
       <!-- Delivery Form -->
-      <div class="card mb-4">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
         <div class="card-header">
           <h5 class="mb-0">Informasi Pengiriman</h5>
         </div>
 
-        <div class="card-body">
+        <div class="p-5">
           <form @submit.prevent="submit">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label">
+            <div class="grid grid-cols-12 g-3">
+              <div class="col-span-12 md:col-span-6">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Nomor Pengiriman
-                  <span class="text-danger">*</span>
+                  <span class="text-rose-600">*</span>
                 </label>
 
-                <input v-model="form.delivery_number" type="text" class="form-control" placeholder="Contoh: DO-2026-001" maxlength="100" required :disabled="!canCreateDelivery || saving" />
+                <input v-model="form.delivery_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Contoh: DO-2026-001" maxlength="100" required :disabled="!canCreateDelivery || saving" />
               </div>
 
-              <div class="col-md-6">
-                <label class="form-label">
+              <div class="col-span-12 md:col-span-6">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                   Tanggal Pengiriman
-                  <span class="text-danger">*</span>
+                  <span class="text-rose-600">*</span>
                 </label>
 
-                <input v-model="form.delivery_date" type="date" class="form-control" required :disabled="!canCreateDelivery || saving" />
+                <input v-model="form.delivery_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required :disabled="!canCreateDelivery || saving" />
               </div>
 
-              <div class="col-md-6">
-                <label class="form-label"> Nama Penerima </label>
+              <div class="col-span-12 md:col-span-6">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nama Penerima </label>
 
-                <input v-model="form.recipient_name" type="text" class="form-control" maxlength="150" placeholder="Nama penerima barang" :disabled="!canCreateDelivery || saving" />
+                <input v-model="form.recipient_name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="150" placeholder="Nama penerima barang" :disabled="!canCreateDelivery || saving" />
               </div>
 
-              <div class="col-md-6">
-                <label class="form-label"> Nomor Telepon Penerima </label>
+              <div class="col-span-12 md:col-span-6">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nomor Telepon Penerima </label>
 
-                <input v-model="form.recipient_phone" type="tel" class="form-control" maxlength="30" placeholder="Nomor telepon penerima" :disabled="!canCreateDelivery || saving" />
+                <input v-model="form.recipient_phone" type="tel" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="30" placeholder="Nomor telepon penerima" :disabled="!canCreateDelivery || saving" />
               </div>
 
-              <div class="col-12">
-                <label class="form-label"> Alamat Pengiriman </label>
+              <div class="col-span-12">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Alamat Pengiriman </label>
 
-                <textarea v-model="form.shipping_address" class="form-control" rows="3" placeholder="Alamat tujuan pengiriman" :disabled="!canCreateDelivery || saving"></textarea>
+                <textarea v-model="form.shipping_address" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="3" placeholder="Alamat tujuan pengiriman" :disabled="!canCreateDelivery || saving"></textarea>
               </div>
 
-              <div class="col-12">
-                <label class="form-label">Catatan</label>
+              <div class="col-span-12">
+                <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Catatan</label>
 
-                <textarea v-model="form.notes" class="form-control" rows="3" placeholder="Catatan tambahan pengiriman" :disabled="!canCreateDelivery || saving"></textarea>
+                <textarea v-model="form.notes" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="3" placeholder="Catatan tambahan pengiriman" :disabled="!canCreateDelivery || saving"></textarea>
               </div>
             </div>
 
             <hr class="my-4" />
 
-            <div class="d-flex justify-content-end gap-2">
-              <button type="button" class="btn btn-light" :disabled="saving" @click="goBack">Batal</button>
+            <div class="flex justify-end gap-2">
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="saving" @click="goBack">Batal</button>
 
-              <button type="submit" class="btn btn-primary" :disabled="saving || !canCreateDelivery">
-                <span v-if="saving" class="spinner-border spinner-border-sm me-1"></span>
+              <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="saving || !canCreateDelivery">
+                <span v-if="saving" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1"></span>
 
                 <i v-else class="ti ti-device-floppy me-1"></i>
 
@@ -349,12 +349,12 @@ onMounted(loadOrder);
       </div>
     </template>
 
-    <div v-else class="card">
-      <div class="card-body text-center py-5">
-        <i class="ti ti-file-off fs-1 text-muted"></i>
+    <div v-else class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <i class="ti ti-file-off fs-1 text-slate-500"></i>
         <h6 class="mt-3">Data pesanan tidak tersedia</h6>
 
-        <button type="button" class="btn btn-light mt-2" @click="goBack">Kembali</button>
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 mt-2" @click="goBack">Kembali</button>
       </div>
     </div>
   </div>
