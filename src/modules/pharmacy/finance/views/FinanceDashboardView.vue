@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import { useToast } from "@/shared/composables/useToast";
-import financeService from "../services/financeService";
+import finance.api from "../api/finance.api";
 
 const toast = useToast();
 
@@ -134,7 +134,7 @@ async function loadDashboard(): Promise<void> {
   if (filters.date_to) params.date_to = filters.date_to;
 
   try {
-    const results = await Promise.allSettled([financeService.getSupplierPayments(params), financeService.getCustomerPayments(params), financeService.getExpenses(params), financeService.getCashTransactions(params)]);
+    const results = await Promise.allSettled([finance.api.getSupplierPayments(params), finance.api.getCustomerPayments(params), finance.api.getExpenses(params), finance.api.getCashTransactions(params)]);
 
     const errors: string[] = [];
 

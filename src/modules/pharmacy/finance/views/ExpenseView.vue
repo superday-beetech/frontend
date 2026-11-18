@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from "vue";
 import { useToast } from "@/shared/composables/useToast";
 import { useModal } from "@/shared/composables/useModal";
 
-import financeService from "../services/financeService";
+import finance.api from "../api/finance.api";
 import type { ExpensePayload } from "../types/finance";
 
 import ExpenseFormModal from "./ExpenseFormModal.vue";
@@ -101,7 +101,7 @@ async function loadExpenses(): Promise<void> {
   loading.value = true;
 
   try {
-    const response = await financeService.getExpenses();
+    const response = await finance.api.getExpenses();
     const body = unwrapResponse(response);
 
     const rows = Array.isArray(body) ? body : (body?.items ?? body?.expenses ?? []);
@@ -117,7 +117,7 @@ async function loadExpenses(): Promise<void> {
 
 async function saveExpense(payload: ExpensePayload): Promise<void> {
   try {
-    await financeService.createExpense(payload);
+    await finance.api.createExpense(payload);
 
     toast.success("Pengeluaran berhasil disimpan.");
     await loadExpenses();

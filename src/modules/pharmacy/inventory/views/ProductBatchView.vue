@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { inventoryService } from "../services/inventoryService";
+import { inventory.api } from "../api/inventory.api";
 import type { InventoryPagination, ProductBatch } from "../types/inventory";
 import { useToast } from "@/shared/composables/useToast";
 
@@ -30,7 +30,7 @@ async function loadData(): Promise<void> {
   loading.value = true;
 
   try {
-    const result = await inventoryService.getBatches({
+    const result = await inventory.api.getBatches({
       page: page.value,
       per_page: perPage.value,
       search: search.value.trim() || undefined,
@@ -52,7 +52,7 @@ async function showDetail(id: number): Promise<void> {
   selectedBatch.value = null;
 
   try {
-    selectedBatch.value = await inventoryService.getBatchDetail(id);
+    selectedBatch.value = await inventory.api.getBatchDetail(id);
   } catch (error) {
     console.error("Gagal memuat detail batch:", error);
     toast.error("Gagal memuat detail batch.");

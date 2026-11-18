@@ -4,7 +4,7 @@ import { http as api } from "@/core/api/client";
 import { useModal } from "@/shared/composables/useModal";
 import { useToast } from "@/shared/composables/useToast";
 
-import financeService from "../services/financeService";
+import finance.api from "../api/finance.api";
 import type { SupplierPaymentPayload } from "../types/finance";
 
 import SupplierPaymentFormModal from "./SupplierPaymentFormModal.vue";
@@ -75,7 +75,7 @@ const loadPayments = async () => {
   loading.value = true;
 
   try {
-    const response = await financeService.getSupplierPayments();
+    const response = await finance.api.getSupplierPayments();
     const result = response.data?.data;
 
     payments.value = Array.isArray(result) ? result : [];
@@ -105,7 +105,7 @@ const savePayment = async (payload: SupplierPaymentPayload) => {
   saving.value = true;
 
   try {
-    const response = await financeService.createSupplierPayment(payload);
+    const response = await finance.api.createSupplierPayment(payload);
 
     toast.success(response.data?.message ?? "Pembayaran supplier berhasil dicatat.", "success");
 

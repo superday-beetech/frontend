@@ -4,7 +4,7 @@ import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 import { useModal } from "@/shared/composables/useModal";
 
-import financeService from "../services/financeService";
+import finance.api from "../api/finance.api";
 import type { CustomerPaymentPayload } from "../types/finance";
 
 import CustomerPaymentFormModal, { type CustomerOption } from "./CustomerPaymentFormModal.vue";
@@ -114,7 +114,7 @@ async function loadPayments(): Promise<void> {
   loading.value = true;
 
   try {
-    const response = await financeService.getCustomerPayments();
+    const response = await finance.api.getCustomerPayments();
     const body = unwrapResponse(response);
     const rows = Array.isArray(body) ? body : (body?.items ?? body?.payments ?? []);
 
@@ -129,7 +129,7 @@ async function loadPayments(): Promise<void> {
 
 async function savePayment(payload: CustomerPaymentPayload): Promise<void> {
   try {
-    await financeService.createCustomerPayment(payload);
+    await finance.api.createCustomerPayment(payload);
 
     toast.success("Pembayaran pelanggan berhasil disimpan.");
     await loadPayments();
