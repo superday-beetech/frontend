@@ -212,7 +212,7 @@ onMounted(loadPurchaseOrders);
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in form.items" :key="item.purchase_order_item_id">
+            <tr v-for="item in form.items" :key="item.purchase_order_item_id">
               <td>
                 <div class="font-semibold">
                   {{ item.product_name }}
