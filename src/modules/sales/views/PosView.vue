@@ -120,7 +120,6 @@ const {
   loadingSearch,
   processing,
   currentSale,
-  offlineTransaction,
 
   isDraft,
   isPosted,
@@ -383,7 +382,7 @@ const { runAction } = usePosMenuActions({
   openUrl,
 })
 
-const { menus, dockItems, loadMenu, loadPermission } = usePosMenus({
+const { menus, dockItems } = usePosMenus({
   dock,
   isSoundEnabled: () => soundEnabled.value,
   isFullscreen: () => isFullscreen.value,
@@ -415,9 +414,6 @@ usePosLifecycle({
   loadHeldTransactions,
   showError,
   focusBarcode,
-
-  loadMenu,
-  loadPermission,
 
   rememberOrganization,
   syncOrganization,
@@ -461,19 +457,6 @@ usePosLifecycle({
 
     <!-- BANTUAN SHORTCUT & NOTIFIKASI (melayang, tidak menggeser layout) -->
     <PosShortcutHelp :visible="shortcutHelp" @close="shortcutHelp = false" />
-    <div v-if="offlineTransaction" class="alert alert-warning mx-3 mt-2 mb-0" role="status">
-      <i class="ti ti-cloud-upload"></i>
-      <span v-if="offlineTransaction.status === 'pending' || offlineTransaction.status === 'syncing'">
-        Transaksi tersimpan di perangkat dan menunggu sinkronisasi. Referensi lokal: {{ offlineTransaction.localId.slice(0, 8) }}.
-      </span>
-      <span v-else-if="offlineTransaction.status === 'synced'">
-        Transaksi lokal berhasil disinkronkan ke server. ID server: {{ offlineTransaction.serverId }}.
-      </span>
-      <span v-else-if="offlineTransaction.status === 'conflict'">
-        Sinkronisasi memerlukan pemeriksaan: {{ offlineTransaction.errorMessage }}.
-      </span>
-      <span v-else>Sinkronisasi belum berhasil: {{ offlineTransaction.errorMessage }}.</span>
-    </div>
     <div v-if="message || errorMessage" class="pos-toasts">
       <div v-if="message" class="alert alert-success" role="status">
         <i class="ti ti-circle-check fs-5"></i>
