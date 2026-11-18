@@ -1,8 +1,7 @@
 import { computed } from "vue";
 
-import { useAuthStore } from "@/stores/auth";
-import { useMenuStore } from "@/stores/menu";
-import { useOrganizationContextStore } from "@/modules/organization/stores/organizationContextStore";
+import { useAuthStore } from '@/modules/auth/stores/auth.store'
+import { useOrganizationStore } from '@/modules/auth/stores/organization.store'
 
 interface UsePosSessionOptions {
   notifyWarning: (message: string) => void;
@@ -23,8 +22,7 @@ function textOf(value: unknown): string {
 /** Identitas kasir, konteks organisasi aktif, dan sign-out. */
 export function usePosSession(options: UsePosSessionOptions) {
   const auth = useAuthStore();
-  const menuStore = useMenuStore();
-  const orgContext = useOrganizationContextStore();
+  const orgContext = useOrganizationStore()
 
   const cashierName = computed(() => {
     const user = auth.user as Record<string, unknown> | null;
@@ -70,14 +68,8 @@ export function usePosSession(options: UsePosSessionOptions) {
   }
 
   async function signOut(): Promise<SignOutResult> {
-    const success = await auth.logout();
-
-    if (success) {
-      menuStore.clear();
-      window.location.href = "/login"; // atau window.location.reload();
-    }
-
-    return { success, error: success ? null : auth.error ? String(auth.error) : null };
+    await auth.logout()
+    return { success: true, error: null }
   }
 
   return {
