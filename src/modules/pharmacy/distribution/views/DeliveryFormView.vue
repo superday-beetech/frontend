@@ -7,7 +7,9 @@ import deliveryService from "../services/deliveryService";
 
 import type { DistributionOrderDetail } from "../types/distribution";
 
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const route = useRoute();
 const router = useRouter();
@@ -79,7 +81,7 @@ function formatNumber(value: number | string): string {
 
 async function loadOrder() {
   if (!Number.isInteger(orderId.value) || orderId.value <= 0) {
-    notify.error("ID pesanan tidak valid.");
+    toast.error("ID pesanan tidak valid.");
     router.replace("/pharmacy/distribution");
     return;
   }
@@ -94,10 +96,10 @@ async function loadOrder() {
     }
 
     if (!canCreateDelivery.value) {
-      notify.warning("Pesanan ini tidak dapat dibuatkan pengiriman.");
+      toast.warning("Pesanan ini tidak dapat dibuatkan pengiriman.");
     }
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat data pesanan.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat data pesanan.");
   } finally {
     loading.value = false;
   }
@@ -120,17 +122,17 @@ function goBack() {
 
 async function submit() {
   if (!order.value || !canCreateDelivery.value) {
-    notify.warning("Pesanan tidak dapat dibuatkan pengiriman.");
+    toast.warning("Pesanan tidak dapat dibuatkan pengiriman.");
     return;
   }
 
   if (!form.delivery_number.trim()) {
-    notify.warning("Nomor pengiriman wajib diisi.");
+    toast.warning("Nomor pengiriman wajib diisi.");
     return;
   }
 
   if (!form.delivery_date) {
-    notify.warning("Tanggal pengiriman wajib diisi.");
+    toast.warning("Tanggal pengiriman wajib diisi.");
     return;
   }
 
@@ -147,7 +149,7 @@ async function submit() {
       notes: form.notes.trim() || null,
     });
 
-    notify.success("Dokumen pengiriman berhasil dibuat.");
+    toast.success("Dokumen pengiriman berhasil dibuat.");
 
     router.push({
       path: "/pharmacy/distribution/delivery-detail",
@@ -157,7 +159,7 @@ async function submit() {
       },
     });
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal membuat dokumen pengiriman.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal membuat dokumen pengiriman.");
   } finally {
     saving.value = false;
   }
