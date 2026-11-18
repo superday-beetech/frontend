@@ -102,7 +102,7 @@ function serializeTree(): MenuHierarchy[] | null {
 }
 
 function applyHierarchyToStore(tree: MenuHierarchy[]) {
-  const menuMap = new Map<string, NavigationMenu>(menuItems.value.map((menu) => [String(menu.id), menu]))
+  const menuMap = new Map<string, NavigationMenu>(menuItems.value.map((menu) => [String(menu.id), menu] as const))
   const flattened: NavigationMenu[] = []
 
   function walk(nodes: MenuHierarchy[]) {
