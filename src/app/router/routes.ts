@@ -31,7 +31,7 @@ export const staticRoutes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'Dashboard',
-        component: resolveView('dashboard/DashboardView'),
+        component: resolveView('pharmacy/master/DashboardView'),
         meta: { title: 'Dashboard' },
       },
     ],
