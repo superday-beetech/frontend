@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { ApiResponse } from "@/types/types";
+import type { ApiResponse } from "@/core/api/types";
 
 import dashboardService from "@/modules/pharmacy/master/services/dashboardService";
 
