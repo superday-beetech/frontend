@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { inventoryService } from "../services/inventoryService";
+import { inventory.api } from "../api/inventory.api";
 import type { InventoryPagination, StockOverview } from "../types/inventory";
 import { useToast } from "@/shared/composables/useToast";
 
@@ -25,7 +25,7 @@ async function loadData(): Promise<void> {
   loading.value = true;
 
   try {
-    const result = await inventoryService.getStockOverview({
+    const result = await inventory.api.getStockOverview({
       page: page.value,
       per_page: perPage.value,
       search: search.value.trim() || undefined,

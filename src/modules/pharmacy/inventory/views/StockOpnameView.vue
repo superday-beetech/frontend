@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "@/shared/composables/useToast";
-import { inventoryService } from "../services/inventoryService";
+import { inventory.api } from "../api/inventory.api";
 import type { StockOpname, InventoryPagination, CreateStockOpnamePayload } from "../types/inventory";
 
 const toast = useToast();
@@ -33,7 +33,7 @@ async function loadData() {
   loading.value = true;
 
   try {
-    const result = await inventoryService.getOpnames(filters.value);
+    const result = await inventory.api.getOpnames(filters.value);
     items.value = result.items;
     pagination.value = result.pagination;
   } catch (error: any) {
@@ -60,7 +60,7 @@ async function createOpname() {
   saving.value = true;
 
   try {
-    const result = await inventoryService.createStockOpname(form.value);
+    const result = await inventory.api.createStockOpname(form.value);
 
     toast.success("Stock opname berhasil dibuat.");
     showForm.value = false;

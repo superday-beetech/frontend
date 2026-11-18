@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "@/shared/composables/useToast";
-import { inventoryService } from "../services/inventoryService";
+import { inventory.api } from "../api/inventory.api";
 import type { StockOpnameDetail, StockOpnameItem, SaveStockOpnameCountsPayload } from "../types/inventory";
 
 const toast = useToast();
@@ -40,7 +40,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    detail.value = await inventoryService.getOpnameDetail(opnameId);
+    detail.value = await inventory.api.getOpnameDetail(opnameId);
   } catch (error: any) {
     toast.error(error?.response?.data?.message ?? "Gagal memuat detail stock opname.");
   } finally {
@@ -86,7 +86,7 @@ async function saveCounts() {
   saving.value = true;
 
   try {
-    await inventoryService.saveStockOpnameCounts(opnameId, payload);
+    await inventory.api.saveStockOpnameCounts(opnameId, payload);
     toast.success("Hasil penghitungan berhasil disimpan.");
     await loadDetail();
   } catch (error: any) {
@@ -120,10 +120,10 @@ async function postOpname() {
 
   try {
     // Simpan hasil penghitungan terlebih dahulu
-    await inventoryService.saveStockOpnameCounts(opnameId, payload);
+    await inventory.api.saveStockOpnameCounts(opnameId, payload);
 
     // Lanjutkan posting setelah penyimpanan berhasil
-    await inventoryService.postStockOpname(opnameId);
+    await inventory.api.postStockOpname(opnameId);
 
     toast.success("Stock opname berhasil disimpan dan diposting.");
 

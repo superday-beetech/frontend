@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Customer } from "../services/customerService";
+import type { Customer } from "../api/customer.api";
 
 defineProps<{
   customer: Customer;
