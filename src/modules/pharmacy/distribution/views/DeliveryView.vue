@@ -2,12 +2,14 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
 
 import distributionService from "../services/distributionService";
 import deliveryService from "../services/deliveryService";
 
 import type { Delivery, DistributionOrder } from "../types/distribution";
+
+const toast = useToast();
 
 interface DeliveryRow extends Delivery {
   order_number?: string;
@@ -116,7 +118,7 @@ async function loadDeliveries() {
       };
     });
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat daftar pengiriman.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat daftar pengiriman.");
   } finally {
     loading.value = false;
   }
