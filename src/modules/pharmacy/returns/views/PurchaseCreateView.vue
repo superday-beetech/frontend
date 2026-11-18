@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { http as api } from "@/core/api/client";
+import goodsReceiptService from "@/modules/pharmacy/procurement/api/goods-receipt.api";
+import { inventoryService } from "@/modules/pharmacy/inventory/api/inventory.api";
+import returnsService from "../api/returns.api";
 
 interface GoodsReceipt {
   id: number;
@@ -99,7 +101,7 @@ async function loadReceipts() {
   errorMessage.value = "";
 
   try {
-    const response = await api.get("/pharmacy/goods-receipts");
+    const response = await goodsReceiptService.getReturnableReceipts();
 
     const data = getResponseData(response);
 
@@ -126,7 +128,7 @@ async function loadReceiptDetail() {
   createdReturnId.value = null;
 
   try {
-    const response = await api.get(`/pharmacy/goods-receipt-detail/${selectedReceiptId.value}`);
+    const response = await goodsReceiptService.getReturnableReceiptDetail(Number(selectedReceiptId.value));
 
     const receipt = getResponseData(response) as GoodsReceipt;
 
@@ -142,18 +144,24 @@ async function loadReceiptDetail() {
 
     items.value = await Promise.all(
       receipt.items.map(async (receiptItem) => {
-        const batchResponse = await api.get("/pharmacy/inventory-api/batches", {
-          params: {
-            page: 1,
-            per_page: 100,
-            product_id: receiptItem.product_id,
-            status: "available",
-          },
+        const batchData = await inventoryService.getBatches({
+          page: 1,
+          per_page: 100,
+          product_id: receiptItem.product_id,
+          status: "available",
         });
 
-        const batchData = getResponseData(batchResponse);
-
-        const allBatches: ProductBatch[] = Array.isArray(batchData) ? batchData : Array.isArray(batchData?.items) ? batchData.items : [];
+        const allBatches: ProductBatch[] = batchData.items.map((batch) => ({
+          id: Number(batch.id),
+          goods_receipt_item_id: Number(batch.goods_receipt_item_id),
+          product_id: Number(batch.product_id),
+          batch_number: batch.batch_number,
+          expired_at: batch.expired_at ?? "",
+          received_quantity: Number(batch.received_quantity),
+          quantity_remaining: Number(batch.quantity_remaining),
+          unit_cost: Number(batch.unit_cost),
+          status: batch.status,
+        }));
 
         const relatedBatches = allBatches.filter((batch) => Number(batch.goods_receipt_item_id) === Number(receiptItem.id) && batch.status === "available" && Number(batch.quantity_remaining) > 0);
 
@@ -249,7 +257,7 @@ async function submitReturn() {
       })),
     };
 
-    const response = await api.post("/pharmacy/returns-api/create-purchase", payload);
+    const response = await returnsService.createPurchase(payload);
 
     const data = getResponseData(response);
 
