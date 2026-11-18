@@ -25,16 +25,16 @@ function select(key: string) {
 </script>
 
 <template>
-  <div class="row g-4">
+  <div class="grid grid-cols-12 g-4">
     <!-- Sidebar menu -->
-    <div class="col-lg-3 col-xl-2">
-      <div class="card master-sidebar-card">
-        <div class="card-body p-2">
-          <div class="text-uppercase text-muted small fw-semibold px-3 pt-2 pb-1">Master Data</div>
+    <div class="col-span-12 lg:col-span-3 col-xl-2">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 master-sidebar-card">
+        <div class="p-5 p-2">
+          <div class="text-uppercase text-slate-500 small font-semibold px-3 pt-2 pb-1">Master Data</div>
 
-          <ul class="nav nav-pills flex-column gap-1">
+          <ul class="nav nav-pills flex-col gap-1">
             <li v-for="m in masterMenus" :key="m.key" class="nav-item">
-              <button type="button" class="nav-link text-start w-100 d-flex align-items-center gap-2" :class="{ active: m.key === activeKey }" :title="m.desc" @click="select(m.key)">
+              <button type="button" class="nav-link text-left w-full flex items-center gap-2" :class="{ active: m.key === activeKey }" :title="m.desc" @click="select(m.key)">
                 <i :class="['ti', m.icon]"></i>
                 <span>{{ m.label }}</span>
               </button>
