@@ -78,29 +78,29 @@ const submit = () => {
 <template>
   <form @submit.prevent="submit">
     <div class="modal-body">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label"> Nomor Pembayaran </label>
+      <div class="grid grid-cols-12 g-3">
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nomor Pembayaran </label>
 
-          <input :value="paymentNumber" type="text" class="form-control" readonly />
+          <input :value="paymentNumber" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" readonly />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Tanggal Pembayaran
-            <span class="text-danger">*</span>
+            <span class="text-rose-600">*</span>
           </label>
 
-          <input v-model="form.payment_date" type="date" class="form-control" required />
+          <input v-model="form.payment_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Supplier
-            <span class="text-danger">*</span>
+            <span class="text-rose-600">*</span>
           </label>
 
-          <select v-model="form.supplier_id" class="form-select" required>
+          <select v-model="form.supplier_id" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required>
             <option value="" disabled>Pilih supplier</option>
 
             <option v-for="supplier in suppliers" :key="supplier.id" :value="String(supplier.id)">
@@ -111,30 +111,30 @@ const submit = () => {
           <div v-if="selectedSupplier" class="form-text">Supplier dipilih: {{ selectedSupplier.name }}</div>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label"> Purchase Order ID </label>
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Purchase Order ID </label>
 
-          <input v-model="form.purchase_order_id" type="number" min="1" class="form-control" placeholder="Kosongkan untuk pembayaran umum" />
+          <input v-model="form.purchase_order_id" type="number" min="1" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Kosongkan untuk pembayaran umum" />
 
           <div class="form-text">Isi jika pembayaran dialokasikan ke PO tertentu.</div>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Nominal Pembayaran
-            <span class="text-danger">*</span>
+            <span class="text-rose-600">*</span>
           </label>
 
-          <input v-model="form.amount" type="number" min="0.01" step="0.01" class="form-control" placeholder="0" required />
+          <input v-model="form.amount" type="number" min="0.01" step="0.01" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="0" required />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Metode Pembayaran
-            <span class="text-danger">*</span>
+            <span class="text-rose-600">*</span>
           </label>
 
-          <select v-model="form.payment_method" class="form-select" required>
+          <select v-model="form.payment_method" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" required>
             <option value="cash">Tunai</option>
             <option value="transfer">Transfer Bank</option>
             <option value="debit">Debit</option>
@@ -143,35 +143,35 @@ const submit = () => {
           </select>
         </div>
 
-        <div v-if="form.payment_method === 'other'" class="col-12">
-          <label class="form-label">
+        <div v-if="form.payment_method === 'other'" class="col-span-12">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Metode Pembayaran Lainnya
-            <span class="text-danger">*</span>
+            <span class="text-rose-600">*</span>
           </label>
 
-          <input v-model="form.custom_payment_method" type="text" class="form-control" placeholder="Masukkan metode pembayaran" required />
+          <input v-model="form.custom_payment_method" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Masukkan metode pembayaran" required />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label"> Nomor Referensi </label>
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nomor Referensi </label>
 
-          <input v-model="form.reference_number" type="text" class="form-control" placeholder="Nomor bukti transfer / referensi" />
+          <input v-model="form.reference_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nomor bukti transfer / referensi" />
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label"> Catatan </label>
+        <div class="col-span-12 md:col-span-6">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Catatan </label>
 
-          <input v-model="form.notes" type="text" class="form-control" placeholder="Catatan pembayaran" />
+          <input v-model="form.notes" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Catatan pembayaran" />
         </div>
       </div>
 
-      <div class="alert alert-info mt-3 mb-0">Pembayaran otomatis dicatat sebagai kas keluar. Jika dikaitkan dengan Purchase Order, nominal akan divalidasi terhadap sisa tagihan.</div>
+      <div class="rounded-lg border px-4 py-3 text-sm alert-info mt-3 mb-0">Pembayaran otomatis dicatat sebagai kas keluar. Jika dikaitkan dengan Purchase Order, nominal akan divalidasi terhadap sisa tagihan.</div>
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-light" @click="emit('close')">Batal</button>
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="emit('close')">Batal</button>
 
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700">
         <i class="ti ti-device-floppy me-1"></i>
         Simpan Pembayaran
       </button>
