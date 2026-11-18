@@ -19,7 +19,10 @@ const props = withDefaults(defineProps<{
   disabled: false,
 })
 
-const emit = defineEmits<{ 'update:modelValue': [value: string | number] }>()
+const emit = defineEmits<{
+  'update:modelValue': [value: string | number]
+  change: [option: OptionItem | null]
+}>()
 const isOpen = ref(false)
 const query = ref('')
 const root = ref<HTMLElement | null>(null)
@@ -35,6 +38,7 @@ const filteredOptions = computed(() => {
 
 function selectOption(option: OptionItem) {
   emit('update:modelValue', option.value)
+  emit('change', option)
   isOpen.value = false
   query.value = ''
 }
@@ -43,6 +47,7 @@ function updateNative(event: Event) {
   const value = (event.target as HTMLSelectElement).value
   const option = props.options.find((item) => String(item.value) === value)
   emit('update:modelValue', option?.value ?? value)
+  emit('change', option ?? null)
 }
 
 function onDocumentClick(event: MouseEvent) {
