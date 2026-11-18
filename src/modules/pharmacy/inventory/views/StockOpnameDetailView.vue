@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
 import { inventoryService } from "../services/inventoryService";
 import type { StockOpnameDetail, StockOpnameItem, SaveStockOpnameCountsPayload } from "../types/inventory";
+
+const toast = useToast();
 
 const route = useRoute();
 const router = useRouter();
@@ -30,7 +32,7 @@ const totalDifference = computed(() => {
 
 async function loadDetail() {
   if (!Number.isInteger(opnameId) || opnameId < 1) {
-    notify.error("Stock Opname ID tidak valid.");
+    toast.error("Stock Opname ID tidak valid.");
     router.back();
     return;
   }
@@ -40,7 +42,7 @@ async function loadDetail() {
   try {
     detail.value = await inventoryService.getOpnameDetail(opnameId);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message ?? "Gagal memuat detail stock opname.");
+    toast.error(error?.response?.data?.message ?? "Gagal memuat detail stock opname.");
   } finally {
     loading.value = false;
   }
@@ -77,7 +79,7 @@ async function saveCounts() {
   };
 
   if (payload.items.length === 0) {
-    notify.warning("Belum ada hasil penghitungan yang diisi.");
+    toast.warning("Belum ada hasil penghitungan yang diisi.");
     return;
   }
 
@@ -85,10 +87,10 @@ async function saveCounts() {
 
   try {
     await inventoryService.saveStockOpnameCounts(opnameId, payload);
-    notify.success("Hasil penghitungan berhasil disimpan.");
+    toast.success("Hasil penghitungan berhasil disimpan.");
     await loadDetail();
   } catch (error: any) {
-    notify.error(error?.response?.data?.message ?? "Gagal menyimpan hasil penghitungan.");
+    toast.error(error?.response?.data?.message ?? "Gagal menyimpan hasil penghitungan.");
   } finally {
     saving.value = false;
   }
@@ -98,7 +100,7 @@ async function postOpname() {
   if (!detail.value || !isDraft.value) return;
 
   if (!allCounted.value) {
-    notify.warning("Semua batch harus dihitung sebelum opname diposting.");
+    toast.warning("Semua batch harus dihitung sebelum opname diposting.");
     return;
   }
 
@@ -123,11 +125,11 @@ async function postOpname() {
     // Lanjutkan posting setelah penyimpanan berhasil
     await inventoryService.postStockOpname(opnameId);
 
-    notify.success("Stock opname berhasil disimpan dan diposting.");
+    toast.success("Stock opname berhasil disimpan dan diposting.");
 
     await loadDetail();
   } catch (error: any) {
-    notify.error(error?.response?.data?.message ?? "Gagal menyimpan atau memposting stock opname.");
+    toast.error(error?.response?.data?.message ?? "Gagal menyimpan atau memposting stock opname.");
   } finally {
     posting.value = false;
   }
