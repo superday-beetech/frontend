@@ -145,47 +145,47 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
       <div>
         <h4 class="mb-1">Arus Kas</h4>
-        <p class="text-muted mb-0">Riwayat seluruh transaksi kas masuk dan kas keluar.</p>
+        <p class="text-slate-500 mb-0">Riwayat seluruh transaksi kas masuk dan kas keluar.</p>
       </div>
 
-      <button type="button" class="btn btn-light" :disabled="loading" @click="loadTransactions">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="loading" @click="loadTransactions">
         <i class="ti ti-refresh me-1"></i>
         Refresh
       </button>
     </div>
 
     <!-- Summary -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Total Kas Masuk</div>
-            <h4 class="text-success mb-0">
+    <div class="grid grid-cols-12 g-3 mb-4">
+      <div class="col-span-12 md:col-span-4">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full">
+          <div class="p-5">
+            <div class="text-slate-500 mb-2">Total Kas Masuk</div>
+            <h4 class="text-emerald-600 mb-0">
               {{ formatCurrency(totalCashIn) }}
             </h4>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Total Kas Keluar</div>
-            <h4 class="text-danger mb-0">
+      <div class="col-span-12 md:col-span-4">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full">
+          <div class="p-5">
+            <div class="text-slate-500 mb-2">Total Kas Keluar</div>
+            <h4 class="text-rose-600 mb-0">
               {{ formatCurrency(totalCashOut) }}
             </h4>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Saldo Bersih Periode</div>
+      <div class="col-span-12 md:col-span-4">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full">
+          <div class="p-5">
+            <div class="text-slate-500 mb-2">Saldo Bersih Periode</div>
             <h4 class="mb-0" :class="netCash >= 0 ? 'text-success' : 'text-danger'">
               {{ formatCurrency(netCash) }}
             </h4>
@@ -195,46 +195,46 @@ onMounted(() => {
     </div>
 
     <!-- Filters -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-3">
-            <label class="form-label">Dari Tanggal</label>
-            <input v-model="filters.date_from" type="date" class="form-control" />
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm mb-4">
+      <div class="p-5">
+        <div class="grid grid-cols-12 g-3 items-end">
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Dari Tanggal</label>
+            <input v-model="filters.date_from" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label">Sampai Tanggal</label>
-            <input v-model="filters.date_to" type="date" class="form-control" :min="filters.date_from || undefined" />
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Sampai Tanggal</label>
+            <input v-model="filters.date_to" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :min="filters.date_from || undefined" />
           </div>
 
-          <div class="col-md-3">
-            <button type="button" class="btn btn-primary w-100" :disabled="loading" @click="loadTransactions">Terapkan Filter</button>
+          <div class="col-span-12 md:col-span-3">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700 w-full" :disabled="loading" @click="loadTransactions">Terapkan Filter</button>
           </div>
 
-          <div class="col-md-3">
-            <button type="button" class="btn btn-light w-100" :disabled="loading" @click="resetFilters">Reset Filter</button>
+          <div class="col-span-12 md:col-span-3">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 w-full" :disabled="loading" @click="resetFilters">Reset Filter</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Transaction table -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-body">
-        <div class="row align-items-center mb-3">
-          <div class="col-md-6">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm">
+      <div class="p-5">
+        <div class="grid grid-cols-12 items-center mb-3">
+          <div class="col-span-12 md:col-span-6">
             <h5 class="mb-0">Riwayat Transaksi Kas</h5>
-            <small class="text-muted"> {{ filteredTransactions.length }} transaksi ditampilkan </small>
+            <small class="text-slate-500"> {{ filteredTransactions.length }} transaksi ditampilkan </small>
           </div>
 
-          <div class="col-md-6 mt-3 mt-md-0">
-            <input v-model="search" type="search" class="form-control" placeholder="Cari nomor, referensi, atau deskripsi..." />
+          <div class="col-span-12 md:col-span-6 mt-3 mt-md-0">
+            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Cari nomor, referensi, atau deskripsi..." />
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0">
             <thead>
               <tr>
                 <th>Tanggal</th>
@@ -242,7 +242,7 @@ onMounted(() => {
                 <th>Jenis</th>
                 <th>Referensi</th>
                 <th>Deskripsi</th>
-                <th class="text-end">Jumlah</th>
+                <th class="text-right">Jumlah</th>
               </tr>
             </thead>
 
@@ -252,32 +252,32 @@ onMounted(() => {
               </tr>
 
               <tr v-else-if="filteredTransactions.length === 0">
-                <td colspan="6" class="text-center text-muted py-4">Tidak ada transaksi kas.</td>
+                <td colspan="6" class="text-center text-slate-500 py-4">Tidak ada transaksi kas.</td>
               </tr>
 
               <tr v-for="item in filteredTransactions" :key="item.id">
                 <td>{{ formatDate(item.transaction_date) }}</td>
 
-                <td class="fw-semibold">
+                <td class="font-semibold">
                   {{ item.transaction_number || `#${item.id}` }}
                 </td>
 
                 <td>
-                  <span class="badge" :class="isCashIn(item.transaction_type) ? 'bg-light-success text-success' : 'bg-light-danger text-danger'">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="isCashIn(item.transaction_type) ? 'bg-light-success text-success' : 'bg-light-danger text-danger'">
                     {{ formatType(item.transaction_type) }}
                   </span>
                 </td>
 
                 <td>
                   <div>{{ formatReference(item.reference_type) }}</div>
-                  <small v-if="item.reference_id" class="text-muted"> ID: {{ item.reference_id }} </small>
+                  <small v-if="item.reference_id" class="text-slate-500"> ID: {{ item.reference_id }} </small>
                 </td>
 
                 <td>
                   {{ item.description || item.notes || "-" }}
                 </td>
 
-                <td class="text-end fw-semibold" :class="isCashIn(item.transaction_type) ? 'text-success' : 'text-danger'">
+                <td class="text-right font-semibold" :class="isCashIn(item.transaction_type) ? 'text-success' : 'text-danger'">
                   {{ isCashIn(item.transaction_type) ? "+" : "-" }}
                   {{ formatCurrency(item.amount) }}
                 </td>
