@@ -25,7 +25,7 @@ async function loadData(): Promise<void> {
   loading.value = true;
 
   try {
-    const result = await inventory.api.getStockOverview({
+    const result = await inventoryService.getStockOverview({
       page: page.value,
       per_page: perPage.value,
       search: search.value.trim() || undefined,

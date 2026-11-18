@@ -33,7 +33,7 @@ async function loadData() {
   loading.value = true;
 
   try {
-    const result = await inventory.api.getOpnames(filters.value);
+    const result = await inventoryService.getOpnames(filters.value);
     items.value = result.items;
     pagination.value = result.pagination;
   } catch (error: any) {
@@ -60,7 +60,7 @@ async function createOpname() {
   saving.value = true;
 
   try {
-    const result = await inventory.api.createStockOpname(form.value);
+    const result = await inventoryService.createStockOpname(form.value);
 
     toast.success("Stock opname berhasil dibuat.");
     showForm.value = false;

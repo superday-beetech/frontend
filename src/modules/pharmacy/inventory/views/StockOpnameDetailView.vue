@@ -40,7 +40,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    detail.value = await inventory.api.getOpnameDetail(opnameId);
+    detail.value = await inventoryService.getOpnameDetail(opnameId);
   } catch (error: any) {
     toast.error(error?.response?.data?.message ?? "Gagal memuat detail stock opname.");
   } finally {
@@ -86,7 +86,7 @@ async function saveCounts() {
   saving.value = true;
 
   try {
-    await inventory.api.saveStockOpnameCounts(opnameId, payload);
+    await inventoryService.saveStockOpnameCounts(opnameId, payload);
     toast.success("Hasil penghitungan berhasil disimpan.");
     await loadDetail();
   } catch (error: any) {
@@ -120,10 +120,10 @@ async function postOpname() {
 
   try {
     // Simpan hasil penghitungan terlebih dahulu
-    await inventory.api.saveStockOpnameCounts(opnameId, payload);
+    await inventoryService.saveStockOpnameCounts(opnameId, payload);
 
     // Lanjutkan posting setelah penyimpanan berhasil
-    await inventory.api.postStockOpname(opnameId);
+    await inventoryService.postStockOpname(opnameId);
 
     toast.success("Stock opname berhasil disimpan dan diposting.");
 

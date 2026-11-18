@@ -30,7 +30,7 @@ async function loadData(): Promise<void> {
   loading.value = true;
 
   try {
-    const result = await inventory.api.getMovements({
+    const result = await inventoryService.getMovements({
       page: page.value,
       per_page: perPage.value,
       search: search.value.trim() || undefined,
