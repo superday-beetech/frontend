@@ -65,6 +65,7 @@ export interface DeliveryItem {
   batch_number?: string;
   product_id?: NumericValue;
   product_name?: string;
+  sku?: string;
   quantity_dispatched: NumericValue;
   unit_price: NumericValue;
 }
