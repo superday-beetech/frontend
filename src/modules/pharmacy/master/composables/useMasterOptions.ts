@@ -3,8 +3,8 @@ import { computed, ref } from "vue";
 import categoryService, { type Category } from "@/modules/pharmacy/master/services/categoryService";
 import unitService, { type Unit } from "@/modules/pharmacy/master/services/unitService";
 import productService, { type ProductOptions } from "../services/productService";
-import type { OptionItem } from "@/composables/useOption";
-import { env } from "@/config/env";
+import type { OptionItem } from "@/shared/composables/useOption";
+import { env } from "@/core/config/env";
 
 // State module-level → dibagi antar komponen (singleton)
 const categories = ref<Category[]>([]);
