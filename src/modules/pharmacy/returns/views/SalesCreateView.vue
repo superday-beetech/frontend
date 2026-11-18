@@ -12,17 +12,6 @@ interface Delivery {
   status: string;
 }
 
-interface DeliveryItem {
-  id: number;
-  product_id: number;
-  product_name: string;
-  sku?: string;
-  batch_id: number;
-  batch_number?: string;
-  quantity_dispatched: number;
-  unit_price: number;
-}
-
 interface ReturnItemForm {
   deliveryItemId: number;
   productName: string;
