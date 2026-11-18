@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 
-import api from "@/api/client";
-import { notify } from "@/utils/notification";
-import { useModalStore } from "@/composables/useModal";
+import api from "@/core/api/client";
+import { useToast } from "@/shared/composables/useToast";
+import { useModal } from "@/shared/composables/useModal";
 
 import purchaseOrderService from "../services/purchaseOrderService";
 
 import PurchaseOrderFormModal from "../components/PurchaseOrderFormModal.vue";
 import PurchaseOrderDetailModal from "../components/PurchaseOrderDetailModal.vue";
 
-import OptionSelect from "@/components/ui/OptionSelect.vue";
-import type { OptionItem } from "@/composables/useOption";
+import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
+import type { OptionItem } from "@/shared/composables/useOption";
 
 import type { CreatePurchaseOrderPayload, PurchaseOrder, PurchaseOrderPagination } from "../types/purchaseOrder";
+
+const toast = useToast();
 
 interface SupplierOption {
   id: number;
@@ -28,7 +30,7 @@ interface ProductOption {
   purchase_price?: number | string;
 }
 
-const modalStore = useModalStore();
+const modalStore = useModal();
 
 const orders = ref<PurchaseOrder[]>([]);
 const suppliers = ref<SupplierOption[]>([]);
@@ -98,7 +100,7 @@ async function loadMasterOptions() {
     products.value = extractList<ProductOption>(productResponse);
   } catch (error) {
     console.error("Gagal memuat supplier dan produk:", error);
-    notify.error("Gagal memuat pilihan supplier dan produk.");
+    toast.error("Gagal memuat pilihan supplier dan produk.");
   }
 }
 
@@ -126,7 +128,7 @@ async function loadOrders(page = 1) {
     pagination.value = response.data.pagination;
   } catch (error: any) {
     console.error(error);
-    notify.error(error?.message || "Gagal mengambil data Purchase Order.");
+    toast.error(error?.message || "Gagal mengambil data Purchase Order.");
   } finally {
     loading.value = false;
   }
@@ -174,12 +176,12 @@ async function createOrder(payload: CreatePurchaseOrderPayload) {
     }
 
     modalStore.close();
-    notify.success("Purchase Order berhasil dibuat.");
+    toast.success("Purchase Order berhasil dibuat.");
 
     await loadOrders(1);
   } catch (error: any) {
     console.error(error);
-    notify.error(error?.response?.data?.message || error?.message || "Gagal membuat Purchase Order.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal membuat Purchase Order.");
   } finally {
     saving.value = false;
   }
@@ -204,7 +206,7 @@ async function openDetail(order: PurchaseOrder) {
     });
   } catch (error: any) {
     console.error(error);
-    notify.error(error?.message || "Gagal mengambil detail Purchase Order.");
+    toast.error(error?.message || "Gagal mengambil detail Purchase Order.");
   }
 }
 
@@ -241,7 +243,7 @@ function statusClass(status: string) {
 
 async function openEditModal(order: PurchaseOrder) {
   if (order.status !== "draft") {
-    notify.warning("Hanya PO draft yang dapat diedit.");
+    toast.warning("Hanya PO draft yang dapat diedit.");
     return;
   }
 
@@ -267,7 +269,7 @@ async function openEditModal(order: PurchaseOrder) {
       },
     });
   } catch (error: any) {
-    notify.error(error?.message || "Gagal mengambil data Purchase Order.");
+    toast.error(error?.message || "Gagal mengambil data Purchase Order.");
   }
 }
 
@@ -280,17 +282,17 @@ async function updateOrder(id: number, payload: CreatePurchaseOrderPayload) {
     }
 
     modalStore.close();
-    notify.success("Purchase Order berhasil diperbarui.");
+    toast.success("Purchase Order berhasil diperbarui.");
 
     await loadOrders(pagination.value.page);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memperbarui Purchase Order.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memperbarui Purchase Order.");
   }
 }
 
 async function deleteOrder(order: PurchaseOrder) {
   if (order.status !== "draft") {
-    notify.warning("Hanya PO draft yang dapat dihapus.");
+    toast.warning("Hanya PO draft yang dapat dihapus.");
     return;
   }
 
@@ -305,13 +307,13 @@ async function deleteOrder(order: PurchaseOrder) {
       throw new Error(getErrorMessage(response.message));
     }
 
-    notify.success("Purchase Order berhasil dihapus.");
+    toast.success("Purchase Order berhasil dihapus.");
 
     const currentPage = orders.value.length === 1 && pagination.value.page > 1 ? pagination.value.page - 1 : pagination.value.page;
 
     await loadOrders(currentPage);
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal menghapus Purchase Order.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal menghapus Purchase Order.");
   }
 }
 
