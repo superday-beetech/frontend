@@ -437,83 +437,83 @@ onMounted(loadDetail);
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
       <div>
         <h4 class="mb-1">Detail Pengiriman</h4>
-        <p class="text-muted mb-0">Alokasi batch dan kuantitas pengiriman.</p>
+        <p class="text-slate-500 mb-0">Alokasi batch dan kuantitas pengiriman.</p>
       </div>
 
-      <button type="button" class="btn btn-light" @click="goBack">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="goBack">
         <i class="ti ti-arrow-left me-1"></i>
         Kembali
       </button>
     </div>
 
-    <div v-if="loading" class="card">
-      <div class="card-body text-center py-5">
-        <div class="spinner-border text-primary"></div>
-        <p class="text-muted mt-2 mb-0">Memuat detail pengiriman...</p>
+    <div v-if="loading" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600"></div>
+        <p class="text-slate-500 mt-2 mb-0">Memuat detail pengiriman...</p>
       </div>
     </div>
 
     <template v-else-if="delivery && order">
       <!-- Delivery Information -->
-      <div class="card mb-4">
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
+        <div class="card-header flex flex-wrap justify-between items-center gap-2">
           <h5 class="mb-0">Informasi Dokumen Pengiriman</h5>
 
-          <span class="badge" :class="deliveryStatusClass(delivery.status)">
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="deliveryStatusClass(delivery.status)">
             {{ deliveryStatusLabel(delivery.status) }}
           </span>
         </div>
 
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="text-muted small"> Nomor Pengiriman </label>
-              <div class="fw-semibold">
+        <div class="p-5">
+          <div class="grid grid-cols-12 g-3">
+            <div class="col-span-12 md:col-span-4">
+              <label class="text-slate-500 small"> Nomor Pengiriman </label>
+              <div class="font-semibold">
                 {{ delivery.delivery_number }}
               </div>
             </div>
 
-            <div class="col-md-4">
-              <label class="text-muted small"> Nomor Pesanan </label>
-              <div class="fw-semibold">
+            <div class="col-span-12 md:col-span-4">
+              <label class="text-slate-500 small"> Nomor Pesanan </label>
+              <div class="font-semibold">
                 {{ order.order_number }}
               </div>
             </div>
 
-            <div class="col-md-4">
-              <label class="text-muted small"> Tanggal Pengiriman </label>
+            <div class="col-span-12 md:col-span-4">
+              <label class="text-slate-500 small"> Tanggal Pengiriman </label>
               <div>
                 {{ formatDate(delivery.delivery_date) }}
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="text-muted small"> Penerima </label>
+            <div class="col-span-12 md:col-span-6">
+              <label class="text-slate-500 small"> Penerima </label>
               <div>
                 {{ delivery.recipient_name || "-" }}
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="text-muted small"> Nomor Telepon </label>
+            <div class="col-span-12 md:col-span-6">
+              <label class="text-slate-500 small"> Nomor Telepon </label>
               <div>
                 {{ delivery.recipient_phone || "-" }}
               </div>
             </div>
 
-            <div class="col-12">
-              <label class="text-muted small"> Alamat Pengiriman </label>
+            <div class="col-span-12">
+              <label class="text-slate-500 small"> Alamat Pengiriman </label>
               <div>
                 {{ delivery.shipping_address || "-" }}
               </div>
             </div>
 
-            <div class="col-12">
-              <label class="text-muted small"> Catatan </label>
+            <div class="col-span-12">
+              <label class="text-slate-500 small"> Catatan </label>
               <div>
                 {{ delivery.notes || "-" }}
               </div>
@@ -523,63 +523,63 @@ onMounted(loadDetail);
       </div>
 
       <!-- Allocation -->
-      <div class="card mb-4">
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
+        <div class="card-header flex flex-wrap justify-between items-center gap-2">
           <div>
             <h5 class="mb-0">Alokasi Batch</h5>
-            <small class="text-muted"> Pilih batch untuk setiap produk yang akan dikirim. </small>
+            <small class="text-slate-500"> Pilih batch untuk setiap produk yang akan dikirim. </small>
           </div>
 
-          <span class="badge bg-light text-secondary"> Total alokasi: {{ formatNumber(totalAllocated) }} </span>
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 text-secondary"> Total alokasi: {{ formatNumber(totalAllocated) }} </span>
         </div>
 
-        <div class="card-body">
-          <div v-if="delivery.status !== 'draft'" class="alert alert-info mb-0">Dokumen ini sudah diproses. Alokasi batch tidak dapat diubah.</div>
+        <div class="p-5">
+          <div v-if="delivery.status !== 'draft'" class="rounded-lg border px-4 py-3 text-sm alert-info mb-0">Dokumen ini sudah diproses. Alokasi batch tidak dapat diubah.</div>
 
           <template v-else>
             <div v-for="item in orderItems" :key="String(item.id)" class="border rounded p-3 mb-3">
-              <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+              <div class="flex flex-wrap justify-between gap-2 mb-3">
                 <div>
                   <h6 class="mb-1">
                     {{ item.product_name || `Produk #${item.product_id}` }}
                   </h6>
-                  <small class="text-muted">
+                  <small class="text-slate-500">
                     {{ item.sku || "-" }}
                   </small>
                 </div>
 
-                <div class="text-end">
-                  <div class="small text-muted">Kuantitas pesanan</div>
+                <div class="text-right">
+                  <div class="small text-slate-500">Kuantitas pesanan</div>
                   <strong>{{ formatNumber(item.quantity) }}</strong>
 
-                  <div class="small text-muted mt-1">
+                  <div class="small text-slate-500 mt-1">
                     Belum dikirim:
-                    <strong class="text-primary">
+                    <strong class="text-primary-600">
                       {{ formatNumber(getDispatchableQuantity(item)) }}
                     </strong>
                   </div>
                 </div>
               </div>
 
-              <div class="row g-2 align-items-end">
+              <div class="grid grid-cols-12 g-2 items-end">
                 <div class="col-md-5">
-                  <label class="form-label small">Batch</label>
+                  <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small">Batch</label>
                 </div>
 
-                <div class="col-md-3">
-                  <label class="form-label small"> Kuantitas Kirim </label>
+                <div class="col-span-12 md:col-span-3">
+                  <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small"> Kuantitas Kirim </label>
                 </div>
 
-                <div class="col-md-3">
-                  <label class="form-label small"> Stok Tersedia </label>
+                <div class="col-span-12 md:col-span-3">
+                  <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small"> Stok Tersedia </label>
                 </div>
 
                 <div class="col-md-1"></div>
               </div>
 
-              <div v-for="(row, index) in allocations[Number(item.id)]" :key="index" class="row g-2 align-items-end mb-2">
+              <div v-for="(row, index) in allocations[Number(item.id)]" :key="index" class="grid grid-cols-12 g-2 items-end mb-2">
                 <div class="col-md-5">
-                  <select v-model.number="row.batch_id" class="form-select" :disabled="posting">
+                  <select v-model.number="row.batch_id" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :disabled="posting">
                     <option :value="null">Pilih batch</option>
 
                     <option v-for="batch in getBatchesForProduct(item.product_id)" :key="batch.id" :value="batch.id" :disabled="getBatchRemaining(batch, row) <= 0 && Number(row.batch_id) !== Number(batch.id)">
@@ -592,11 +592,11 @@ onMounted(loadDetail);
                   </select>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-span-12 md:col-span-3">
                   <input
                     v-model.number="row.quantity"
                     type="number"
-                    class="form-control"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                     min="0.001"
                     step="0.001"
                     placeholder="0"
@@ -605,24 +605,24 @@ onMounted(loadDetail);
                   />
                 </div>
 
-                <div class="col-md-3">
-                  <input type="text" class="form-control" readonly :value="row.batch_id && getBatch(Number(row.batch_id)) ? formatNumber(getBatchRemaining(getBatch(Number(row.batch_id))!, row)) : '-'" />
+                <div class="col-span-12 md:col-span-3">
+                  <input type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" readonly :value="row.batch_id && getBatch(Number(row.batch_id)) ? formatNumber(getBatchRemaining(getBatch(Number(row.batch_id))!, row)) : '-'" />
                 </div>
 
                 <div class="col-md-1">
-                  <button type="button" class="btn btn-light text-danger w-100" title="Hapus alokasi" :disabled="posting" @click="removeAllocation(Number(item.id), index)">
+                  <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600 w-full" title="Hapus alokasi" :disabled="posting" @click="removeAllocation(Number(item.id), index)">
                     <i class="ti ti-trash"></i>
                   </button>
                 </div>
               </div>
 
-              <div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
-                <button type="button" class="btn btn-sm btn-light" :disabled="posting" @click="addAllocation(Number(item.id))">
+              <div class="flex flex-wrap justify-between items-center mt-3">
+                <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="posting" @click="addAllocation(Number(item.id))">
                   <i class="ti ti-plus me-1"></i>
                   Tambah Batch
                 </button>
 
-                <div class="small text-muted">
+                <div class="small text-slate-500">
                   Dialokasikan:
                   <strong>
                     {{ formatNumber(getItemAllocated(Number(item.id))) }}
@@ -636,29 +636,29 @@ onMounted(loadDetail);
                 </div>
               </div>
 
-              <div v-if="getBatchesForProduct(item.product_id).length === 0" class="alert alert-warning mt-3 mb-0">Tidak ada batch dengan stok tersedia dan belum kedaluwarsa untuk produk ini.</div>
+              <div v-if="getBatchesForProduct(item.product_id).length === 0" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800 mt-3 mb-0">Tidak ada batch dengan stok tersedia dan belum kedaluwarsa untuk produk ini.</div>
             </div>
 
-            <div v-if="orderItems.length === 0" class="text-center text-muted py-4">Tidak ada item pada pesanan ini.</div>
+            <div v-if="orderItems.length === 0" class="text-center text-slate-500 py-4">Tidak ada item pada pesanan ini.</div>
           </template>
         </div>
       </div>
 
       <!-- Footer Actions -->
-      <div class="card">
-        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="p-5 flex flex-wrap justify-between items-center gap-3">
           <div>
-            <div class="text-muted small">Total kuantitas yang dialokasikan</div>
+            <div class="text-slate-500 small">Total kuantitas yang dialokasikan</div>
             <h5 class="mb-0">
               {{ formatNumber(totalAllocated) }}
             </h5>
           </div>
 
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-light" @click="goBack">Kembali</button>
+          <div class="flex gap-2">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="goBack">Kembali</button>
 
-            <button v-if="delivery.status === 'draft'" type="button" class="btn btn-primary" :disabled="posting || !canPost" @click="postDelivery">
-              <span v-if="posting" class="spinner-border spinner-border-sm me-1"></span>
+            <button v-if="delivery.status === 'draft'" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="posting || !canPost" @click="postDelivery">
+              <span v-if="posting" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1"></span>
               <i v-else class="ti ti-check me-1"></i>
               {{ posting ? "Memproses..." : "Posting Pengiriman" }}
             </button>
@@ -667,11 +667,11 @@ onMounted(loadDetail);
       </div>
     </template>
 
-    <div v-else class="card">
-      <div class="card-body text-center py-5">
-        <i class="ti ti-file-off fs-1 text-muted"></i>
+    <div v-else class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5 text-center py-5">
+        <i class="ti ti-file-off fs-1 text-slate-500"></i>
         <h6 class="mt-3">Dokumen pengiriman tidak ditemukan</h6>
-        <button type="button" class="btn btn-light mt-2" @click="goBack">Kembali</button>
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200 mt-2" @click="goBack">Kembali</button>
       </div>
     </div>
   </div>
