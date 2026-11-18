@@ -157,40 +157,40 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
       <div>
         <h4 class="mb-1">Pembayaran Supplier</h4>
-        <p class="text-muted mb-0">Pencatatan pembayaran utang kepada supplier.</p>
+        <p class="text-slate-500 mb-0">Pencatatan pembayaran utang kepada supplier.</p>
       </div>
 
-      <div class="d-flex gap-2">
-        <button type="button" class="btn btn-light" :disabled="loading" @click="loadPayments">
+      <div class="flex gap-2">
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="loading" @click="loadPayments">
           <i class="ti ti-refresh me-1"></i>
           Refresh
         </button>
 
-        <button type="button" class="btn btn-primary" :disabled="supplierLoading || saving" @click="openCreateModal">
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="supplierLoading || saving" @click="openCreateModal">
           <i class="ti ti-plus me-1"></i>
           Pembayaran Baru
         </button>
       </div>
     </div>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <div class="card mb-0">
-          <div class="card-body">
-            <div class="text-muted small mb-1">Jumlah Transaksi</div>
+    <div class="grid grid-cols-12 g-3 mb-4">
+      <div class="col-span-12 md:col-span-6">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-0">
+          <div class="p-5">
+            <div class="text-slate-500 small mb-1">Jumlah Transaksi</div>
             <h4 class="mb-0">{{ payments.length }}</h4>
           </div>
         </div>
       </div>
 
-      <div class="col-md-6">
-        <div class="card mb-0">
-          <div class="card-body">
-            <div class="text-muted small mb-1">Total Pembayaran</div>
+      <div class="col-span-12 md:col-span-6">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-0">
+          <div class="p-5">
+            <div class="text-slate-500 small mb-1">Total Pembayaran</div>
             <h4 class="mb-0">
               {{ formatCurrency(totalPayment) }}
             </h4>
@@ -199,14 +199,14 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="card">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div class="card-header">
         <h5 class="mb-0">Riwayat Pembayaran Supplier</h5>
       </div>
 
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
+      <div class="p-5 p-0">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0">
             <thead class="table-light">
               <tr>
                 <th>Nomor Pembayaran</th>
@@ -214,7 +214,7 @@ onMounted(async () => {
                 <th>Supplier</th>
                 <th>Purchase Order</th>
                 <th>Metode</th>
-                <th class="text-end">Nominal</th>
+                <th class="text-right">Nominal</th>
                 <th>Referensi</th>
               </tr>
             </thead>
@@ -225,7 +225,7 @@ onMounted(async () => {
               </tr>
 
               <tr v-else-if="payments.length === 0">
-                <td colspan="7" class="text-center text-muted py-4">Belum ada pembayaran supplier.</td>
+                <td colspan="7" class="text-center text-slate-500 py-4">Belum ada pembayaran supplier.</td>
               </tr>
 
               <tr v-for="item in payments" :key="item.id">
@@ -242,12 +242,12 @@ onMounted(async () => {
                 </td>
 
                 <td>
-                  <span class="badge bg-light text-dark">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 text-dark">
                     {{ item.payment_method }}
                   </span>
                 </td>
 
-                <td class="text-end">
+                <td class="text-right">
                   <strong>
                     {{ formatCurrency(item.amount) }}
                   </strong>
