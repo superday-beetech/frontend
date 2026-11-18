@@ -45,21 +45,21 @@ const panelClass = computed(() => [
 <template>
   <Teleport to="body">
     <div
-      v-if="open"
+      v-if="props.open"
       class="fixed inset-0 flex overflow-y-auto bg-slate-950/50 p-4 backdrop-blur-[1px]"
       :style="{ zIndex: 10000 }"
-      :class="centered ? 'items-center' : 'items-start'"
+      :class="props.centered ? 'items-center' : 'items-start'"
       @click.self="emit('close')"
     >
       <section
         role="dialog"
         aria-modal="true"
-        :aria-label="title"
+        :aria-label="props.title"
         class="mx-auto flex w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
         :class="panelClass"
       >
         <header class="flex shrink-0 items-center justify-between gap-4 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-          <h2 class="text-base font-semibold text-slate-900 dark:text-white">{{ title }}</h2>
+          <h2 class="text-base font-semibold text-slate-900 dark:text-white">{{ props.title }}</h2>
           <button
             type="button"
             aria-label="Tutup"
@@ -70,7 +70,7 @@ const panelClass = computed(() => [
           </button>
         </header>
 
-        <div class="min-h-0 flex-1" :class="scrollable ? 'overflow-y-auto smooth-scroll' : 'overflow-visible'">
+        <div class="min-h-0 flex-1" :class="props.scrollable ? 'overflow-y-auto smooth-scroll' : 'overflow-visible'">
           <div class="p-5">
             <slot />
           </div>
