@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
 import financeService from "../services/financeService";
+
+const toast = useToast();
 
 interface FinanceRow {
   id: number;
@@ -169,11 +171,11 @@ async function loadDashboard(): Promise<void> {
     }
 
     if (errors.length > 0) {
-      notify.warning(`Sebagian data Finance gagal dimuat: ${errors.join(", ")}.`);
+      toast.warning(`Sebagian data Finance gagal dimuat: ${errors.join(", ")}.`);
     }
   } catch (error) {
     console.error("Gagal memuat Finance Dashboard:", error);
-    notify.error("Gagal memuat ringkasan Finance.");
+    toast.error("Gagal memuat ringkasan Finance.");
   } finally {
     loading.value = false;
   }
