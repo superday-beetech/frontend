@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 
 import { useToast } from "@/shared/composables/useToast";
+import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
 
 import unitService, { type Unit, type UnitPagination } from "../services/unitService";
@@ -10,6 +11,7 @@ import UnitFormModal from "../components/UnitFormModal.vue";
 import UnitDetailModal from "../components/UnitDetailModal.vue";
 
 const toast = useToast();
+const { confirm } = useConfirm();
 
 const modalStore = useModal();
 
@@ -121,7 +123,12 @@ async function openDetail(unit: Unit): Promise<void> {
 }
 
 async function deleteUnit(unit: Unit): Promise<void> {
-  const confirmed = window.confirm(`Hapus satuan "${unit.name}" (${unit.abbreviation})?`);
+  const confirmed = await confirm({
+    title: "Konfirmasi Hapus",
+    message: `Hapus satuan "${unit.name}" (${unit.abbreviation})?`,
+    confirmText: "Ya, Hapus",
+    variant: "danger",
+  });
 
   if (!confirmed) return;
 
