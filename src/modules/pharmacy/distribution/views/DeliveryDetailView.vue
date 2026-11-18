@@ -2,13 +2,15 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import api from "@/api/client";
-import { notify } from "@/utils/notification";
+import api from "@/core/api/client";
+import { useToast } from "@/shared/composables/useToast";
 
 import distributionService from "../services/distributionService";
 import deliveryService from "../services/deliveryService";
 
 import type { Delivery, DeliveryAllocationPayload, DeliveryItem, DistributionOrderDetail } from "../types/distribution";
+
+const toast = useToast();
 
 interface DeliveryWithItems extends Delivery {
   items: DeliveryItem[];
@@ -271,13 +273,13 @@ async function loadBatches() {
       product_name: item.product_name ?? "",
     }));
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat daftar batch.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat daftar batch.");
   }
 }
 
 async function loadDetail() {
   if (!Number.isInteger(deliveryId.value) || deliveryId.value <= 0 || !Number.isInteger(orderId.value) || orderId.value <= 0) {
-    notify.error("ID pengiriman atau pesanan tidak valid.");
+    toast.error("ID pengiriman atau pesanan tidak valid.");
     goBack();
     return;
   }
@@ -313,7 +315,7 @@ async function loadDetail() {
 
     await loadBatches();
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat detail pengiriman.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat detail pengiriman.");
   } finally {
     loading.value = false;
   }
@@ -347,24 +349,24 @@ function validateAllocations(): boolean {
       if (!row.batch_id && !row.quantity) continue;
 
       if (!row.batch_id || !row.quantity || Number(row.quantity) <= 0) {
-        notify.warning("Pilih batch dan isi kuantitas pada setiap alokasi.");
+        toast.warning("Pilih batch dan isi kuantitas pada setiap alokasi.");
         return false;
       }
 
       const batch = getBatch(row.batch_id);
 
       if (!batch) {
-        notify.warning("Batch yang dipilih tidak ditemukan.");
+        toast.warning("Batch yang dipilih tidak ditemukan.");
         return false;
       }
 
       if (Number(batch.product_id) !== Number(item.product_id)) {
-        notify.warning("Batch tidak sesuai dengan produk pesanan.");
+        toast.warning("Batch tidak sesuai dengan produk pesanan.");
         return false;
       }
 
       if (Number(row.quantity) > getBatchRemaining(batch, row)) {
-        notify.warning(`Kuantitas melebihi stok tersedia pada batch ${batch.batch_number}.`);
+        toast.warning(`Kuantitas melebihi stok tersedia pada batch ${batch.batch_number}.`);
         return false;
       }
 
@@ -372,7 +374,7 @@ function validateAllocations(): boolean {
     }
 
     if (itemTotal > getDispatchableQuantity(item)) {
-      notify.warning(`Total alokasi melebihi kuantitas pesanan untuk ${item.product_name || `produk #${item.product_id}`}.`);
+      toast.warning(`Total alokasi melebihi kuantitas pesanan untuk ${item.product_name || `produk #${item.product_id}`}.`);
       return false;
     }
   }
@@ -388,7 +390,7 @@ async function postDelivery() {
   const payload = buildAllocationPayload();
 
   if (Object.keys(payload).length === 0) {
-    notify.warning("Belum ada alokasi batch untuk dikirim.");
+    toast.warning("Belum ada alokasi batch untuk dikirim.");
     return;
   }
 
@@ -401,7 +403,7 @@ async function postDelivery() {
   try {
     await deliveryService.postDelivery(deliveryId.value, payload);
 
-    notify.success("Pengiriman berhasil diposting.");
+    toast.success("Pengiriman berhasil diposting.");
 
     router.push({
       path: "/pharmacy/distribution/distribution-order-detail",
@@ -410,7 +412,7 @@ async function postDelivery() {
       },
     });
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memposting pengiriman.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memposting pengiriman.");
   } finally {
     posting.value = false;
   }
