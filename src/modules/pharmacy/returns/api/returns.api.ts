@@ -18,6 +18,14 @@ export const returnsService = {
     return api.post(`/pharmacy/returns-api/post-purchase/${id}`);
   },
 
+  async listSales() {
+    return api.get('/pharmacy/returns-api/list-sales')
+  },
+
+  async showSales(id: number) {
+    return api.get(`/pharmacy/returns-api/show-sales/${id}`)
+  },
+
   async createSales(payload: CreateSalesReturnPayload) {
     return api.post("/pharmacy/returns-api/create-sales", payload);
   },
