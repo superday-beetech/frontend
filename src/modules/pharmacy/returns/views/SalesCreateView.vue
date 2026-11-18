@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { http as api } from "@/core/api/client";
+import deliveryService from "@/modules/pharmacy/distribution/api/delivery.api";
+import returnsService from "../api/returns.api";
 
 interface Delivery {
   id: number;
@@ -63,10 +64,6 @@ const totalAmount = computed(() => items.value.reduce((total, item) => total + N
 
 const totalRestockable = computed(() => items.value.reduce((total, item) => total + (item.restockable ? Number(item.quantity || 0) : 0), 0));
 
-function getResponseData(response: any): any {
-  return response?.data?.data;
-}
-
 function generateReturnNumber(): string {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
 
@@ -88,18 +85,12 @@ async function loadDeliveries() {
   errorMessage.value = "";
 
   try {
-    const response = await api.get("/pharmacy/delivery-api", {
-      params: {
-        page: 1,
-        per_page: 100,
-      },
+    const data = await deliveryService.getDeliveries({
+      page: 1,
+      per_page: 100,
     });
 
-    const data = getResponseData(response);
-
-    const rows = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [];
-
-    deliveries.value = rows.filter((delivery: Delivery) => delivery.status === "posted");
+    deliveries.value = data.items.filter((delivery) => delivery.status === "posted");
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || "Gagal mengambil daftar pengiriman.";
   } finally {
@@ -119,9 +110,7 @@ async function loadDeliveryDetail() {
   loadingDetail.value = true;
 
   try {
-    const response = await api.get(`/pharmacy/delivery-api/show/${selectedDeliveryId.value}`);
-
-    const data = getResponseData(response);
+    const data = await deliveryService.getDeliveryDetail(Number(selectedDeliveryId.value));
 
     const delivery = data?.delivery;
 
@@ -200,7 +189,7 @@ async function submitReturn() {
       })),
     };
 
-    const response = await api.post("/pharmacy/returns-api/create-sales", payload);
+    const response = await returnsService.createSales(payload);
 
     const data = getResponseData(response);
 
