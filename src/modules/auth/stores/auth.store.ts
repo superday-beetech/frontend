@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getErrorStatus } from '@/core/api/errors'
 import { authApi } from '../api/auth.api'
+import { useOrganizationStore } from './organization.store'
 import { can, filterMenus } from '../utils/permissions'
 import type { AuthUser, DynamicMenu, LoginPayload } from '../types'
 
@@ -40,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     permissions.value = context.permissions
     isSuperadmin.value = context.is_superadmin
+    menus.value = context.menus ?? []
   }
 
   /**
@@ -79,6 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
     isSuperadmin.value = false
     menus.value = []
     isRoutesLoaded.value = false
+    useOrganizationStore().reset()
   }
 
   async function logout() {
