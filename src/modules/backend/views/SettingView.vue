@@ -377,17 +377,54 @@ onMounted(() => {
                   </label>
                 </div>
 
-                <div v-else-if="fieldFor(row).input === 'checkbox-group'" class="flex flex-wrap gap-2">
-                  <div
-                    v-for="option in fieldFor(row).options ?? []"
-                    :key="String(option.value)"
-                    class="rounded-xl border border-slate-200 px-3 py-2 transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:border-slate-700 dark:hover:border-primary-500/40 dark:hover:bg-primary-500/5"
-                  >
-                    <BaseCheckbox
-                      :model-value="checkboxGroupValues(row).includes(String(option.value))"
-                      :label="option.label"
-                      @update:model-value="toggleCheckboxGroup(row, String(option.value), $event)"
-                    />
+                <div v-else-if="fieldFor(row).input === 'checkbox-group'" class="space-y-2.5">
+                  <p class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+                    {{ fieldFor(row).label ?? 'Pilih opsi' }}
+                  </p>
+
+                  <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    <label
+                      v-for="option in fieldFor(row).options ?? []"
+                      :key="String(option.value)"
+                      class="group relative flex cursor-pointer items-center gap-2.5 rounded-xl border p-3 transition-all duration-200"
+                      :class="checkboxGroupValues(row).includes(String(option.value))
+                        ? 'border-primary-500 bg-primary-50/70 shadow-sm shadow-primary-500/5 dark:border-primary-500/70 dark:bg-primary-500/10'
+                        : 'border-slate-200 bg-white hover:border-primary-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-primary-500/50 dark:hover:bg-slate-800'"
+                    >
+                      <input
+                        type="checkbox"
+                        class="peer sr-only"
+                        :checked="checkboxGroupValues(row).includes(String(option.value))"
+                        @change="toggleCheckboxGroup(row, String(option.value), ($event.target as HTMLInputElement).checked)"
+                      />
+
+                      <span
+                        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500/30 peer-focus-visible:ring-offset-2"
+                        :class="checkboxGroupValues(row).includes(String(option.value))
+                          ? 'border-primary-600 bg-primary-600 text-white'
+                          : 'border-slate-300 bg-white text-transparent group-hover:border-primary-400 dark:border-slate-600 dark:bg-slate-900'"
+                      >
+                        <Check
+                          class="h-3.5 w-3.5 transition-transform duration-200"
+                          :class="checkboxGroupValues(row).includes(String(option.value)) ? 'scale-100' : 'scale-50'"
+                          :stroke-width="3"
+                        />
+                      </span>
+
+                      <span
+                        class="min-w-0 truncate text-xs font-semibold transition-colors"
+                        :class="checkboxGroupValues(row).includes(String(option.value))
+                          ? 'text-primary-700 dark:text-primary-300'
+                          : 'text-slate-600 dark:text-slate-300'"
+                      >
+                        {{ option.label }}
+                      </span>
+
+                      <span
+                        v-if="checkboxGroupValues(row).includes(String(option.value))"
+                        class="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary-500"
+                      />
+                    </label>
                   </div>
                 </div>
 
