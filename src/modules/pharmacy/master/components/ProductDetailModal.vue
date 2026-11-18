@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 
-import productService, { type Product, type ProductDetail } from "../services/productService";
+import product.api, { type Product, type ProductDetail } from "../api/product.api";
 
 import { useMasterOptions } from "../composables/useMasterOptions";
 
@@ -90,7 +90,7 @@ async function loadDetail(): Promise<void> {
   detailError.value = "";
 
   try {
-    const res = await productService.getDetail(props.product.id);
+    const res = await product.api.getDetail(props.product.id);
 
     if (res.error || !res.data) {
       detail.value = null;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Unit } from "../services/unitService";
+import type { Unit } from "../api/unit.api";
 
 defineProps<{
   unit: Unit;

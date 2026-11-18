@@ -2,7 +2,7 @@
 import { ref, watch } from "vue";
 import { useToast } from "@/shared/composables/useToast";
 
-import unitService, { type Unit, type UnitPayload } from "../services/unitService";
+import unit.api, { type Unit, type UnitPayload } from "../api/unit.api";
 
 const toast = useToast();
 
@@ -82,7 +82,7 @@ async function save(): Promise<void> {
   };
 
   try {
-    const response = props.unit ? await unitService.update(props.unit.id, payload) : await unitService.create(payload);
+    const response = props.unit ? await unit.api.update(props.unit.id, payload) : await unit.api.create(payload);
 
     const result = response.data;
 
