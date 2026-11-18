@@ -131,41 +131,41 @@ onMounted(loadReturns);
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
       <div>
         <h4 class="mb-1">Sales Return</h4>
-        <p class="text-muted mb-0">Pengelolaan retur barang dari pelanggan.</p>
+        <p class="text-slate-500 mb-0">Pengelolaan retur barang dari pelanggan.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="createReturn">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="createReturn">
         <i class="ti ti-plus me-1"></i>
         Buat Sales Return
       </button>
     </div>
 
-    <div class="row g-4">
+    <div class="grid grid-cols-12 g-4">
       <div :class="selected ? 'col-xl-7' : 'col-12'">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="card-header flex justify-between items-center">
             <h5 class="mb-0">Daftar Retur Penjualan</h5>
 
-            <button class="btn btn-sm btn-light" type="button" @click="loadReturns" :disabled="loading">
+            <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" type="button" @click="loadReturns" :disabled="loading">
               <i class="ti ti-refresh me-1"></i>
               Refresh
             </button>
           </div>
 
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-hover align-middle mb-0">
+          <div class="p-5 p-0">
+            <div class="w-full overflow-x-auto">
+              <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0">
                 <thead class="table-light">
                   <tr>
                     <th>No. Retur</th>
                     <th>Tanggal</th>
                     <th>Delivery ID</th>
-                    <th class="text-end">Item</th>
-                    <th class="text-end">Total</th>
+                    <th class="text-right">Item</th>
+                    <th class="text-right">Total</th>
                     <th>Status</th>
                     <th></th>
                   </tr>
@@ -177,7 +177,7 @@ onMounted(loadReturns);
                   </tr>
 
                   <tr v-else-if="returns.length === 0">
-                    <td colspan="7" class="text-center py-4 text-muted">Belum ada data sales return.</td>
+                    <td colspan="7" class="text-center py-4 text-slate-500">Belum ada data sales return.</td>
                   </tr>
 
                   <tr v-for="item in returns" :key="item.id">
@@ -189,22 +189,22 @@ onMounted(loadReturns);
 
                     <td>{{ item.delivery_id }}</td>
 
-                    <td class="text-end">
+                    <td class="text-right">
                       {{ item.total_items }}
                     </td>
 
-                    <td class="text-end">
+                    <td class="text-right">
                       {{ formatCurrency(item.total_amount) }}
                     </td>
 
                     <td>
-                      <span class="badge" :class="item.status === 'posted' ? 'bg-success' : item.status === 'draft' ? 'bg-warning text-dark' : 'bg-secondary'">
+                      <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="item.status === 'posted' ? 'bg-success' : item.status === 'draft' ? 'bg-warning text-dark' : 'bg-secondary'">
                         {{ statusLabel(item.status) }}
                       </span>
                     </td>
 
-                    <td class="text-end">
-                      <button class="btn btn-sm btn-outline-primary" type="button" @click="showDetail(item.id)">Detail</button>
+                    <td class="text-right">
+                      <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-primary-600 text-primary-700 hover:bg-primary-50" type="button" @click="showDetail(item.id)">Detail</button>
                     </td>
                   </tr>
                 </tbody>
@@ -215,42 +215,42 @@ onMounted(loadReturns);
       </div>
 
       <div v-if="selected || detailLoading" class="col-xl-5">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="card-header flex justify-between items-center">
             <h5 class="mb-0">Detail Sales Return</h5>
 
             <button class="btn-close" type="button" aria-label="Tutup detail" @click="selected = null"></button>
           </div>
 
-          <div class="card-body">
+          <div class="p-5">
             <div v-if="detailLoading" class="text-center py-4">Memuat detail...</div>
 
             <template v-else-if="selected">
               <div class="mb-3">
-                <div class="text-muted small">Nomor Retur</div>
+                <div class="text-slate-500 small">Nomor Retur</div>
                 <strong>{{ selected.return.return_number }}</strong>
               </div>
 
-              <div class="row g-3 mb-3">
+              <div class="grid grid-cols-12 g-3 mb-3">
                 <div class="col-6">
-                  <div class="text-muted small">Tanggal</div>
+                  <div class="text-slate-500 small">Tanggal</div>
                   <strong>
                     {{ formatDate(selected.return.return_date) }}
                   </strong>
                 </div>
 
                 <div class="col-6">
-                  <div class="text-muted small">Delivery ID</div>
+                  <div class="text-slate-500 small">Delivery ID</div>
                   <strong>{{ selected.return.delivery_id }}</strong>
                 </div>
 
                 <div class="col-6">
-                  <div class="text-muted small">Customer ID</div>
+                  <div class="text-slate-500 small">Customer ID</div>
                   <strong>{{ selected.return.customer_id }}</strong>
                 </div>
 
                 <div class="col-6">
-                  <div class="text-muted small">Status</div>
+                  <div class="text-slate-500 small">Status</div>
                   <strong>
                     {{ statusLabel(selected.return.status) }}
                   </strong>
@@ -258,7 +258,7 @@ onMounted(loadReturns);
               </div>
 
               <div class="mb-3">
-                <div class="text-muted small">Alasan Retur</div>
+                <div class="text-slate-500 small">Alasan Retur</div>
                 <div>{{ selected.return.reason || "-" }}</div>
               </div>
 
@@ -267,54 +267,54 @@ onMounted(loadReturns);
               <h6 class="mb-3">Item Retur</h6>
 
               <div v-for="item in selected.items" :key="item.id" class="border rounded p-3 mb-2">
-                <div class="d-flex justify-content-between">
+                <div class="flex justify-between">
                   <strong> Delivery Item #{{ item.delivery_item_id }} </strong>
 
-                  <span class="badge" :class="item.restockable ? 'bg-success' : 'bg-secondary'">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="item.restockable ? 'bg-success' : 'bg-secondary'">
                     {{ item.restockable ? "Dapat Restock" : "Tidak Restock" }}
                   </span>
                 </div>
 
-                <div class="small text-muted mt-2">Batch ID: {{ item.batch_id }}</div>
+                <div class="small text-slate-500 mt-2">Batch ID: {{ item.batch_id }}</div>
 
-                <div class="d-flex justify-content-between mt-2">
+                <div class="flex justify-between mt-2">
                   <span>Jumlah</span>
                   <strong>{{ item.quantity }}</strong>
                 </div>
 
-                <div class="d-flex justify-content-between">
+                <div class="flex justify-between">
                   <span>Harga Satuan</span>
                   <span>{{ formatCurrency(item.unit_price) }}</span>
                 </div>
 
-                <div class="d-flex justify-content-between">
+                <div class="flex justify-between">
                   <span>Subtotal</span>
                   <strong>{{ formatCurrency(item.subtotal) }}</strong>
                 </div>
 
-                <div v-if="item.condition_notes" class="small text-muted mt-2">Kondisi: {{ item.condition_notes }}</div>
+                <div v-if="item.condition_notes" class="small text-slate-500 mt-2">Kondisi: {{ item.condition_notes }}</div>
               </div>
 
               <hr />
 
-              <div class="d-flex justify-content-between mb-2">
+              <div class="flex justify-between mb-2">
                 <span>Total Item</span>
                 <strong>{{ selected.items.length }}</strong>
               </div>
 
-              <div class="d-flex justify-content-between mb-3">
+              <div class="flex justify-between mb-3">
                 <span>Total Retur</span>
                 <strong>
                   {{ formatCurrency(selected.return.total_amount) }}
                 </strong>
               </div>
 
-              <button v-if="selected.return.status === 'draft'" type="button" class="btn btn-success w-100" :disabled="postingId === selected.return.id" @click="postReturn(selected.return.id)">
+              <button v-if="selected.return.status === 'draft'" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 btn-success w-full" :disabled="postingId === selected.return.id" @click="postReturn(selected.return.id)">
                 <i class="ti ti-check me-1"></i>
                 {{ postingId === selected.return.id ? "Memproses..." : "Posting Sales Return" }}
               </button>
 
-              <div v-else class="alert alert-success mb-0">Sales return sudah diposting.</div>
+              <div v-else class="rounded-lg border px-4 py-3 text-sm border-emerald-200 bg-emerald-50 text-emerald-800 mb-0">Sales return sudah diposting.</div>
             </template>
           </div>
         </div>
