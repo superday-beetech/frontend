@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '../modules/pharmacy/styles.css';
+@import './pharmacy-compat.css';
 
 /* Definisikan variant dark untuk Tailwind v4 */
 @custom-variant dark (&:where(.dark, .dark *));
