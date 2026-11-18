@@ -330,63 +330,63 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+  <div class="w-full">
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
       <div>
         <h4 class="mb-1">Purchase Order</h4>
-        <p class="text-muted mb-0">Pengelolaan pesanan pembelian kepada supplier.</p>
+        <p class="text-slate-500 mb-0">Pengelolaan pesanan pembelian kepada supplier.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" :disabled="loading" @click="openCreateModal">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="loading" @click="openCreateModal">
         <i class="ti ti-plus me-1"></i>
         Buat Purchase Order
       </button>
     </div>
 
     <!-- Filters -->
-    <div class="card">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-lg-4">
-            <label class="form-label">Pencarian</label>
-            <input v-model="filters.search" type="text" class="form-control" placeholder="Nomor PO atau nama supplier" @keyup.enter="searchOrders" />
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
+        <div class="grid grid-cols-12 g-3 items-end">
+          <div class="col-span-12 lg:col-span-4">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Pencarian</label>
+            <input v-model="filters.search" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nomor PO atau nama supplier" @keyup.enter="searchOrders" />
           </div>
 
-          <div class="col-lg-3">
-            <label class="form-label">Supplier</label>
+          <div class="col-span-12 lg:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Supplier</label>
 
             <OptionSelect v-model="filters.supplier_id" :options="supplierFilterOptions" placeholder="Semua Supplier" search-placeholder="Cari supplier..." empty-text="Supplier tidak ditemukan" />
           </div>
 
-          <div class="col-lg-3">
-            <label class="form-label">Status</label>
+          <div class="col-span-12 lg:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
 
             <OptionSelect v-model="filters.status" :options="statusFilterOptions" placeholder="Semua Status" search-placeholder="Cari status..." empty-text="Status tidak ditemukan" />
           </div>
 
-          <div class="col-lg-2 d-flex gap-2">
-            <button type="button" class="btn btn-primary flex-fill" @click="searchOrders">
+          <div class="col-lg-2 flex gap-2">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700 flex-1" @click="searchOrders">
               <i class="ti ti-search me-1"></i>
               Cari
             </button>
 
-            <button type="button" class="btn btn-light" @click="resetFilters">Reset</button>
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" @click="resetFilters">Reset</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Table -->
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0">Daftar Purchase Order</h5>
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
+        <div class="flex justify-between items-center mb-3">
+          <h5 class="text-base font-semibold mb-0">Daftar Purchase Order</h5>
 
-          <span class="text-muted small"> Total {{ pagination.total }} data </span>
+          <span class="text-slate-500 small"> Total {{ pagination.total }} data </span>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
             <thead>
               <tr>
                 <th>Nomor PO</th>
@@ -394,7 +394,7 @@ onMounted(async () => {
                 <th>Tanggal Order</th>
                 <th>Estimasi</th>
                 <th>Status</th>
-                <th class="text-end">Total</th>
+                <th class="text-right">Total</th>
                 <th class="text-center">Aksi</th>
               </tr>
             </thead>
@@ -402,18 +402,18 @@ onMounted(async () => {
             <tbody>
               <tr v-if="loading">
                 <td colspan="7" class="text-center py-5">
-                  <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                  <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm text-primary-600 me-2"></div>
                   Memuat data...
                 </td>
               </tr>
 
               <tr v-else-if="orders.length === 0">
-                <td colspan="7" class="text-center text-muted py-5">Belum ada Purchase Order.</td>
+                <td colspan="7" class="text-center text-slate-500 py-5">Belum ada Purchase Order.</td>
               </tr>
 
               <tr v-for="order in orders" :key="order.id">
                 <td>
-                  <span class="fw-semibold">
+                  <span class="font-semibold">
                     {{ order.order_number }}
                   </span>
                 </td>
@@ -425,26 +425,26 @@ onMounted(async () => {
                 <td>{{ formatDate(order.expected_date) }}</td>
 
                 <td>
-                  <span class="badge" :class="statusClass(order.status)">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="statusClass(order.status)">
                     {{ order.status }}
                   </span>
                 </td>
 
-                <td class="text-end fw-semibold">
+                <td class="text-right font-semibold">
                   {{ formatCurrency(order.total_amount) }}
                 </td>
 
                 <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-sm btn-light-primary" title="Detail" @click="openDetail(order)">
+                  <div class="flex justify-center gap-1">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-primary-50 text-primary-700" title="Detail" @click="openDetail(order)">
                       <i class="ti ti-eye"></i>
                     </button>
 
-                    <button v-if="order.status === 'draft'" type="button" class="btn btn-sm btn-light-warning" title="Edit" @click="openEditModal(order)">
+                    <button v-if="order.status === 'draft'" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-amber-50 text-amber-700" title="Edit" @click="openEditModal(order)">
                       <i class="ti ti-edit"></i>
                     </button>
 
-                    <button v-if="order.status === 'draft'" type="button" class="btn btn-sm btn-light-danger" title="Hapus" @click="deleteOrder(order)">
+                    <button v-if="order.status === 'draft'" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-rose-50 text-rose-700" title="Hapus" @click="deleteOrder(order)">
                       <i class="ti ti-trash"></i>
                     </button>
                   </div>
@@ -455,31 +455,31 @@ onMounted(async () => {
         </div>
 
         <!-- Pagination -->
-        <div v-if="pagination.total > 0" class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
-          <div class="d-flex align-items-center gap-2">
-            <span class="text-muted small">Tampilkan</span>
+        <div v-if="pagination.total > 0" class="flex flex-wrap justify-between items-center gap-3 mt-3">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 small">Tampilkan</span>
 
-            <select v-model.number="pagination.per_page" class="form-select form-select-sm" style="width: 80px" @change="loadOrders(1)">
+            <select v-model.number="pagination.per_page" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-select-sm" style="width: 80px" @change="loadOrders(1)">
               <option :value="10">10</option>
               <option :value="25">25</option>
               <option :value="50">50</option>
               <option :value="100">100</option>
             </select>
 
-            <span class="text-muted small">data</span>
+            <span class="text-slate-500 small">data</span>
           </div>
 
-          <div class="d-flex align-items-center gap-2">
-            <span class="text-muted small">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500 small">
               Halaman {{ pagination.page }} dari
               {{ pagination.total_pages }}
             </span>
 
-            <button type="button" class="btn btn-sm btn-light" :disabled="!pagination.has_prev || loading" @click="loadOrders(pagination.page - 1)">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="!pagination.has_prev || loading" @click="loadOrders(pagination.page - 1)">
               <i class="ti ti-chevron-left"></i>
             </button>
 
-            <button type="button" class="btn btn-sm btn-light" :disabled="!pagination.has_next || loading" @click="loadOrders(pagination.page + 1)">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="!pagination.has_next || loading" @click="loadOrders(pagination.page + 1)">
               <i class="ti ti-chevron-right"></i>
             </button>
           </div>
