@@ -35,13 +35,8 @@ interface UsePosMenusOptions {
   isProcessing: () => boolean;
 }
 
-function flattenMenu(items: MenuItem[]): MenuItem[] {
-  return items.flatMap((item) => {
-    if (item.children?.length) return flattenMenu(item.children);
-    if (!item.url || item.url === "#" || item.is_divider || !item.is_active) return [];
-
-    return [item];
-  });
+function flattenMenu(items: DynamicMenu[]): DynamicMenu[] {
+  return items.flatMap((item) => item.children?.length ? flattenMenu(item.children) : [item])
 }
 
 /** Menu bar dan item dock. Murni presentasi: id aksi dieksekusi oleh usePosMenuActions. */
@@ -80,15 +75,15 @@ export function usePosMenus(options: UsePosMenusOptions) {
     {
       id: "pages",
       label: "Halaman",
-      items: pageMenuItems.value.length ? pageMenuItems.value : ([{ label: menuStore.loading ? "Memuat…" : "Tidak ada halaman", disabled: true }] as MenuEntry[]),
+      items: pageMenuItems.value.length ? pageMenuItems.value : ([{ label: "Tidak ada halaman", disabled: true }] as MenuEntry[]),
     },
     {
       id: "settings",
       label: "Pengaturan",
       items: [
         { id: "settings-printer", label: "Printer & struk" },
-        { id: "settings-pos", label: "Pengaturan POS", disabled: !can(POS_PERMISSIONS.settings) },
-        { id: "settings-payment", label: "Integrasi pembayaran", disabled: !can(POS_PERMISSIONS.paymentIntegration) },
+        { id: "settings-pos", label: "Pengaturan POS" },
+        { id: "settings-payment", label: "Integrasi pembayaran" },
       ] as MenuEntry[],
     },
     {
