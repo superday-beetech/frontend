@@ -6,7 +6,7 @@ import { useToast } from "@/shared/composables/useToast";
 import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
 
-import purchase-order.api from "../api/purchase-order.api";
+import purchaseOrderService from "../api/purchase-order.api";
 
 import PurchaseOrderFormModal from "../components/PurchaseOrderFormModal.vue";
 import PurchaseOrderDetailModal from "../components/PurchaseOrderDetailModal.vue";
