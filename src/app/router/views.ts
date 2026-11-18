@@ -7,9 +7,9 @@ export const loadNotFound = () => import('@/app/views/NotFoundView.vue')
 
 export function resolveView(componentKey: string) {
   const normalized = componentKey
-    .replace(/^\\/+/, '')
-    .replace(/\\.vue$/, '')
-    .replace(/\\/views\\//g, '/')
+    .replace(/^\/+/, '')
+    .replace(/\.vue$/, '')
+    .replace(/\/views\//g, '/')
   const segments = normalized.split('/').filter(Boolean)
   if (segments.length < 2) return loadNotFound
 
@@ -17,8 +17,8 @@ export function resolveView(componentKey: string) {
   const viewName = segments[segments.length - 1]
   const subModule = segments.slice(1, -1)
   const viewPath = subModule.length
-    ? `../../modules/${moduleName}/${subModule.join('/')}/views/${viewName}.vue`
-    : `../../modules/${moduleName}/views/${viewName}.vue`
+    ? \`../../modules/\${moduleName}/\${subModule.join('/')}/views/\${viewName}.vue\`
+    : \`../../modules/\${moduleName}/views/\${viewName}.vue\`
 
   return viewModules[viewPath] ?? loadNotFound
 }
