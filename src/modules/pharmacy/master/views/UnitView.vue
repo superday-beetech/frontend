@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 
-import { notify } from "@/utils/notification";
-import { useModalStore } from "@/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
+import { useModal } from "@/shared/composables/useModal";
 
 import unitService, { type Unit, type UnitPagination } from "../services/unitService";
 
 import UnitFormModal from "../components/UnitFormModal.vue";
 import UnitDetailModal from "../components/UnitDetailModal.vue";
 
-const modalStore = useModalStore();
+const toast = useToast();
+
+const modalStore = useModal();
 
 const units = ref<Unit[]>([]);
 const loading = ref(false);
@@ -56,7 +58,7 @@ async function loadUnits(page = currentPage.value): Promise<void> {
     pagination.value = result.data.pagination;
     currentPage.value = result.data.pagination.current_page;
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   } finally {
     loading.value = false;
   }
@@ -114,7 +116,7 @@ async function openDetail(unit: Unit): Promise<void> {
       },
     });
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   }
 }
 
@@ -131,13 +133,13 @@ async function deleteUnit(unit: Unit): Promise<void> {
       throw new Error(typeof result.message === "string" ? result.message : "Gagal menghapus satuan.");
     }
 
-    notify.success("Satuan berhasil dihapus.");
+    toast.success("Satuan berhasil dihapus.");
 
     const nextPage = units.value.length === 1 && currentPage.value > 1 ? currentPage.value - 1 : currentPage.value;
 
     await loadUnits(nextPage);
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   }
 }
 
