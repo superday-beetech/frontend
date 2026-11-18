@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import api from "@/api/client";
-import { useModalStore } from "@/composables/useModal";
-import { notify } from "@/utils/notification";
+import api from "@/core/api/client";
+import { useModal } from "@/shared/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
 
 import financeService from "../services/financeService";
 import type { SupplierPaymentPayload } from "../types/finance";
 
 import SupplierPaymentFormModal from "./SupplierPaymentFormModal.vue";
+
+const toast = useToast();
 
 interface Supplier {
   id: number;
@@ -27,7 +29,7 @@ interface SupplierPayment {
   created_at?: string;
 }
 
-const modalStore = useModalStore();
+const modalStore = useModal();
 
 const payments = ref<SupplierPayment[]>([]);
 const suppliers = ref<Supplier[]>([]);
@@ -78,7 +80,7 @@ const loadPayments = async () => {
 
     payments.value = Array.isArray(result) ? result : [];
   } catch (error: any) {
-    notify.error(error.response?.data?.message ?? "Gagal memuat pembayaran supplier.", "error");
+    toast.error(error.response?.data?.message ?? "Gagal memuat pembayaran supplier.", "error");
   } finally {
     loading.value = false;
   }
@@ -93,7 +95,7 @@ const loadSuppliers = async () => {
 
     suppliers.value = Array.isArray(result?.items) ? result.items : Array.isArray(result) ? result : [];
   } catch (error: any) {
-    notify.error(error.response?.data?.message ?? "Gagal memuat daftar supplier.", "error");
+    toast.error(error.response?.data?.message ?? "Gagal memuat daftar supplier.", "error");
   } finally {
     supplierLoading.value = false;
   }
@@ -105,11 +107,11 @@ const savePayment = async (payload: SupplierPaymentPayload) => {
   try {
     const response = await financeService.createSupplierPayment(payload);
 
-    notify.success(response.data?.message ?? "Pembayaran supplier berhasil dicatat.", "success");
+    toast.success(response.data?.message ?? "Pembayaran supplier berhasil dicatat.", "success");
 
     await loadPayments();
   } catch (error: any) {
-    notify.error(error.response?.data?.message ?? "Gagal mencatat pembayaran supplier.", "error");
+    toast.error(error.response?.data?.message ?? "Gagal mencatat pembayaran supplier.", "error");
   } finally {
     saving.value = false;
   }
@@ -123,7 +125,7 @@ const openCreateModal = async () => {
   }
 
   if (suppliers.value.length === 0) {
-    notify.warning("Daftar supplier kosong. Tambahkan supplier terlebih dahulu.", "warning");
+    toast.warning("Daftar supplier kosong. Tambahkan supplier terlebih dahulu.", "warning");
     return;
   }
 
