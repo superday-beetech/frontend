@@ -2,7 +2,6 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import categoryService, { type Category, type CategoryPayload, type CategoryPagination } from "@/modules/pharmacy/master/services/categoryService";
 import { useToast } from "@/shared/composables/useToast";
-import { env } from "@/core/config/env";
 import { useCategoryTypes } from "../composables/useCategoryTypes";
 import type { CategoryTypeOption } from "../services/categoryTypeService";
 
@@ -12,7 +11,7 @@ const { load: loadCategoryTypes } = useCategoryTypes();
 const typeOptions = ref<CategoryTypeOption[]>([]);
 
 // Halaman ini fokus farmasi
-const FIXED_MODULE = env.isModule;
+const FIXED_MODULE = "pharmacy";
 
 // const TYPE_OPTIONS = ["obat", "alkes", "herbal", "makanan", "minuman", "sembako", "kebersihan", "umum"];
 
