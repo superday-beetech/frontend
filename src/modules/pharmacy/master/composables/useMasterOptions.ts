@@ -1,8 +1,8 @@
 import { computed, ref } from "vue";
 
-import categoryService, { type Category } from "@/modules/pharmacy/master/services/categoryService";
-import unitService, { type Unit } from "@/modules/pharmacy/master/services/unitService";
-import productService from "../services/productService";
+import category.api, { type Category } from "@/modules/pharmacy/master/api/category.api";
+import unit.api, { type Unit } from "@/modules/pharmacy/master/api/unit.api";
+import product.api from "../api/product.api";
 import type { OptionItem } from "@/shared/composables/useOption";
 
 // State module-level → dibagi antar komponen (singleton)
@@ -32,7 +32,7 @@ async function load(force = false): Promise<void> {
   error.value = "";
 
   try {
-    const [catRes, unitRes] = await Promise.all([categoryService.getAll({ page: 1, per_page: 100, module: "pharmacy" }), unitService.getAll({ page: 1, per_page: 100 })]);
+    const [catRes, unitRes] = await Promise.all([category.api.getAll({ page: 1, per_page: 100, module: "pharmacy" }), unit.api.getAll({ page: 1, per_page: 100 })]);
 
     // category: response.data = CategoryListData
     const catData = catRes.data;
@@ -61,7 +61,7 @@ async function loadProductOptions(force = false): Promise<void> {
   productOptionsLoading.value = true;
 
   try {
-    const res = await productService.getOptions();
+    const res = await product.api.getOptions();
     const data = res.data;
 
     if (!data) throw new Error("Gagal memuat opsi produk.");

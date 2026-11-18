@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { ApiResponse } from "@/core/api/types";
 
-import dashboardService from "@/modules/pharmacy/master/services/dashboardService";
+import dashboard.api from "@/modules/pharmacy/master/api/dashboard.api";
 
 import type {
     DashboardDateRange,
@@ -38,9 +38,9 @@ export function usePharmacyDashboard() {
 
         try {
             const results = await Promise.allSettled([
-                dashboardService.getOverview(params),
-                dashboardService.getCashFlow(params),
-                dashboardService.getTopSelling({
+                dashboard.api.getOverview(params),
+                dashboard.api.getCashFlow(params),
+                dashboard.api.getTopSelling({
                     ...params,
                     limit: topSellingLimit.value,
                 }),

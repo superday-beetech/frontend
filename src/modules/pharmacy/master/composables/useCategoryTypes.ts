@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import categoryTypeService, { type CategoryTypeOption } from "../services/categoryTypeService";
+import category-type.api, { type CategoryTypeOption } from "../api/category-type.api";
 
 // Cache per module
 const cache: Record<string, CategoryTypeOption[]> = {};
@@ -11,7 +11,7 @@ export function useCategoryTypes() {
 
     loading.value = true;
     try {
-      const res = await categoryTypeService.getByModule(module);
+      const res = await category-type.api.getByModule(module);
       if (res.error || !res.data) {
         return [];
       }
