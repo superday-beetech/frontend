@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { notify } from "@/utils/notification";
-import { useCurrencyInput } from "@/composables/useCurrencyInput";
+import { useToast } from "@/shared/composables/useToast";
+import { useCurrencyInput } from "@/shared/composables/useCurrencyInput";
 
 import productService, { type Product, type ProductPayload, type ProductDetailPayload } from "../services/productService";
 
-import OptionSelect from "@/components/ui/OptionSelect.vue";
+import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
 import { useMasterOptions } from "../composables/useMasterOptions";
+
+const toast = useToast();
 
 interface UnitConversionRow {
   unit: string;
@@ -174,55 +176,55 @@ function buildUnitConversionJson(): Record<string, number> | null {
 
 function validateForm(): boolean {
   if (!form.value.sku.trim()) {
-    notify.warning("SKU produk wajib diisi.");
+    toast.warning("SKU produk wajib diisi.");
     activeTab.value = "product";
     return false;
   }
 
   if (form.value.sku.trim().length > 50) {
-    notify.warning("SKU maksimal 50 karakter.");
+    toast.warning("SKU maksimal 50 karakter.");
     activeTab.value = "product";
     return false;
   }
 
   if (form.value.barcode && form.value.barcode.trim().length > 100) {
-    notify.warning("Barcode maksimal 100 karakter.");
+    toast.warning("Barcode maksimal 100 karakter.");
     activeTab.value = "product";
     return false;
   }
 
   if (!form.value.name.trim()) {
-    notify.warning("Nama produk wajib diisi.");
+    toast.warning("Nama produk wajib diisi.");
     activeTab.value = "product";
     return false;
   }
 
   if (form.value.name.trim().length < 2 || form.value.name.trim().length > 180) {
-    notify.warning("Nama produk harus terdiri dari 2 sampai 180 karakter.");
+    toast.warning("Nama produk harus terdiri dari 2 sampai 180 karakter.");
     activeTab.value = "product";
     return false;
   }
 
   if (!form.value.category_id) {
-    notify.warning("Silakan pilih kategori produk.");
+    toast.warning("Silakan pilih kategori produk.");
     activeTab.value = "product";
     return false;
   }
 
   if (!form.value.unit_id) {
-    notify.warning("Silakan pilih satuan produk.");
+    toast.warning("Silakan pilih satuan produk.");
     activeTab.value = "product";
     return false;
   }
 
   if (!Number.isFinite(form.value.purchase_price) || form.value.purchase_price < 0) {
-    notify.warning("Harga beli tidak valid.");
+    toast.warning("Harga beli tidak valid.");
     activeTab.value = "product";
     return false;
   }
 
   if (!Number.isFinite(form.value.selling_price) || form.value.selling_price < 0) {
-    notify.warning("Harga jual tidak valid.");
+    toast.warning("Harga jual tidak valid.");
     activeTab.value = "product";
     return false;
   }
@@ -231,13 +233,13 @@ function validateForm(): boolean {
     const unit = row.unit.trim();
 
     if (!unit && row.qty != null) {
-      notify.warning("Nama satuan konversi wajib diisi.");
+      toast.warning("Nama satuan konversi wajib diisi.");
       activeTab.value = "detail";
       return false;
     }
 
     if (unit && (!Number.isFinite(Number(row.qty)) || Number(row.qty) <= 0)) {
-      notify.warning(`Jumlah konversi untuk "${unit}" harus lebih dari 0.`);
+      toast.warning(`Jumlah konversi untuk "${unit}" harus lebih dari 0.`);
       activeTab.value = "detail";
       return false;
     }
@@ -248,7 +250,7 @@ function validateForm(): boolean {
 
 async function save(): Promise<void> {
   if (!optionsLoaded.value) {
-    notify.warning("Data opsi belum berhasil dimuat.");
+    toast.warning("Data opsi belum berhasil dimuat.");
     return;
   }
   if (!validateForm()) return;
@@ -315,12 +317,12 @@ async function save(): Promise<void> {
       });
     }
 
-    notify.success(isEditing.value ? "Produk berhasil diperbarui." : "Produk berhasil ditambahkan.");
+    toast.success(isEditing.value ? "Produk berhasil diperbarui." : "Produk berhasil ditambahkan.");
 
     emit("select", result.data);
     emit("close");
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   } finally {
     saving.value = false;
   }
