@@ -2,7 +2,9 @@
 import { onMounted, ref } from "vue";
 import { inventoryService } from "../services/inventoryService";
 import type { InventoryPagination, StockOverview } from "../types/inventory";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const rows = ref<StockOverview[]>([]);
 const loading = ref(false);
@@ -33,7 +35,7 @@ async function loadData(): Promise<void> {
     pagination.value = result.pagination;
   } catch (error) {
     console.error("Gagal memuat ringkasan stok:", error);
-    notify.error("Gagal memuat ringkasan stok.");
+    toast.error("Gagal memuat ringkasan stok.");
   } finally {
     loading.value = false;
   }
