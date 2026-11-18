@@ -279,7 +279,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    const [orderResponse, deliveryResponse] = await Promise.all([distribution.api.getOrderDetail(orderId.value), delivery.api.getDeliveryDetail(deliveryId.value)]);
+    const [orderResponse, deliveryResponse] = await Promise.all([distributionService.getOrderDetail(orderId.value), deliveryService.getDeliveryDetail(deliveryId.value)]);
 
     orderDetail.value = orderResponse;
     deliveryDetail.value = deliveryResponse;
@@ -393,7 +393,7 @@ async function postDelivery() {
   posting.value = true;
 
   try {
-    await delivery.api.postDelivery(deliveryId.value, payload);
+    await deliveryService.postDelivery(deliveryId.value, payload);
 
     toast.success("Pengiriman berhasil diposting.");
 

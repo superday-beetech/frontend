@@ -80,7 +80,7 @@ async function loadOrder() {
   loading.value = true;
 
   try {
-    orderDetail.value = await distribution.api.getOrderDetail(orderId.value);
+    orderDetail.value = await distributionService.getOrderDetail(orderId.value);
 
     if (!orderDetail.value?.order) {
       throw new Error("Data pesanan tidak ditemukan.");
@@ -130,7 +130,7 @@ async function submit() {
   saving.value = true;
 
   try {
-    const newDeliveryId = await delivery.api.createDelivery({
+    const newDeliveryId = await deliveryService.createDelivery({
       delivery_number: form.delivery_number.trim(),
       distribution_order_id: Number(order.value.id),
       delivery_date: form.delivery_date,

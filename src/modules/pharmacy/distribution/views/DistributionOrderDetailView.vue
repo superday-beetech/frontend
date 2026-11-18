@@ -132,7 +132,7 @@ async function loadDetail() {
   loading.value = true;
 
   try {
-    detail.value = await distribution.api.getOrderDetail(orderId.value);
+    detail.value = await distributionService.getOrderDetail(orderId.value);
   } catch (error: any) {
     detail.value = null;
 

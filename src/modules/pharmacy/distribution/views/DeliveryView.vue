@@ -96,11 +96,11 @@ async function loadDeliveries() {
 
   try {
     const [deliveryResponse, orderResponse] = await Promise.all([
-      delivery.api.getDeliveries({
+      deliveryService.getDeliveries({
         page: 1,
         per_page: 100,
       }),
-      distribution.api.getOrders(),
+      distributionService.getOrders(),
     ]);
 
     orders.value = orderResponse;

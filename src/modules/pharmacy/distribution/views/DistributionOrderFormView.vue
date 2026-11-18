@@ -245,7 +245,7 @@ async function saveOrder() {
   saving.value = true;
 
   try {
-    const id = await distribution.api.createOrder(payload);
+    const id = await distributionService.createOrder(payload);
 
     toast.success("Pesanan distribusi berhasil dibuat.");
 

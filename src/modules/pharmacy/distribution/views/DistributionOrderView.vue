@@ -92,7 +92,7 @@ async function loadOrders() {
   loading.value = true;
 
   try {
-    orders.value = await distribution.api.getOrders();
+    orders.value = await distributionService.getOrders();
   } catch (error: any) {
     toast.error(error?.response?.data?.message || error?.message || "Gagal memuat pesanan distribusi.");
   } finally {
