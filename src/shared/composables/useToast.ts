@@ -24,9 +24,9 @@ export function useToast() {
   return {
     toasts,
     remove,
-    success: (title: string, msg?: string) => show('success', title, msg),
-    error: (title: string, msg?: string) => show('error', title, msg, 5000),
-    warning: (title: string, msg?: string) => show('warning', title, msg),
-    info: (title: string, msg?: string) => show('info', title, msg),
+    success: (title: string, msg?: string) => show('success', title, msg === 'success' ? undefined : msg),
+    error: (title: string, msg?: string) => show('error', title, msg === 'error' ? undefined : msg, 5000),
+    warning: (title: string, msg?: string) => show('warning', title, msg === 'warning' ? undefined : msg),
+    info: (title: string, msg?: string) => show('info', title, msg === 'info' ? undefined : msg),
   }
 }
