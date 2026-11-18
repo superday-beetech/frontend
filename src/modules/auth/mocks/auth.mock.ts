@@ -19,7 +19,7 @@ const MOCK_SESSION_KEY = STORAGE_KEYS.mockSession
 export async function mockLogin(payload: LoginPayload): Promise<void> {
   await new Promise((r) => setTimeout(r, 400))
   const errors: Record<string, string> = {}
-  if (!payload.email) errors.email = 'Email wajib diisi.'
+  if (!payload.identity) errors.identity = 'Email atau username wajib diisi.'
   if (!payload.password) errors.password = 'Password wajib diisi.'
   if (Object.keys(errors).length) throw new MockApiError(422, 'Validasi gagal', errors)
   sessionStorage.setItem(MOCK_SESSION_KEY, '1')
@@ -54,7 +54,6 @@ const MOCK_SESSION: SessionContext = {
   ],
   is_superadmin: true,
   groups: ['superadmin'],
-  identities: [],
   /*  menus: [
     { id: 1, parent_id: null, title: 'Dashboard', path: '/', name: 'Dashboard', component_key: null, icon: 'LayoutDashboard' },
     {
