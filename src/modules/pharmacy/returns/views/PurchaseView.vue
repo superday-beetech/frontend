@@ -165,40 +165,40 @@ onMounted(loadReturns);
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="w-full">
+    <div class="flex justify-between items-center mb-4">
       <div>
         <h4 class="mb-1">Purchase Return</h4>
-        <p class="text-muted mb-0">Pengelolaan retur pembelian kepada supplier.</p>
+        <p class="text-slate-500 mb-0">Pengelolaan retur pembelian kepada supplier.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="$router.push('/pharmacy/returns/purchase/purchase-create')">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="$router.push('/pharmacy/returns/purchase/purchase-create')">
         <i class="ti ti-plus me-1"></i>
         Buat Purchase Return
       </button>
     </div>
 
-    <div v-if="errorMessage" class="alert alert-danger alert-dismissible" role="alert">
+    <div v-if="errorMessage" class="rounded-lg border px-4 py-3 text-sm border-rose-200 bg-rose-50 text-rose-800 alert-dismissible" role="alert">
       {{ errorMessage }}
       <button type="button" class="btn-close" @click="errorMessage = ''"></button>
     </div>
 
-    <div v-if="successMessage" class="alert alert-success alert-dismissible" role="alert">
+    <div v-if="successMessage" class="rounded-lg border px-4 py-3 text-sm border-emerald-200 bg-emerald-50 text-emerald-800 alert-dismissible" role="alert">
       {{ successMessage }}
       <button type="button" class="btn-close" @click="successMessage = ''"></button>
     </div>
 
-    <div class="card mb-4">
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Pencarian</label>
-            <input v-model="search" type="search" class="form-control" placeholder="Nomor retur, supplier, atau receipt..." />
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4">
+      <div class="p-5">
+        <div class="grid grid-cols-12 g-3">
+          <div class="col-span-12 md:col-span-6">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Pencarian</label>
+            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nomor retur, supplier, atau receipt..." />
           </div>
 
-          <div class="col-md-3">
-            <label class="form-label">Status</label>
-            <select v-model="statusFilter" class="form-select">
+          <div class="col-span-12 md:col-span-3">
+            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+            <select v-model="statusFilter" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
               <option value="">Semua Status</option>
               <option value="draft">Draft</option>
               <option value="posted">Sudah Diposting</option>
@@ -206,8 +206,8 @@ onMounted(loadReturns);
             </select>
           </div>
 
-          <div class="col-md-3 d-flex align-items-end">
-            <button type="button" class="btn btn-outline-secondary w-100" :disabled="loading" @click="loadReturns">
+          <div class="col-span-12 md:col-span-3 flex items-end">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 border border-slate-300 text-slate-700 hover:bg-slate-50 w-full" :disabled="loading" @click="loadReturns">
               <i class="ti ti-refresh me-1"></i>
               Muat Ulang
             </button>
@@ -216,33 +216,33 @@ onMounted(loadReturns);
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="card-header flex justify-between items-center">
         <h5 class="mb-0">Daftar Purchase Return</h5>
 
-        <span class="badge bg-primary"> {{ filteredReturns.length }} Transaksi </span>
+        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-primary"> {{ filteredReturns.length }} Transaksi </span>
       </div>
 
-      <div class="card-body">
+      <div class="p-5">
         <div v-if="loading" class="text-center py-5">
-          <div class="spinner-border text-primary"></div>
-          <p class="text-muted mt-2 mb-0">Memuat data Purchase Return...</p>
+          <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600"></div>
+          <p class="text-slate-500 mt-2 mb-0">Memuat data Purchase Return...</p>
         </div>
 
-        <div v-else-if="filteredReturns.length === 0" class="text-center text-muted py-5">
+        <div v-else-if="filteredReturns.length === 0" class="text-center text-slate-500 py-5">
           <i class="ti ti-file-off fs-7"></i>
           <p class="mt-2 mb-0">Belum ada Purchase Return.</p>
         </div>
 
-        <div v-else class="table-responsive">
-          <table class="table table-hover align-middle">
+        <div v-else class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
             <thead class="table-light">
               <tr>
                 <th>Nomor Retur</th>
                 <th>Tanggal</th>
                 <th>Supplier</th>
                 <th>Goods Receipt</th>
-                <th class="text-end">Total</th>
+                <th class="text-right">Total</th>
                 <th>Status</th>
                 <th class="text-center">Aksi</th>
               </tr>
@@ -260,23 +260,23 @@ onMounted(loadReturns);
 
                 <td>{{ item.receipt_number || "-" }}</td>
 
-                <td class="text-end">
+                <td class="text-right">
                   {{ formatCurrency(item.total_amount) }}
                 </td>
 
                 <td>
-                  <span class="badge" :class="statusClass(item.status)">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="statusClass(item.status)">
                     {{ statusLabel(item.status) }}
                   </span>
                 </td>
 
                 <td class="text-center">
-                  <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-sm btn-outline-primary" title="Detail" @click="showDetail(item.id)">
+                  <div class="flex justify-center gap-1">
+                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-primary-600 text-primary-700 hover:bg-primary-50" title="Detail" @click="showDetail(item.id)">
                       <i class="ti ti-eye"></i>
                     </button>
 
-                    <button v-if="item.status === 'draft'" type="button" class="btn btn-sm btn-success" title="Posting" :disabled="posting" @click="postReturn(item)">
+                    <button v-if="item.status === 'draft'" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs btn-success" title="Posting" :disabled="posting" @click="postReturn(item)">
                       <i class="ti ti-check"></i>
                     </button>
                   </div>
@@ -288,72 +288,72 @@ onMounted(loadReturns);
       </div>
     </div>
 
-    <div v-if="loadingDetail" class="card mt-4">
-      <div class="card-body text-center py-4">
-        <div class="spinner-border text-primary"></div>
-        <p class="text-muted mt-2 mb-0">Memuat detail retur...</p>
+    <div v-if="loadingDetail" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mt-4">
+      <div class="p-5 text-center py-4">
+        <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600"></div>
+        <p class="text-slate-500 mt-2 mb-0">Memuat detail retur...</p>
       </div>
     </div>
 
-    <div v-if="selectedReturn" class="card mt-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
+    <div v-if="selectedReturn" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mt-4">
+      <div class="card-header flex justify-between items-center">
         <div>
           <h5 class="mb-1">Detail {{ selectedReturn.return_number }}</h5>
-          <small class="text-muted"> Purchase Return #{{ selectedReturn.id }} </small>
+          <small class="text-slate-500"> Purchase Return #{{ selectedReturn.id }} </small>
         </div>
 
-        <button type="button" class="btn btn-sm btn-outline-secondary" @click="selectedReturn = null">
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-slate-300 text-slate-700 hover:bg-slate-50" @click="selectedReturn = null">
           <i class="ti ti-x me-1"></i>
           Tutup
         </button>
       </div>
 
-      <div class="card-body">
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
-            <small class="text-muted d-block">Supplier</small>
+      <div class="p-5">
+        <div class="grid grid-cols-12 g-3 mb-4">
+          <div class="col-span-12 md:col-span-3">
+            <small class="text-slate-500 block">Supplier</small>
             <strong>{{ selectedReturn.supplier_name || "-" }}</strong>
           </div>
 
-          <div class="col-md-3">
-            <small class="text-muted d-block">Goods Receipt</small>
+          <div class="col-span-12 md:col-span-3">
+            <small class="text-slate-500 block">Goods Receipt</small>
             <strong>{{ selectedReturn.receipt_number || "-" }}</strong>
           </div>
 
-          <div class="col-md-3">
-            <small class="text-muted d-block">Tanggal Retur</small>
+          <div class="col-span-12 md:col-span-3">
+            <small class="text-slate-500 block">Tanggal Retur</small>
             <strong>{{ formatDate(selectedReturn.return_date) }}</strong>
           </div>
 
-          <div class="col-md-3">
-            <small class="text-muted d-block">Status</small>
-            <span class="badge" :class="statusClass(selectedReturn.status)">
+          <div class="col-span-12 md:col-span-3">
+            <small class="text-slate-500 block">Status</small>
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="statusClass(selectedReturn.status)">
               {{ statusLabel(selectedReturn.status) }}
             </span>
           </div>
 
-          <div class="col-md-6">
-            <small class="text-muted d-block">Alasan</small>
+          <div class="col-span-12 md:col-span-6">
+            <small class="text-slate-500 block">Alasan</small>
             {{ selectedReturn.reason || "-" }}
           </div>
 
-          <div class="col-md-6">
-            <small class="text-muted d-block">Catatan</small>
+          <div class="col-span-12 md:col-span-6">
+            <small class="text-slate-500 block">Catatan</small>
             {{ selectedReturn.notes || "-" }}
           </div>
         </div>
 
         <h6 class="mb-3">Item Retur</h6>
 
-        <div class="table-responsive">
-          <table class="table table-bordered align-middle">
+        <div class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm table-bordered align-middle">
             <thead class="table-light">
               <tr>
                 <th>Produk</th>
                 <th>Batch</th>
-                <th class="text-end">Kuantitas</th>
-                <th class="text-end">Harga Satuan</th>
-                <th class="text-end">Subtotal</th>
+                <th class="text-right">Kuantitas</th>
+                <th class="text-right">Harga Satuan</th>
+                <th class="text-right">Subtotal</th>
                 <th>Catatan</th>
               </tr>
             </thead>
@@ -362,18 +362,18 @@ onMounted(loadReturns);
               <tr v-for="item in selectedReturn.items || []" :key="item.id">
                 <td>
                   <strong>{{ item.product_name || "-" }}</strong>
-                  <small v-if="item.sku" class="d-block text-muted"> SKU: {{ item.sku }} </small>
+                  <small v-if="item.sku" class="block text-slate-500"> SKU: {{ item.sku }} </small>
                 </td>
 
                 <td>{{ item.batch_number || "-" }}</td>
 
-                <td class="text-end">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
 
-                <td class="text-end">
+                <td class="text-right">
                   {{ formatCurrency(item.unit_cost) }}
                 </td>
 
-                <td class="text-end">
+                <td class="text-right">
                   {{ formatCurrency(item.subtotal) }}
                 </td>
 
@@ -381,14 +381,14 @@ onMounted(loadReturns);
               </tr>
 
               <tr v-if="!selectedReturn.items?.length">
-                <td colspan="6" class="text-center text-muted">Tidak ada item retur.</td>
+                <td colspan="6" class="text-center text-slate-500">Tidak ada item retur.</td>
               </tr>
             </tbody>
 
             <tfoot>
               <tr>
-                <th colspan="4" class="text-end">Total Retur</th>
-                <th class="text-end">
+                <th colspan="4" class="text-right">Total Retur</th>
+                <th class="text-right">
                   {{ formatCurrency(selectedReturn.total_amount) }}
                 </th>
                 <th></th>
@@ -397,8 +397,8 @@ onMounted(loadReturns);
           </table>
         </div>
 
-        <div v-if="selectedReturn.status === 'draft'" class="text-end mt-3">
-          <button type="button" class="btn btn-success" :disabled="posting" @click="postReturn(selectedReturn)">
+        <div v-if="selectedReturn.status === 'draft'" class="text-right mt-3">
+          <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 btn-success" :disabled="posting" @click="postReturn(selectedReturn)">
             <i class="ti ti-check me-1"></i>
             Posting Purchase Return
           </button>
