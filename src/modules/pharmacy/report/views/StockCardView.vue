@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import report.api, { type StockCardFilter, type StockCardReport } from "../api/report.api";
+import reportService, { type StockCardFilter, type StockCardReport } from "../api/report.api";
 import { useToast } from "@/shared/composables/useToast";
 
 const toast = useToast();
@@ -117,7 +117,7 @@ async function loadReport(page = 1): Promise<void> {
 
   try {
     filters.page = page;
-    report.value = await report.api.getStockCard(buildFilters(page));
+    report.value = await reportService.getStockCard(buildFilters(page));
   } catch (error: any) {
     report.value = null;
     toast.error(error?.response?.data?.message || error?.message || "Gagal memuat laporan kartu stok.");
@@ -150,13 +150,13 @@ async function downloadFile(type: "csv" | "excel" | "pdf"): Promise<void> {
 
     switch (type) {
       case "csv":
-        blob = await report.api.downloadStockCardCsv(params);
+        blob = await reportService.downloadStockCardCsv(params);
         break;
       case "excel":
-        blob = await report.api.downloadStockCardExcel(params);
+        blob = await reportService.downloadStockCardExcel(params);
         break;
       case "pdf":
-        blob = await report.api.downloadStockCardPdf(params);
+        blob = await reportService.downloadStockCardPdf(params);
         break;
     }
 

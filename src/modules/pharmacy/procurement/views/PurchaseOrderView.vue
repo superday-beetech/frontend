@@ -110,7 +110,7 @@ async function loadOrders(page = 1) {
   loading.value = true;
 
   try {
-    const response = await purchase-order.api.getAll({
+    const response = await purchaseOrderService.getAll({
       search: filters.search.trim() || undefined,
       status: filters.status || undefined,
       supplier_id: filters.supplier_id ? Number(filters.supplier_id) : undefined,
@@ -171,7 +171,7 @@ async function createOrder(payload: CreatePurchaseOrderPayload) {
   saving.value = true;
 
   try {
-    const response = await purchase-order.api.create(payload);
+    const response = await purchaseOrderService.create(payload);
 
     if (response.error) {
       throw new Error(getErrorMessage(response.message));
@@ -191,7 +191,7 @@ async function createOrder(payload: CreatePurchaseOrderPayload) {
 
 async function openDetail(order: PurchaseOrder) {
   try {
-    const response = await purchase-order.api.getById(order.id);
+    const response = await purchaseOrderService.getById(order.id);
 
     if (response.error) {
       throw new Error(getErrorMessage(response.message));
@@ -250,7 +250,7 @@ async function openEditModal(order: PurchaseOrder) {
   }
 
   try {
-    const response = await purchase-order.api.getById(order.id);
+    const response = await purchaseOrderService.getById(order.id);
 
     if (response.error) {
       throw new Error(getErrorMessage(response.message));
@@ -277,7 +277,7 @@ async function openEditModal(order: PurchaseOrder) {
 
 async function updateOrder(id: number, payload: CreatePurchaseOrderPayload) {
   try {
-    const response = await purchase-order.api.update(id, payload);
+    const response = await purchaseOrderService.update(id, payload);
 
     if (response.error) {
       throw new Error(getErrorMessage(response.message));
@@ -308,7 +308,7 @@ async function deleteOrder(order: PurchaseOrder) {
   if (!confirmed) return;
 
   try {
-    const response = await purchase-order.api.delete(order.id);
+    const response = await purchaseOrderService.delete(order.id);
 
     if (response.error) {
       throw new Error(getErrorMessage(response.message));

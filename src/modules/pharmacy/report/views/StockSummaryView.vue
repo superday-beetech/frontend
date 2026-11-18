@@ -91,7 +91,7 @@ async function loadData() {
   errorMessage.value = "";
 
   try {
-    const result = await report.api.getStockSummary(getFilters());
+    const result = await reportService.getStockSummary(getFilters());
 
     report.value = result;
     items.value = result.items || [];
@@ -167,7 +167,7 @@ async function exportCsv() {
   errorMessage.value = "";
 
   try {
-    const blob = await report.api.downloadStockSummaryCsv(getExportFilters());
+    const blob = await reportService.downloadStockSummaryCsv(getExportFilters());
 
     saveBlob(blob, getFilename("csv"));
   } catch (error: any) {
@@ -188,7 +188,7 @@ async function exportExcel() {
   errorMessage.value = "";
 
   try {
-    const blob = await report.api.downloadStockSummaryExcel(getExportFilters());
+    const blob = await reportService.downloadStockSummaryExcel(getExportFilters());
 
     saveBlob(blob, getFilename("xlsx"));
   } catch (error: any) {
@@ -232,7 +232,7 @@ async function printReport() {
 
     printWindow.document.close();
 
-    const blob = await report.api.downloadStockSummaryPdf(getExportFilters());
+    const blob = await reportService.downloadStockSummaryPdf(getExportFilters());
 
     const pdfUrl = URL.createObjectURL(blob);
 
