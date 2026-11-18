@@ -7,9 +7,6 @@ import type { SettlementMode } from "../types/sales";
 import type { DockState } from "./usePosDock";
 import { POS_ROUTES } from "../utils/posRoutes";
 
-/** Isi kode permission bila pengaturan POS perlu dibatasi. Kosong = terbuka untuk semua kasir. */
-export const POS_PERMISSIONS: { settings?: string; paymentIntegration?: string } = {};
-
 // const POS_ROUTE_FRAGMENT = "/pharmacy/sales/pos";
 const MAX_PAGE_MENU_ITEMS = 20;
 
