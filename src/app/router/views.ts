@@ -1,13 +1,24 @@
 import type { Component } from 'vue'
 
-// SATU-SATUNYA tempat memuat view modul (lazy). Route statis dan dinamis sama-sama lewat sini,
-// sehingga tiap view hanya punya satu titik import() → tidak ada chunk ganda.
-const viewModules = import.meta.glob<{ default: Component }>('../../modules/*/views/**/*.vue')
+// Mendukung modul bertingkat: pharmacy/master/views/ProductView.vue.
+const viewModules = import.meta.glob<{ default: Component }>('../../modules/**/views/**/*.vue')
 
 export const loadNotFound = () => import('@/app/views/NotFoundView.vue')
 
-/** `"modul/NamaView"` (atau `"modul/views/NamaView"`) → loader view; jatuh ke NotFound bila tidak ada. */
 export function resolveView(componentKey: string) {
-  const [moduleName, ...rest] = componentKey.replace('/views/', '/').split('/')
-  return viewModules[`../../modules/${moduleName}/views/${rest.join('/')}.vue`] ?? loadNotFound
+  const normalized = componentKey
+    .replace(/^\\/+/, '')
+    .replace(/\\.vue$/, '')
+    .replace(/\\/views\\//g, '/')
+  const segments = normalized.split('/').filter(Boolean)
+  if (segments.length < 2) return loadNotFound
+
+  const moduleName = segments[0]
+  const viewName = segments[segments.length - 1]
+  const subModule = segments.slice(1, -1)
+  const viewPath = subModule.length
+    ? `../../modules/${moduleName}/${subModule.join('/')}/views/${viewName}.vue`
+    : `../../modules/${moduleName}/views/${viewName}.vue`
+
+  return viewModules[viewPath] ?? loadNotFound
 }
