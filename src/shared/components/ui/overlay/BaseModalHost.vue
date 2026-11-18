@@ -6,13 +6,20 @@ const { state, close, handleSelect } = useModal()
 </script>
 
 <template>
-  <BaseModal :open="state.open" :title="state.title" :max-width="state.maxWidth" @close="close">
+  <BaseModal
+    :open="state.open"
+    :title="state.title"
+    :max-width="state.maxWidth"
+    :centered="state.centered"
+    :scrollable="state.scrollable"
+    @close="close()"
+  >
     <component
       :is="state.component"
       v-if="state.component"
       v-bind="state.props"
       @select="handleSelect"
-      @close="close"
+      @close="close()"
     />
   </BaseModal>
 </template>
