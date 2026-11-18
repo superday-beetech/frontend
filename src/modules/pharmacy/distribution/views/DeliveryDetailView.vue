@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 
 import distributionService from "../services/distributionService";
