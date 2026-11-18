@@ -158,53 +158,53 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+  <div class="w-full>
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-2>
       <div>
-        <h4 class="mb-1">Pengeluaran Operasional</h4>
-        <p class="text-muted mb-0">Kelola pencatatan biaya dan pengeluaran operasional apotek.</p>
+        <h4 class="mb-1>Pengeluaran Operasional</h4>
+        <p class="text-slate-500 mb-0>Kelola pencatatan biaya dan pengeluaran operasional apotek.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="openCreateModal">
-        <i class="ti ti-plus me-1"></i>
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700 @click="openCreateModal">
+        <i class="ti ti-plus me-1></i>
         Tambah Pengeluaran
       </button>
     </div>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-6 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Total Pengeluaran</div>
-            <h4 class="mb-0">{{ formatCurrency(totalExpense) }}</h4>
+    <div class="grid grid-cols-12 g-3 mb-4>
+      <div class="col-span-12 md:col-span-6 col-xl-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="text-slate-500 mb-2>Total Pengeluaran</div>
+            <h4 class="mb-0>{{ formatCurrency(totalExpense) }}</h4>
           </div>
         </div>
       </div>
 
-      <div class="col-md-6 col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="text-muted mb-2">Jumlah Transaksi</div>
-            <h4 class="mb-0">{{ filteredExpenses.length }}</h4>
+      <div class="col-span-12 md:col-span-6 col-xl-4>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full>
+          <div class="p-5>
+            <div class="text-slate-500 mb-2>Jumlah Transaksi</div>
+            <h4 class="mb-0>{{ filteredExpenses.length }}</h4>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-      <div class="card-body">
-        <div class="row align-items-center mb-3">
-          <div class="col-md-6">
-            <h5 class="mb-0">Riwayat Pengeluaran</h5>
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm>
+      <div class="p-5>
+        <div class="grid grid-cols-12 items-center mb-3>
+          <div class="col-span-12 md:col-span-6>
+            <h5 class="mb-0>Riwayat Pengeluaran</h5>
           </div>
 
-          <div class="col-md-6 mt-3 mt-md-0">
-            <input v-model="search" type="search" class="form-control" placeholder="Cari nomor, kategori, atau deskripsi..." />
+          <div class="col-span-12 md:col-span-6 mt-3 mt-md-0>
+            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 placeholder="Cari nomor, kategori, atau deskripsi..." />
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
+        <div class="w-full overflow-x-auto>
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0>
             <thead>
               <tr>
                 <th>Nomor Pengeluaran</th>
@@ -212,28 +212,28 @@ onMounted(() => {
                 <th>Kategori</th>
                 <th>Deskripsi</th>
                 <th>Metode</th>
-                <th class="text-end">Jumlah</th>
+                <th class="text-right>Jumlah</th>
               </tr>
             </thead>
 
             <tbody>
               <tr v-if="loading">
-                <td colspan="6" class="text-center py-4">Memuat data pengeluaran...</td>
+                <td colspan="6" class="text-center py-4>Memuat data pengeluaran...</td>
               </tr>
 
               <tr v-else-if="filteredExpenses.length === 0">
-                <td colspan="6" class="text-center text-muted py-4">Belum ada data pengeluaran.</td>
+                <td colspan="6" class="text-center text-slate-500 py-4>Belum ada data pengeluaran.</td>
               </tr>
 
               <tr v-for="expense in filteredExpenses" :key="expense.id">
-                <td class="fw-semibold">
+                <td class="font-semibold>
                   {{ expense.expense_number }}
                 </td>
                 <td>{{ formatDate(expense.expense_date) }}</td>
                 <td>{{ formatCategory(expense.category) }}</td>
                 <td>{{ expense.description }}</td>
                 <td>{{ formatPaymentMethod(expense.payment_method) }}</td>
-                <td class="text-end fw-semibold">
+                <td class="text-right font-semibold>
                   {{ formatCurrency(expense.amount) }}
                 </td>
               </tr>
