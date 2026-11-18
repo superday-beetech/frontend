@@ -21,18 +21,8 @@ function normalizeAvailableOrganization(item: AvailableOrganization): AvailableO
 
 function normalizeContext(context: OrganizationContext): OrganizationContext {
   return {
-    organization: {
-      ...context.organization,
-      id: Number(context.organization.id),
-    },
-
-    unit: context.unit
-      ? {
-          ...context.unit,
-          id: Number(context.unit.id),
-        }
-      : null,
-
+    organization: { ...context.organization, id: Number(context.organization.id) },
+    unit: context.unit ? { ...context.unit, id: Number(context.unit.id) } : null,
     membership: {
       ...context.membership,
       id: Number(context.membership.id),
@@ -43,131 +33,114 @@ function normalizeContext(context: OrganizationContext): OrganizationContext {
 }
 
 export const useOrganizationStore = defineStore('organization', () => {
-  // State
   const availableOrganizations = ref<AvailableOrganization[]>([])
   const activeContext = ref<OrganizationContext | null>(null)
-
   const loading = ref(false)
   const switching = ref(false)
   const initialized = ref(false)
   const errorMessage = ref<string | null>(null)
 
   let initializePromise: Promise<void> | null = null
+  // Invalidates in-flight requests when the authenticated user/session changes.
+  let requestVersion = 0
 
-  // Getters
   const activeOrganization = computed(() => activeContext.value?.organization ?? null)
-
   const activeUnit = computed(() => activeContext.value?.unit ?? null)
-
   const activeMembership = computed(() => activeContext.value?.membership ?? null)
-
   const membershipRole = computed(() => activeMembership.value?.role ?? null)
-
   const hasContext = computed(() => activeContext.value !== null)
-
   const hasOrganizations = computed(() => availableOrganizations.value.length > 0)
-
   const needsOrganizationSelection = computed(() => hasOrganizations.value && !hasContext.value)
-
   const isOrganizationMember = computed(() => hasContext.value)
 
-  // API actions
   async function fetchAvailableOrganizations(): Promise<void> {
+    const version = requestVersion
     const data = await organizationApi.getAvailable()
-
+    if (version !== requestVersion) return
     availableOrganizations.value = Array.isArray(data) ? data.map(normalizeAvailableOrganization) : []
   }
 
   async function fetchCurrentContext(): Promise<void> {
+    const version = requestVersion
     const data = await organizationApi.getCurrentContext()
-
+    if (version !== requestVersion) return
     activeContext.value = data ? normalizeContext(data) : null
   }
 
   async function switchOrganization(organizationId: number): Promise<OrganizationContext> {
     const id = Number(organizationId)
-
-    if (!Number.isInteger(id) || id <= 0) {
-      throw new Error('Organisasi tidak valid.')
-    }
+    if (!Number.isInteger(id) || id <= 0) throw new Error('Organisasi tidak valid.')
 
     const available = availableOrganizations.value.some((item) => item.organization_id === id)
+    if (!available) throw new Error('Organisasi tidak tersedia pada akun Anda.')
+    if (switching.value) throw new Error('Pergantian organisasi sedang diproses.')
 
-    if (!available) {
-      throw new Error('Organisasi tidak tersedia pada akun Anda.')
-    }
-
-    if (switching.value) {
-      throw new Error('Pergantian organisasi sedang diproses.')
-    }
-
+    const version = requestVersion
     switching.value = true
     errorMessage.value = null
 
     try {
       const data = await organizationApi.switchOrganization(id)
-
-      if (!data?.organization || !data?.membership) {
-        throw new Error('Response konteks organisasi tidak valid.')
-      }
+      if (version !== requestVersion) throw new Error('Sesi telah berubah. Silakan pilih workspace kembali.')
+      if (!data?.organization || !data?.membership) throw new Error('Response konteks organisasi tidak valid.')
 
       activeContext.value = normalizeContext(data)
-
       return activeContext.value
     } catch (error) {
-      errorMessage.value = getErrorMessage(error)
+      if (version === requestVersion) errorMessage.value = getErrorMessage(error)
       throw error
     } finally {
-      switching.value = false
+      if (version === requestVersion) switching.value = false
     }
   }
 
   async function clearContext(): Promise<void> {
+    const version = requestVersion
     await organizationApi.clearContext()
-    activeContext.value = null
+    if (version === requestVersion) activeContext.value = null
   }
 
-  // Initialization
   async function initialize(force = false): Promise<void> {
     if (initialized.value && !force) return
+    if (initializePromise) return initializePromise
 
-    if (initializePromise) {
-      return initializePromise
-    }
-
+    const version = requestVersion
     initializePromise = (async () => {
       loading.value = true
       errorMessage.value = null
 
       try {
         await fetchAvailableOrganizations()
+        if (version !== requestVersion) return
+
         await fetchCurrentContext()
+        if (version !== requestVersion) return
 
         if (!activeContext.value) {
           const organizations = availableOrganizations.value
           const defaults = organizations.filter((item) => item.is_default)
+          const selectedId =
+            organizations.length === 1
+              ? organizations[0].organization_id
+              : defaults.length === 1
+                ? defaults[0].organization_id
+                : null
 
-          let selectedId: number | null = null
-
-          if (organizations.length === 1) {
-            selectedId = organizations[0].organization_id
-          } else if (defaults.length === 1) {
-            selectedId = defaults[0].organization_id
-          }
-
-          if (selectedId !== null) {
-            await switchOrganization(selectedId)
-          }
+          if (selectedId !== null) await switchOrganization(selectedId)
         }
 
-        initialized.value = true
+        if (version === requestVersion) initialized.value = true
       } catch (error) {
-        errorMessage.value = getErrorMessage(error)
-        initialized.value = false
+        if (version === requestVersion) {
+          errorMessage.value = getErrorMessage(error)
+          initialized.value = false
+        }
         throw error
       } finally {
-        loading.value = false
-        initializePromise = null
+        if (version === requestVersion) {
+          loading.value = false
+          initializePromise = null
+        }
       }
     })()
 
@@ -175,32 +148,27 @@ export const useOrganizationStore = defineStore('organization', () => {
   }
 
   function getErrorMessage(error: unknown): string {
-    if (error instanceof Error) return error.message
-    return 'Terjadi kesalahan saat memproses organisasi.'
+    return error instanceof Error ? error.message : 'Terjadi kesalahan saat memproses organisasi.'
   }
 
-  // Reset
   function reset(): void {
+    requestVersion += 1
     availableOrganizations.value = []
     activeContext.value = null
-
     loading.value = false
     switching.value = false
     initialized.value = false
     errorMessage.value = null
-
     initializePromise = null
   }
 
   return {
     availableOrganizations,
     activeContext,
-
     loading,
     switching,
     initialized,
     errorMessage,
-
     activeOrganization,
     activeUnit,
     activeMembership,
@@ -209,7 +177,6 @@ export const useOrganizationStore = defineStore('organization', () => {
     hasOrganizations,
     needsOrganizationSelection,
     isOrganizationMember,
-
     fetchAvailableOrganizations,
     fetchCurrentContext,
     switchOrganization,
