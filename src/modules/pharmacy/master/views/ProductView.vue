@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 
 import { useToast } from "@/shared/composables/useToast";
+import { useConfirm } from "@/shared/composables/useConfirm";
 import { useModal } from "@/shared/composables/useModal";
 import { useMasterOptions } from "@/modules/pharmacy/master/composables/useMasterOptions";
 
@@ -13,6 +14,7 @@ import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
 import type { OptionItem } from "@/shared/composables/useOption";
 
 const toast = useToast();
+const { confirm } = useConfirm();
 
 const modalStore = useModal();
 const masterOptions = useMasterOptions();
@@ -159,7 +161,12 @@ async function openDetail(product: Product): Promise<void> {
 }
 
 async function deleteProduct(product: Product): Promise<void> {
-  const confirmed = window.confirm(`Hapus produk "${product.name}"?`);
+  const confirmed = await confirm({
+    title: "Konfirmasi Hapus",
+    message: `Hapus produk "${product.name}"?`,
+    confirmText: "Ya, Hapus",
+    variant: "danger",
+  });
   if (!confirmed) return;
 
   try {
