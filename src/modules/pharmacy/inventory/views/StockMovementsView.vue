@@ -2,7 +2,9 @@
 import { onMounted, ref } from "vue";
 import { inventoryService } from "../services/inventoryService";
 import type { InventoryPagination, StockMovement } from "../types/inventory";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const rows = ref<StockMovement[]>([]);
 const loading = ref(false);
@@ -41,7 +43,7 @@ async function loadData(): Promise<void> {
     pagination.value = result.pagination;
   } catch (error) {
     console.error("Gagal memuat mutasi stok:", error);
-    notify.error("Gagal memuat riwayat mutasi stok.");
+    toast.error("Gagal memuat riwayat mutasi stok.");
   } finally {
     loading.value = false;
   }
