@@ -1,81 +1,87 @@
 <script setup lang="ts">
-import { watch, onUnmounted } from 'vue'
+import { watch, onUnmounted, computed } from 'vue'
 import { X } from 'lucide-vue-next'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   open: boolean
   title: string
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full' // <-- Ditambah opsi "full"
-}>()
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  centered?: boolean
+  scrollable?: boolean
+}>(), {
+  maxWidth: 'md',
+  centered: true,
+  scrollable: true,
+})
 
-const emit = defineEmits<{
-  close: []
-}>()
+const emit = defineEmits<{ close: [] }>()
 
-// Tutup dengan tombol Esc (hanya terpasang saat modal terbuka)
-function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') emit('close')
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') emit('close')
 }
 
-watch(
-  () => props.open,
-  (isOpen) => {
-    if (isOpen) document.addEventListener('keydown', onKeydown)
-    else document.removeEventListener('keydown', onKeydown)
-  },
-  { immediate: true }
-)
+watch(() => props.open, (isOpen) => {
+  if (isOpen) document.addEventListener('keydown', onKeydown)
+  else document.removeEventListener('keydown', onKeydown)
+}, { immediate: true })
+
 onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 
-const widthClass = {
+const widthClass = computed(() => ({
   sm: 'max-w-sm',
   md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-2xl',
-  full: 'max-w-[95vw] h-[95vh] md:max-w-[90vw]', // <-- Ukuran lebar & tinggi penuh
-}
+  lg: 'max-w-2xl',
+  xl: 'max-w-4xl',
+  full: 'max-w-[95vw]',
+}[props.maxWidth]))
+
+const panelClass = computed(() => [
+  widthClass.value,
+  props.maxWidth === 'full' ? 'h-[95vh]' : 'max-h-[90vh]',
+  props.centered ? 'my-auto' : 'mt-8 mb-4',
+])
 </script>
 
 <template>
   <Teleport to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[1px]"
-      @click.self="$emit('close')"
+      class="fixed inset-0 z-[100] flex overflow-y-auto bg-slate-950/50 p-4 backdrop-blur-[1px]"
+      :class="centered ? 'items-center' : 'items-start'"
+      @click.self="emit('close')"
     >
-      <div
+      <section
         role="dialog"
         aria-modal="true"
         :aria-label="title"
-        class="w-full rounded-xl border border-slate-200 bg-white shadow-xl flex flex-col transition-all"
-        :class="[widthClass[maxWidth || 'md'], maxWidth === 'full' ? 'h-[95vh]' : 'max-h-[90vh]']"
+        class="mx-auto flex w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        :class="panelClass"
       >
-        <!-- Header -->
-        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-3.5 shrink-0">
-          <h3 class="text-sm font-semibold text-slate-800">{{ title }}</h3>
+        <header class="flex shrink-0 items-center justify-between gap-4 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+          <h2 class="text-base font-semibold text-slate-900 dark:text-white">{{ title }}</h2>
           <button
             type="button"
             aria-label="Tutup"
-            @click="$emit('close')"
-            class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 cursor-pointer"
+            class="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            @click="emit('close')"
           >
-            <X class="w-4 h-4" />
+            <X class="h-4 w-4" />
           </button>
+        </header>
+
+        <div class="min-h-0 flex-1" :class="scrollable ? 'overflow-y-auto smooth-scroll' : 'overflow-visible'">
+          <div class="p-5">
+            <slot />
+          </div>
         </div>
 
-        <!-- Body Content dengan Smooth Scroll -->
-        <div class="p-5 flex-1 overflow-y-auto smooth-scroll">
-          <slot />
-        </div>
-
-        <!-- Footer -->
-        <div
+        <footer
           v-if="$slots.footer"
-          class="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-3 rounded-b-xl shrink-0"
+          class="flex shrink-0 items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3 dark:border-slate-800 dark:bg-slate-900"
         >
           <slot name="footer" />
-        </div>
-      </div>
+        </footer>
+      </section>
     </div>
   </Teleport>
 </template>
