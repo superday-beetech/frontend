@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
 
 import unitService, { type Unit, type UnitPayload } from "../services/unitService";
+
+const toast = useToast();
 
 const props = defineProps<{
   unit?: Unit | null;
@@ -33,22 +35,22 @@ watch(
 
 function validateForm(): boolean {
   if (form.value.name.trim().length < 2) {
-    notify.warning("Nama satuan minimal 2 karakter.");
+    toast.warning("Nama satuan minimal 2 karakter.");
     return false;
   }
 
   if (form.value.name.trim().length > 60) {
-    notify.warning("Nama satuan maksimal 60 karakter.");
+    toast.warning("Nama satuan maksimal 60 karakter.");
     return false;
   }
 
   if (!form.value.abbreviation.trim()) {
-    notify.warning("Singkatan satuan wajib diisi.");
+    toast.warning("Singkatan satuan wajib diisi.");
     return false;
   }
 
   if (form.value.abbreviation.trim().length > 20) {
-    notify.warning("Singkatan maksimal 20 karakter.");
+    toast.warning("Singkatan maksimal 20 karakter.");
     return false;
   }
 
@@ -88,12 +90,12 @@ async function save(): Promise<void> {
       throw new Error(typeof result.message === "string" ? result.message : "Gagal menyimpan satuan.");
     }
 
-    notify.success(props.unit ? "Satuan berhasil diperbarui." : "Satuan berhasil ditambahkan.");
+    toast.success(props.unit ? "Satuan berhasil diperbarui." : "Satuan berhasil ditambahkan.");
 
     emit("select", result.data);
     emit("close");
   } catch (error: any) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   } finally {
     saving.value = false;
   }
