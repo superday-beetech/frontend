@@ -8,7 +8,7 @@ import goodsReceiptService from "../services/goodsReceiptService";
 import GoodsReceiptFormModal from "../components/GoodsReceiptFormModal.vue";
 import GoodsReceiptDetailModal from "../components/GoodsReceiptDetailModal.vue";
 
-import type { GoodsReceipt, GoodsReceiptListResult, GoodsReceiptPayload, GoodsReceiptPagination, GoodsReceiptStatus } from "../types/goodsReceipt";
+import type { GoodsReceipt, GoodsReceiptPayload, GoodsReceiptPagination, GoodsReceiptStatus } from "../types/goodsReceipt";
 
 const toast = useToast();
 
