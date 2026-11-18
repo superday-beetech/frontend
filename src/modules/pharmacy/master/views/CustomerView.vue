@@ -8,8 +8,10 @@ import CustomerDetailModal from "../components/CustomerDetailModal.vue";
 
 import { useModal } from "@/shared/composables/useModal";
 import { useToast } from "@/shared/composables/useToast";
+import { useConfirm } from "@/shared/composables/useConfirm";
 
 const toast = useToast();
+const { confirm } = useConfirm();
 
 const modalStore = useModal();
 
@@ -126,7 +128,12 @@ function openDetail(customer: Customer) {
 }
 
 async function deleteCustomer(customer: Customer) {
-  const confirmed = window.confirm(`Hapus customer "${customer.name}"?`);
+  const confirmed = await confirm({
+    title: "Konfirmasi Hapus",
+    message: `Hapus customer "${customer.name}"?`,
+    confirmText: "Ya, Hapus",
+    variant: "danger",
+  });
 
   if (!confirmed) return;
 
