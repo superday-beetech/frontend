@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DiscountMode } from '@/shared/composables/useDiscount'
-const props = withDefaults(defineProps<{ modelValue: number; mode?: DiscountMode; disabled?: boolean }>(), { mode: 'percent', disabled: false })
+withDefaults(defineProps<{ modelValue: number; mode?: DiscountMode; disabled?: boolean }>(), { mode: 'percent', disabled: false })
 const emit = defineEmits<{ 'update:modelValue': [value: number]; 'update:mode': [value: DiscountMode] }>()
 </script>
 
