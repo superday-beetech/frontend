@@ -150,34 +150,34 @@ onMounted(() => loadReceipts());
 
 <template>
   <div class="goods-receipt-page">
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
       <div>
         <h4 class="mb-1">Goods Receipt</h4>
-        <p class="text-muted mb-0">Pengelolaan penerimaan barang dari supplier.</p>
+        <p class="text-slate-500 mb-0">Pengelolaan penerimaan barang dari supplier.</p>
       </div>
 
-      <button type="button" class="btn btn-primary" @click="openCreateModal">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreateModal">
         <i class="ti ti-plus me-1" />
         Buat Penerimaan
       </button>
     </div>
 
-    <div class="card">
-      <div class="card-body">
-        <div class="row g-2 mb-3">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div class="p-5">
+        <div class="grid grid-cols-12 g-2 mb-3">
           <div class="col-md-5">
-            <div class="input-group">
-              <input v-model="search" type="search" class="form-control" placeholder="Cari nomor GR, PO, supplier..." @keyup.enter="searchReceipts" />
+            <div class="flex w-full items-stretch">
+              <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Cari nomor GR, PO, supplier..." @keyup.enter="searchReceipts" />
 
-              <button type="button" class="btn btn-outline-primary" @click="searchReceipts">
+              <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 border border-primary-600 text-primary-700 hover:bg-primary-50" @click="searchReceipts">
                 <i class="ti ti-search" />
                 Cari
               </button>
             </div>
           </div>
 
-          <div class="col-md-3">
-            <select v-model="status" class="form-select" @change="changeStatus">
+          <div class="col-span-12 md:col-span-3">
+            <select v-model="status" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" @change="changeStatus">
               <option value="">Semua Status</option>
               <option value="draft">Draft</option>
               <option value="posted">Posted</option>
@@ -185,8 +185,8 @@ onMounted(() => loadReceipts());
             </select>
           </div>
 
-          <div class="col-md-4 text-md-end">
-            <button type="button" class="btn btn-light" :disabled="loading" @click="loadReceipts(pagination.page)">
+          <div class="col-span-12 md:col-span-4 text-md-end">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="loading" @click="loadReceipts(pagination.page)">
               <i class="ti ti-refresh me-1" />
               Muat Ulang
             </button>
@@ -194,12 +194,12 @@ onMounted(() => loadReceipts());
         </div>
 
         <div v-if="loading" class="text-center py-5">
-          <div class="spinner-border text-primary" />
-          <div class="mt-2 text-muted">Memuat data penerimaan...</div>
+          <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent text-primary-600" />
+          <div class="mt-2 text-slate-500">Memuat data penerimaan...</div>
         </div>
 
-        <div v-else class="table-responsive">
-          <table class="table table-hover align-middle">
+        <div v-else class="w-full overflow-x-auto">
+          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
             <thead class="table-light">
               <tr>
                 <th>Nomor Penerimaan</th>
@@ -207,13 +207,13 @@ onMounted(() => loadReceipts());
                 <th>Supplier</th>
                 <th>Tanggal Terima</th>
                 <th>Status</th>
-                <th class="text-end">Aksi</th>
+                <th class="text-right">Aksi</th>
               </tr>
             </thead>
 
             <tbody>
               <tr v-for="receipt in receipts" :key="receipt.id">
-                <td class="fw-semibold">
+                <td class="font-semibold">
                   {{ receipt.receipt_number }}
                 </td>
 
@@ -230,13 +230,13 @@ onMounted(() => loadReceipts());
                 </td>
 
                 <td>
-                  <span class="badge" :class="statusClass(receipt.status)">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="statusClass(receipt.status)">
                     {{ receipt.status }}
                   </span>
                 </td>
 
-                <td class="text-end">
-                  <button type="button" class="btn btn-sm btn-outline-primary" title="Detail" @click="openDetailModal(receipt)">
+                <td class="text-right">
+                  <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-primary-600 text-primary-700 hover:bg-primary-50" title="Detail" @click="openDetailModal(receipt)">
                     <i class="ti ti-eye" />
                     Detail
                   </button>
@@ -244,14 +244,14 @@ onMounted(() => loadReceipts());
               </tr>
 
               <tr v-if="receipts.length === 0">
-                <td colspan="6" class="text-center text-muted py-5">Belum ada data Goods Receipt.</td>
+                <td colspan="6" class="text-center text-slate-500 py-5">Belum ada data Goods Receipt.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div v-if="!loading && pagination.total > 0" class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">
-          <div class="text-muted small">
+        <div v-if="!loading && pagination.total > 0" class="flex flex-wrap items-center justify-between gap-3 mt-3">
+          <div class="text-slate-500 small">
             Menampilkan
             {{ (pagination.page - 1) * pagination.per_page + 1 }}
             -
@@ -259,12 +259,12 @@ onMounted(() => loadReceipts());
             dari {{ formatNumber(pagination.total) }} data
           </div>
 
-          <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="!pagination.has_prev" @click="changePage(pagination.page - 1)">Sebelumnya</button>
+          <div class="flex items-center gap-2">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-slate-300 text-slate-700 hover:bg-slate-50" :disabled="!pagination.has_prev" @click="changePage(pagination.page - 1)">Sebelumnya</button>
 
             <span class="small"> Halaman {{ pagination.page }} / {{ Math.max(1, pagination.total_pages) }} </span>
 
-            <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="!pagination.has_next" @click="changePage(pagination.page + 1)">Berikutnya</button>
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs border border-slate-300 text-slate-700 hover:bg-slate-50" :disabled="!pagination.has_next" @click="changePage(pagination.page + 1)">Berikutnya</button>
           </div>
         </div>
       </div>
