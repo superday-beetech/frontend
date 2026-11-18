@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import { notify } from "@/utils/notification";
-import { useModalStore } from "@/composables/useModal";
+import { useToast } from "@/shared/composables/useToast";
+import { useModal } from "@/shared/composables/useModal";
 
 import goodsReceiptService from "../services/goodsReceiptService";
 import GoodsReceiptFormModal from "../components/GoodsReceiptFormModal.vue";
@@ -10,7 +10,9 @@ import GoodsReceiptDetailModal from "../components/GoodsReceiptDetailModal.vue";
 
 import type { GoodsReceipt, GoodsReceiptListResult, GoodsReceiptPayload, GoodsReceiptPagination, GoodsReceiptStatus } from "../types/goodsReceipt";
 
-const modalStore = useModalStore();
+const toast = useToast();
+
+const modalStore = useModal();
 
 const loading = ref(false);
 const receipts = ref<GoodsReceipt[]>([]);
@@ -59,7 +61,7 @@ async function loadReceipts(page = 1) {
     receipts.value = result.items;
     pagination.value = result.pagination;
   } catch (error) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   } finally {
     loading.value = false;
   }
@@ -99,13 +101,13 @@ async function createReceipt(payload: GoodsReceiptPayload) {
   try {
     await goodsReceiptService.create(payload);
 
-    notify.success("Goods Receipt berhasil dibuat sebagai draft.");
+    toast.success("Goods Receipt berhasil dibuat sebagai draft.");
 
     modalStore.close();
 
     await loadReceipts(1);
   } catch (error) {
-    notify.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error));
   }
 }
 
