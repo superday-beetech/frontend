@@ -18,10 +18,6 @@ onMounted(async () => {
       // Pesan error ditampilkan dari state store.
     }
   }
-
-  if (organization.hasContext) {
-    await router.replace({ name: 'Dashboard' })
-  }
 })
 
 async function selectOrganization(id: number) {
