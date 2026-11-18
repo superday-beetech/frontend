@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
 import financeService from "../services/financeService";
+
+const toast = useToast();
 
 interface CashTransaction {
   id: number;
@@ -124,7 +126,7 @@ async function loadTransactions(): Promise<void> {
     transactions.value = rows.map(normalizeTransaction);
   } catch (error) {
     console.error("Gagal memuat transaksi kas:", error);
-    notify.error("Gagal memuat data transaksi kas.");
+    toast.error("Gagal memuat data transaksi kas.");
   } finally {
     loading.value = false;
   }
