@@ -6,7 +6,7 @@ import { usePosCalculation } from "./usePosCalculation";
 import { usePosPayment } from "./usePosPayment";
 import { usePosSale } from "./usePosSale";
 
-import type { DiscountMode, TaxMode, SettlementMode, PaymentMethod, Sale, ProductSearchResult } from "../types/sales";
+import type { SettlementMode, PaymentMethod, Sale, ProductSearchResult } from "../types/sales";
 
 import { getToday } from "../utils/format";
 import { roundMoney, toNumber } from "../utils/posMath";
@@ -191,11 +191,7 @@ export function usePos(options: UsePosOptions) {
 
   const itemDiscount = computed(() => roundMoney(calculation.itemDiscount.value));
 
-  const afterItemDiscount = computed(() => roundMoney(calculation.afterItemDiscount.value));
-
   const transactionDiscount = computed(() => roundMoney(calculation.transactionDiscount.value));
-
-  const discountTotal = computed(() => roundMoney(calculation.discountTotal.value));
 
   const dpp = computed(() => roundMoney(calculation.dpp.value));
 
@@ -237,26 +233,15 @@ export function usePos(options: UsePosOptions) {
   });
 
   const {
-    amountReceived,
     appliedAmount,
     changeAmount,
     remainingAmount,
-    receivableAmount,
-
-    isPaid,
-    isPartial,
-    isReceivable,
-    requiresConfirmation,
-
     dueDateError,
     validationErrors: paymentValidationErrors,
     isValid: isPaymentValid,
-    summary: paymentSummary,
-
     buildPaymentData,
     payExactAmount,
     resetAmount,
-    setDefaultDueDate,
     needsBuyerInfo,
   } = payment;
 
@@ -328,7 +313,6 @@ export function usePos(options: UsePosOptions) {
 
     heldTransactions,
     loadingHeldTransactions,
-    offlineTransaction,
 
     createDraft,
     postCurrentSale,
@@ -499,7 +483,6 @@ export function usePos(options: UsePosOptions) {
     transactionLocked,
     canCreateDraft,
     canPostSale,
-    offlineTransaction,
 
     // Calculation state
     transactionDiscountMode,

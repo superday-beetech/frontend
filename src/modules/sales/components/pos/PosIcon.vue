@@ -1,0 +1,74 @@
+<script setup lang="ts">
+import type { Component } from 'vue'
+import {
+  Activity, ArrowLeft, ArrowRight, BadgePercent, Banknote, Barcode, Building2,
+  CalendarDays, ChartColumn, ChartLine, Check, ChevronRight, CircleAlert,
+  CircleCheck, Clock3, CreditCard, FileText, GripHorizontal, GripVertical,
+  Hospital, Info, Keyboard, Landmark, LayoutGrid, Maximize, Minimize, Minus,
+  NotebookPen, Package, PanelTop, Pause, Percent, Play, Plus, QrCode, Receipt,
+  RefreshCw, Save, ScanLine, Search, ShoppingCart, Trash2, User, UserRound,
+  UserRoundSearch, Volume2, VolumeX, Wallet, X,
+} from 'lucide-vue-next'
+
+withDefaults(defineProps<{ name: string; size?: number | string; strokeWidth?: number }>(), {
+  size: 18,
+  strokeWidth: 2,
+})
+
+const icons: Record<string, Component> = {
+  activity: Activity,
+  'arrow-left': ArrowLeft,
+  'arrow-right': ArrowRight,
+  'badge-percent': BadgePercent,
+  banknote: Banknote,
+  barcode: Barcode,
+  'building-2': Building2,
+  'calendar-days': CalendarDays,
+  'chart-column': ChartColumn,
+  'chart-line': ChartLine,
+  check: Check,
+  'chevron-right': ChevronRight,
+  'circle-alert': CircleAlert,
+  'circle-check': CircleCheck,
+  'clock-3': Clock3,
+  'credit-card': CreditCard,
+  'file-text': FileText,
+  'grip-horizontal': GripHorizontal,
+  'grip-vertical': GripVertical,
+  hospital: Hospital,
+  info: Info,
+  keyboard: Keyboard,
+  landmark: Landmark,
+  'layout-grid': LayoutGrid,
+  'panel-top-open': PanelTop,
+  'panel-top-close': PanelTop,
+  maximize: Maximize,
+  minimize: Minimize,
+  minus: Minus,
+  'notebook-pen': NotebookPen,
+  package: Package,
+  pause: Pause,
+  percent: Percent,
+  play: Play,
+  plus: Plus,
+  'qr-code': QrCode,
+  receipt: Receipt,
+  'refresh-cw': RefreshCw,
+  save: Save,
+  'scan-line': ScanLine,
+  search: Search,
+  'shopping-cart': ShoppingCart,
+  'trash-2': Trash2,
+  user: User,
+  'user-round': UserRound,
+  'user-round-search': UserRoundSearch,
+  'volume-2': Volume2,
+  'volume-x': VolumeX,
+  wallet: Wallet,
+  x: X,
+}
+</script>
+
+<template>
+  <component :is="icons[name] || CircleAlert" :size="size" :stroke-width="strokeWidth" aria-hidden="true" />
+</template>

@@ -1,45 +1,31 @@
-import type { Component } from "vue";
-
-import { useModalStore, type ModalSize } from "@/composables/useModal";
-import { useOffcanvasStore } from "@/composables/useOffcanvas";
-import { modal } from "@/utils/modal";
-import { offcanvas } from "@/utils/offcanvas";
-import { notify as globalNotify } from "@/utils/notification";
-import pinia from "@/stores";
+import type { Component } from 'vue'
+import { useModal, type ModalSize } from '@/shared/composables/useModal'
+import { useToast } from '@/shared/composables/useToast'
 
 export function usePosHost() {
+  const modal = useModal()
+  const toast = useToast()
+
   function openOffCanvas(component: Component, options: { title: string; width?: string; props?: Record<string, unknown> }): void {
-    offcanvas.open({
-      component,
-      title: options.title,
-      width: options.width ?? "480px",
-      props: options.props,
-    });
+    // Fondasi baru menyediakan modal global; gunakan ukuran lebar untuk panel pengaturan POS.
+    modal.open({ component, title: options.title, size: 'xl', centered: true, scrollable: true, props: options.props })
   }
 
-  function openModal(component: Component, options: { title: string; size?: ModalSize; props?: Record<string, unknown> }): void {
-    modal.open({
-      component,
-      title: options.title,
-      size: options.size ?? "default",
-      centered: true,
-      scrollable: true,
-      props: options.props,
-    });
+  function openModal(component: Component, options: { title: string; size?: ModalSize | 'default'; props?: Record<string, unknown> }): void {
+    modal.open({ component, title: options.title, size: options.size ?? 'md', centered: true, scrollable: true, props: options.props })
   }
 
   function closeModal(): void {
-    modal.close();
+    modal.close()
   }
 
-  function notify(type: "success" | "error" | "info" | "warning", text: string): void {
-    globalNotify[type](text);
+  function notify(type: 'success' | 'error' | 'info' | 'warning', text: string): void {
+    toast[type](text)
   }
 
-  /** True bila modal atau offcanvas global sedang terbuka. */
   function isOpen(): boolean {
-    return useModalStore(pinia).isOpen || useOffcanvasStore(pinia).isOpen;
+    return modal.state.open
   }
 
-  return { openOffCanvas, openModal, notify, isOpen };
+  return { openOffCanvas, openModal, closeModal, notify, isOpen }
 }

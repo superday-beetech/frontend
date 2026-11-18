@@ -8,8 +8,6 @@ interface UsePosLifecycleOptions {
   showError: (error: unknown) => void;
   focusBarcode: () => void;
 
-  loadMenu: () => Promise<unknown>;
-  loadPermission: () => Promise<unknown>;
 
   rememberOrganization: () => void;
   syncOrganization: () => Promise<void>;
@@ -54,8 +52,6 @@ export function usePosLifecycle(options: UsePosLifecycleOptions) {
     options.focusBarcode();
 
     void loadHeld();
-    void options.loadMenu().catch(() => undefined);
-    void options.loadPermission().catch(() => undefined);
   });
 
   onBeforeUnmount(() => {
