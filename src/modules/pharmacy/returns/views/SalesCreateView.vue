@@ -90,7 +90,7 @@ async function loadDeliveries() {
       per_page: 100,
     });
 
-    deliveries.value = data.items.filter((delivery) => delivery.status === "posted");
+    deliveries.value = data.items.filter((delivery) => delivery.status === "posted").map((delivery) => ({ ...delivery, id: Number(delivery.id) }));
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || "Gagal mengambil daftar pengiriman.";
   } finally {
@@ -120,11 +120,11 @@ async function loadDeliveryDetail() {
 
     selectedDelivery.value = delivery;
 
-    const deliveryItems: DeliveryItem[] = Array.isArray(data?.items) ? data.items : [];
+    const deliveryItems = Array.isArray(data?.items) ? data.items : [];
 
     items.value = deliveryItems.map((item) => ({
       deliveryItemId: Number(item.id),
-      productName: item.product_name,
+      productName: item.product_name ?? "-",
       sku: item.sku,
       batchNumber: item.batch_number,
       batchId: Number(item.batch_id),
@@ -191,7 +191,7 @@ async function submitReturn() {
 
     const response = await returnsService.createSales(payload);
 
-    const data = getResponseData(response);
+    const data = response.data?.data;
 
     createdReturnId.value = Number(data?.return_id);
 
