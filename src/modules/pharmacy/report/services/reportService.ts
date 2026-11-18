@@ -1,4 +1,4 @@
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 
 export interface ReportDateFilter {
     date_from?: string;
