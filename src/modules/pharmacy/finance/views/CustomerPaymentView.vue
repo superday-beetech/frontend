@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import api from "@/api/client";
-import { notify } from "@/utils/notification";
-import { useModalStore } from "@/composables/useModal";
+import api from "@/core/api/client";
+import { useToast } from "@/shared/composables/useToast";
+import { useModal } from "@/shared/composables/useModal";
 
 import financeService from "../services/financeService";
 import type { CustomerPaymentPayload } from "../types/finance";
 
 import CustomerPaymentFormModal, { type CustomerOption } from "./CustomerPaymentFormModal.vue";
+
+const toast = useToast();
 
 interface CustomerPaymentRow {
   id: number;
@@ -21,7 +23,7 @@ interface CustomerPaymentRow {
   notes?: string | null;
 }
 
-const modalStore = useModalStore();
+const modalStore = useModal();
 
 const payments = ref<CustomerPaymentRow[]>([]);
 const customers = ref<CustomerOption[]>([]);
@@ -104,7 +106,7 @@ async function loadCustomers(): Promise<void> {
       .filter((row: CustomerOption) => row.id > 0 && row.name !== "");
   } catch (error) {
     console.error("Gagal memuat pelanggan:", error);
-    notify.error("Gagal memuat data pelanggan.");
+    toast.error("Gagal memuat data pelanggan.");
   }
 }
 
@@ -119,7 +121,7 @@ async function loadPayments(): Promise<void> {
     payments.value = rows;
   } catch (error) {
     console.error("Gagal memuat pembayaran pelanggan:", error);
-    notify.error("Gagal memuat daftar pembayaran pelanggan.");
+    toast.error("Gagal memuat daftar pembayaran pelanggan.");
   } finally {
     loading.value = false;
   }
@@ -129,20 +131,20 @@ async function savePayment(payload: CustomerPaymentPayload): Promise<void> {
   try {
     await financeService.createCustomerPayment(payload);
 
-    notify.success("Pembayaran pelanggan berhasil disimpan.");
+    toast.success("Pembayaran pelanggan berhasil disimpan.");
     await loadPayments();
   } catch (error: any) {
     console.error("Gagal menyimpan pembayaran pelanggan:", error);
 
     const message = error?.response?.data?.messages?.error ?? error?.response?.data?.message ?? "Gagal menyimpan pembayaran pelanggan.";
 
-    notify.error(message);
+    toast.error(message);
   }
 }
 
 function openCreateModal(): void {
   if (customers.value.length === 0) {
-    notify.warning("Data pelanggan belum tersedia.");
+    toast.warning("Data pelanggan belum tersedia.");
     return;
   }
 
