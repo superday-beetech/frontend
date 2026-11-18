@@ -142,15 +142,15 @@ onMounted(loadPurchaseOrders);
 <template>
   <div class="goods-receipt-form">
     <div class="mb-3">
-      <label class="form-label"> Nomor Penerimaan <span class="text-danger">*</span> </label>
-      <input v-model="form.receipt_number" type="text" class="form-control" placeholder="Contoh: GR-2026-0001" />
+      <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nomor Penerimaan <span class="text-rose-600">*</span> </label>
+      <input v-model="form.receipt_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Contoh: GR-2026-0001" />
     </div>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label class="form-label"> Purchase Order <span class="text-danger">*</span> </label>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 mb-3">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Purchase Order <span class="text-rose-600">*</span> </label>
 
-        <select v-model.number="form.purchase_order_id" class="form-select" :disabled="loadingOrders || loadingOrderDetail" @change="selectPurchaseOrder">
+        <select v-model.number="form.purchase_order_id" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" :disabled="loadingOrders || loadingOrderDetail" @change="selectPurchaseOrder">
           <option :value="0">
             {{ loadingOrders ? "Memuat PO..." : "Pilih PO" }}
           </option>
@@ -160,32 +160,32 @@ onMounted(loadPurchaseOrders);
           </option>
         </select>
 
-        <small v-if="!loadingOrders && purchaseOrders.length === 0" class="text-muted"> Tidak ada PO yang dapat menerima barang. </small>
+        <small v-if="!loadingOrders && purchaseOrders.length === 0" class="text-slate-500"> Tidak ada PO yang dapat menerima barang. </small>
       </div>
 
-      <div class="col-md-6 mb-3">
-        <label class="form-label"> Tanggal Penerimaan <span class="text-danger">*</span> </label>
-        <input v-model="form.received_date" type="date" class="form-control" />
+      <div class="col-span-12 md:col-span-6 mb-3">
+        <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Tanggal Penerimaan <span class="text-rose-600">*</span> </label>
+        <input v-model="form.received_date" type="date" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
       </div>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Nomor Surat Jalan Supplier</label>
-      <input v-model="form.supplier_delivery_number" type="text" class="form-control" placeholder="Nomor surat jalan" />
+      <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nomor Surat Jalan Supplier</label>
+      <input v-model="form.supplier_delivery_number" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Nomor surat jalan" />
     </div>
 
-    <div v-if="selectedOrder" class="card border mb-3">
-      <div class="card-body py-3">
-        <div class="row">
-          <div class="col-md-6">
-            <small class="text-muted">Nomor PO</small>
-            <div class="fw-semibold">
+    <div v-if="selectedOrder" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border mb-3">
+      <div class="p-5 py-3">
+        <div class="grid grid-cols-12">
+          <div class="col-span-12 md:col-span-6">
+            <small class="text-slate-500">Nomor PO</small>
+            <div class="font-semibold">
               {{ selectedOrder.order_number }}
             </div>
           </div>
-          <div class="col-md-6">
-            <small class="text-muted">Supplier</small>
-            <div class="fw-semibold">
+          <div class="col-span-12 md:col-span-6">
+            <small class="text-slate-500">Supplier</small>
+            <div class="font-semibold">
               {{ selectedOrder.supplier_name || "-" }}
             </div>
           </div>
@@ -194,40 +194,40 @@ onMounted(loadPurchaseOrders);
     </div>
 
     <div v-if="loadingOrderDetail" class="text-center py-4">
-      <div class="spinner-border spinner-border-sm" />
+      <div class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm" />
       <span class="ms-2">Memuat detail PO...</span>
     </div>
 
     <template v-else-if="form.items.length > 0">
-      <h6 class="fw-semibold mb-3">Item Penerimaan</h6>
+      <h6 class="font-semibold mb-3">Item Penerimaan</h6>
 
-      <div class="table-responsive">
-        <table class="table table-bordered align-middle">
+      <div class="w-full overflow-x-auto">
+        <table class="w-full border-collapse text-sm table-bordered align-middle">
           <thead class="table-light">
             <tr>
               <th>Produk</th>
-              <th class="text-end">Qty PO</th>
+              <th class="text-right">Qty PO</th>
               <th style="width: 130px">Qty Diterima</th>
-              <th class="text-end">Harga Satuan</th>
+              <th class="text-right">Harga Satuan</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(item, index) in form.items" :key="item.purchase_order_item_id">
               <td>
-                <div class="fw-semibold">
+                <div class="font-semibold">
                   {{ item.product_name }}
                 </div>
-                <small class="text-muted">
+                <small class="text-slate-500">
                   {{ item.sku }}
                 </small>
               </td>
-              <td class="text-end">
+              <td class="text-right">
                 {{ formatNumber(item.quantity_ordered) }}
               </td>
               <td>
-                <input v-model.number="item.quantity_received" type="number" min="0" step="0.001" class="form-control form-control-sm" />
+                <input v-model.number="item.quantity_received" type="number" min="0" step="0.001" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-control-sm" />
               </td>
-              <td class="text-end">
+              <td class="text-right">
                 {{ formatNumber(item.unit_cost) }}
               </td>
             </tr>
@@ -235,21 +235,21 @@ onMounted(loadPurchaseOrders);
         </table>
       </div>
 
-      <small class="text-muted"> Isi jumlah aktual yang diterima. Item dengan jumlah nol tidak akan dikirim. </small>
+      <small class="text-slate-500"> Isi jumlah aktual yang diterima. Item dengan jumlah nol tidak akan dikirim. </small>
     </template>
 
-    <div v-else-if="form.purchase_order_id > 0" class="alert alert-warning">Purchase Order ini tidak memiliki item.</div>
+    <div v-else-if="form.purchase_order_id > 0" class="rounded-lg border px-4 py-3 text-sm border-amber-200 bg-amber-50 text-amber-800">Purchase Order ini tidak memiliki item.</div>
 
     <div class="mb-3 mt-3">
-      <label class="form-label">Catatan</label>
-      <textarea v-model="form.notes" class="form-control" rows="2" placeholder="Catatan penerimaan..." />
+      <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Catatan</label>
+      <textarea v-model="form.notes" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="2" placeholder="Catatan penerimaan..." />
     </div>
 
-    <div class="d-flex justify-content-end gap-2">
-      <button type="button" class="btn btn-light" :disabled="submitting" @click="emit('close')">Batal</button>
+    <div class="flex justify-end gap-2">
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="submitting" @click="emit('close')">Batal</button>
 
-      <button type="button" class="btn btn-primary" :disabled="!canSubmit || submitting" @click="submit">
-        <span v-if="submitting" class="spinner-border spinner-border-sm me-1" />
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="!canSubmit || submitting" @click="submit">
+        <span v-if="submitting" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1" />
         Simpan Draft
       </button>
     </div>
