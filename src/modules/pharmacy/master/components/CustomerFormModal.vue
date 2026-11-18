@@ -89,40 +89,40 @@ async function submitForm() {
 <template>
   <form @submit.prevent="submitForm">
     <div class="modal-body">
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label class="form-label"> Kode Customer <span class="text-danger">*</span> </label>
-          <input v-model="form.code" type="text" class="form-control" maxlength="50" placeholder="Contoh: CUS-001" required />
+      <div class="grid grid-cols-12">
+        <div class="col-span-12 md:col-span-4 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Kode Customer <span class="text-rose-600">*</span> </label>
+          <input v-model="form.code" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="50" placeholder="Contoh: CUS-001" required />
         </div>
 
-        <div class="col-md-8 mb-3">
-          <label class="form-label"> Nama Customer <span class="text-danger">*</span> </label>
-          <input v-model="form.name" type="text" class="form-control" maxlength="150" placeholder="Nama customer" required />
+        <div class="col-span-12 md:col-span-8 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300"> Nama Customer <span class="text-rose-600">*</span> </label>
+          <input v-model="form.name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="150" placeholder="Nama customer" required />
         </div>
 
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Jenis Customer</label>
-          <input v-model="form.customer_type" type="text" class="form-control" maxlength="30" placeholder="Contoh: retail, grosir, instansi" />
+        <div class="col-span-12 md:col-span-6 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Jenis Customer</label>
+          <input v-model="form.customer_type" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="30" placeholder="Contoh: retail, grosir, instansi" />
         </div>
 
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Nomor Telepon</label>
-          <input v-model="form.phone" type="text" class="form-control" maxlength="30" placeholder="Nomor telepon" />
+        <div class="col-span-12 md:col-span-6 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nomor Telepon</label>
+          <input v-model="form.phone" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="30" placeholder="Nomor telepon" />
         </div>
 
-        <div class="col-12 mb-3">
-          <label class="form-label">Email</label>
-          <input v-model="form.email" type="email" class="form-control" maxlength="150" placeholder="Alamat email" />
+        <div class="col-span-12 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
+          <input v-model="form.email" type="email" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" maxlength="150" placeholder="Alamat email" />
         </div>
 
-        <div class="col-12 mb-3">
-          <label class="form-label">Alamat</label>
-          <textarea v-model="form.address" class="form-control" rows="3" placeholder="Alamat customer" />
+        <div class="col-span-12 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Alamat</label>
+          <textarea v-model="form.address" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" rows="3" placeholder="Alamat customer" />
         </div>
 
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Status</label>
-          <select v-model.number="form.is_active" class="form-select">
+        <div class="col-span-12 md:col-span-6 mb-3">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+          <select v-model.number="form.is_active" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">
             <option :value="1">Aktif</option>
             <option :value="0">Nonaktif</option>
           </select>
@@ -131,10 +131,10 @@ async function submitForm() {
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-light" :disabled="loading.value" @click="emit('close')">Batal</button>
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" :disabled="loading.value" @click="emit('close')">Batal</button>
 
-      <button type="submit" class="btn btn-primary" :disabled="loading.value">
-        <span v-if="loading.value" class="spinner-border spinner-border-sm me-1" />
+      <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" :disabled="loading.value">
+        <span v-if="loading.value" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-1" />
         {{ loading.value ? "Menyimpan..." : "Simpan" }}
       </button>
     </div>
