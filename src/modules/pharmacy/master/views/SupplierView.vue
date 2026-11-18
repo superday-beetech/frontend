@@ -8,8 +8,10 @@ import SupplierDetailModal from "../components/SupplierDetailModal.vue";
 
 import { useModal } from "@/shared/composables/useModal";
 import { useToast } from "@/shared/composables/useToast";
+import { useConfirm } from "@/shared/composables/useConfirm";
 
 const toast = useToast();
+const { confirm } = useConfirm();
 
 const modalStore = useModal();
 
@@ -130,7 +132,12 @@ function openDetail(supplier: Supplier) {
 }
 
 async function deleteSupplier(supplier: Supplier) {
-  const confirmed = window.confirm(`Hapus supplier "${supplier.name}"?`);
+  const confirmed = await confirm({
+    title: "Konfirmasi Hapus",
+    message: `Hapus supplier "${supplier.name}"?`,
+    confirmText: "Ya, Hapus",
+    variant: "danger",
+  });
 
   if (!confirmed) return;
 
