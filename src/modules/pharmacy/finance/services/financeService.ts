@@ -1,4 +1,4 @@
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 
 import type { CustomerPaymentPayload, CreateFinanceResponse, ExpensePayload, FinanceDateFilter, OutstandingResponse, SupplierPaymentPayload } from "../types/finance";
 
