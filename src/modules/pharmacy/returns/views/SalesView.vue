@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import api from "@/core/api/client";
+import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 
 const toast = useToast();
