@@ -5,7 +5,9 @@ import { useRouter } from "vue-router";
 import distributionService from "../services/distributionService";
 import type { DistributionOrder, DistributionOrderStatus } from "../types/distribution";
 
-import { notify } from "@/utils/notification";
+import { useToast } from "@/shared/composables/useToast";
+
+const toast = useToast();
 
 const router = useRouter();
 
@@ -92,7 +94,7 @@ async function loadOrders() {
   try {
     orders.value = await distributionService.getOrders();
   } catch (error: any) {
-    notify.error(error?.response?.data?.message || error?.message || "Gagal memuat pesanan distribusi.");
+    toast.error(error?.response?.data?.message || error?.message || "Gagal memuat pesanan distribusi.");
   } finally {
     loading.value = false;
   }
