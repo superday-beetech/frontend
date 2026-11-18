@@ -26,46 +26,46 @@ function formatDate(value?: string | null): string {
 
 <template>
   <div class="modal-body">
-    <div class="d-flex justify-content-between align-items-start mb-4">
+    <div class="flex justify-between align-items-start mb-4">
       <div>
         <h5 class="mb-1">{{ supplier.name }}</h5>
-        <span class="text-muted">{{ supplier.code }}</span>
+        <span class="text-slate-500">{{ supplier.code }}</span>
       </div>
 
-      <span class="badge" :class="Number(supplier.is_active) === 1 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+      <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="Number(supplier.is_active) === 1 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
         {{ Number(supplier.is_active) === 1 ? "Aktif" : "Nonaktif" }}
       </span>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-borderless align-middle mb-0">
+    <div class="w-full overflow-x-auto">
+      <table class="w-full border-collapse text-sm table-borderless align-middle mb-0">
         <tbody>
           <tr>
-            <th class="text-muted ps-0" style="width: 35%">Kode</th>
+            <th class="text-slate-500 ps-0" style="width: 35%">Kode</th>
             <td>{{ supplier.code }}</td>
           </tr>
           <tr>
-            <th class="text-muted ps-0">Nama</th>
+            <th class="text-slate-500 ps-0">Nama</th>
             <td>{{ supplier.name }}</td>
           </tr>
           <tr>
-            <th class="text-muted ps-0">Telepon</th>
+            <th class="text-slate-500 ps-0">Telepon</th>
             <td>{{ supplier.phone || "-" }}</td>
           </tr>
           <tr>
-            <th class="text-muted ps-0">Email</th>
+            <th class="text-slate-500 ps-0">Email</th>
             <td>{{ supplier.email || "-" }}</td>
           </tr>
           <tr>
-            <th class="text-muted ps-0">Alamat</th>
+            <th class="text-slate-500 ps-0">Alamat</th>
             <td class="text-wrap">{{ supplier.address || "-" }}</td>
           </tr>
           <tr>
-            <th class="text-muted ps-0">Dibuat</th>
+            <th class="text-slate-500 ps-0">Dibuat</th>
             <td>{{ formatDate(supplier.created_at) }}</td>
           </tr>
           <tr>
-            <th class="text-muted ps-0">Diperbarui</th>
+            <th class="text-slate-500 ps-0">Diperbarui</th>
             <td>{{ formatDate(supplier.updated_at) }}</td>
           </tr>
         </tbody>
@@ -74,9 +74,9 @@ function formatDate(value?: string | null): string {
   </div>
 
   <div class="modal-footer">
-    <button class="btn btn-light" type="button" @click="emit('close')">Tutup</button>
+    <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-slate-100 text-slate-700 hover:bg-slate-200" type="button" @click="emit('close')">Tutup</button>
 
-    <button class="btn btn-primary" type="button" @click="emit('select', supplier)">
+    <button class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" type="button" @click="emit('select', supplier)">
       <i class="ti ti-edit me-1" />
       Edit Supplier
     </button>
