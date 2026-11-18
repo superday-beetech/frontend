@@ -87,7 +87,7 @@ export function usePosTransactionActions(options: UsePosTransactionActionsOption
 
     try {
       //   await options.checkoutCurrentSale();
-      const result = await options.checkoutCurrentSale();
+      await options.checkoutCurrentSale();
 
       options.playTransactionSound();
       options.showSuccess("Penjualan berhasil diposting.");
