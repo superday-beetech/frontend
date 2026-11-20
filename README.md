@@ -1,2 +1,3 @@
 # frontend
-how it work Vue 3 + Tailwind
+Vue 3 + Tailwind
+Perubahan dari bootstrap 5, sekarang full tailwind dan modular Vue 3
