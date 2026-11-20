@@ -1,0 +1,705 @@
+@reference "../../../assets/main.css";
+
+@layer components {
+  /* ══════════════════════════════════════════════════════════════ */
+  /* LAYOUT UTAMA - Paksa Full Screen Tanpa Scroll Global          */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-page {
+    @apply flex h-dvh w-full min-h-0 flex-col gap-2 overflow-hidden bg-slate-100 p-2 text-sm text-slate-800 dark:bg-slate-950 dark:text-slate-100;
+  }
+  .pos-main {
+    @apply grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-hidden lg:grid-cols-[minmax(0,5fr)_minmax(250px,.8fr)_minmax(220px,.9fr)];
+  }
+
+  /* .pos-main {
+  @apply grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(250px,.8fr)_minmax(280px,.9fr)];
+} */
+  .pos-left,
+  .pos-middle,
+  .pos-right {
+    @apply flex h-full min-h-0 min-w-0 flex-col gap-2;
+  }
+
+  /* Area Scroll (Hanya untuk Form Pembayaran) */
+  /* Area pembayaran */
+  .pos-right-scroll {
+    @apply flex-1 min-h-0 overflow-hidden rounded-2xl; /* overflow-hidden pada container luar */
+  }
+  .pos-right-scroll .pos-panel {
+    @apply h-full flex flex-col;
+  }
+  .pos-right-scroll .pos-panel-body {
+    @apply flex-1 overflow-y-auto p-3 space-y-2; /* Scroll hanya di body */
+  }
+  /* ══════════════════════════════════════════════════════════════ */
+  /* MENUBAR & HEADER                                              */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-menubar {
+    @apply relative z-30 flex min-h-11 shrink-0 flex-wrap items-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-1 shadow-sm dark:border-slate-800 dark:bg-slate-900;
+  }
+  .pos-menu {
+    @apply relative;
+  }
+  .pos-menu-btn {
+    @apply rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+  .pos-menu-btn.is-open {
+    @apply bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300;
+  }
+  .pos-menu-list {
+    @apply absolute left-0 top-full z-50 mt-1 min-w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl dark:border-slate-700 dark:bg-slate-900;
+  }
+  .pos-menu-sep {
+    @apply my-1 border-t border-slate-100 dark:border-slate-800;
+  }
+  .pos-menu-item {
+    @apply flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-800;
+  }
+  .pos-menu-check {
+    @apply w-4 text-center font-bold text-primary-600;
+  }
+  .pos-menu-label {
+    @apply min-w-0 flex-1;
+  }
+  .pos-menubar-end {
+    @apply ml-auto flex flex-wrap items-center gap-2 pl-2;
+  }
+  .pos-menubar-clock,
+  .pos-menubar-workspace,
+  .pos-menubar-user {
+    @apply inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400;
+  }
+  .pos-menubar-icon {
+    @apply inline-flex size-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-white;
+  }
+
+  .pos-header {
+    @apply flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900;
+  }
+  .pos-header-brand,
+  .pos-header-actions,
+  .pos-header-meta {
+    @apply flex flex-wrap items-center gap-3;
+  }
+  .pos-logo {
+    @apply flex size-10 items-center justify-center rounded-xl bg-primary-600 text-white;
+  }
+  .pos-header-title h1 {
+    @apply m-0 text-base font-bold text-slate-900 dark:text-white;
+  }
+  .pos-header-title small,
+  .pos-header-trx small,
+  .pos-header-cashier small,
+  .pos-clock small {
+    @apply block text-[11px] text-slate-500 dark:text-slate-400;
+  }
+  .pos-header-meta {
+    @apply mr-auto gap-5;
+  }
+  .pos-header-trx strong,
+  .pos-header-cashier strong {
+    @apply mr-2 text-xs font-semibold text-slate-800 dark:text-slate-100;
+  }
+  .pos-chip {
+    @apply inline-flex rounded-full px-2 py-1 text-[10px] font-bold;
+  }
+  .pos-chip.is-new {
+    @apply bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300;
+  }
+  .pos-chip.is-draft {
+    @apply bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300;
+  }
+  .pos-chip.is-done {
+    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300;
+  }
+  .pos-clock {
+    @apply text-right;
+  }
+  .pos-header-divider {
+    @apply h-7 border-l border-slate-200 dark:border-slate-700;
+  }
+
+  /* ══════════════════════════════════════════════════════════════ */
+  /* KARTU & PANEL                                                 */
+  /* ══════════════════════════════════════════════════════════════ */
+  /* .pos-card,
+  .pos-panel {
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900;
+  } */
+  .pos-card,
+  .pos-panel {
+    @apply overflow-hidden rounded-2xl border border-slate-200/60 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-slate-800 dark:bg-slate-900;
+  }
+  .pos-panel {
+    @apply flex min-h-0 flex-col;
+  }
+  /*  .pos-panel-head {
+    @apply flex min-h-2 shrink-0 items-center gap-3 border-b border-slate-100 px-4 py-2 dark:border-slate-800;
+  } */
+  .pos-panel-head {
+    @apply flex min-h-12 shrink-0 items-center gap-3 border-b border-slate-100 bg-slate-50/50 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-900/50;
+  }
+  .pos-panel-title {
+    @apply min-w-0 flex-1;
+  }
+  .pos-panel-title h6 {
+    @apply m-0 text-sm font-bold text-slate-800 dark:text-slate-100;
+  }
+  .pos-panel-title small {
+    @apply mt-0.5 block text-xs text-slate-500 dark:text-slate-400;
+  }
+  .pos-panel-extra {
+    @apply flex items-center gap-2;
+  }
+  .pos-panel-body {
+    @apply min-h-0 flex-1 space-y-3 p-4;
+  }
+  .pos-panel-body.is-flush {
+    @apply p-0;
+  }
+  .pos-panel-body.is-scroll {
+    @apply overflow-y-auto;
+  }
+  .pos-panel-foot {
+    @apply flex shrink-0 items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-4 py-3 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-950/60;
+  }
+
+  /* ══════════════════════════════════════════════════════════════ */
+  /* KOLOM KIRI (Pencarian, Pelanggan, Keranjang)                  */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-search-card,
+  .pos-customer {
+    @apply shrink-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900;
+  }
+  .pos-search-box {
+    @apply relative;
+  }
+  .pos-search-results {
+    @apply absolute left-0 right-0 top-full z-40 mt-1 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl dark:border-slate-700 dark:bg-slate-900;
+  }
+  .pos-result {
+    @apply flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800;
+  }
+  .pos-result.is-active {
+    @apply bg-primary-50 dark:bg-primary-500/15;
+  }
+  .pos-result-info {
+    @apply min-w-0;
+  }
+  .pos-result-info strong,
+  .pos-result-price strong {
+    @apply block truncate text-xs font-semibold text-slate-800 dark:text-slate-100;
+  }
+  .pos-result-info small,
+  .pos-result-price small {
+    @apply block text-[11px] text-slate-500 dark:text-slate-400;
+  }
+  .pos-result-price {
+    @apply shrink-0 text-right;
+  }
+
+  /* Keranjang: Flex-1 agar mengisi sisa ruang di kolom kiri */
+  .pos-cart {
+    @apply flex min-h-0 flex-1 flex-col overflow-hidden;
+  }
+  .pos-cart .pos-panel-body {
+    @apply flex-1 overflow-y-auto;
+  } /* Scroll hanya di body keranjang */
+  .pos-cart.is-flash {
+    @apply ring-2 ring-emerald-400/50;
+  }
+
+  .pos-numpad-btn {
+    @apply flex h-12 items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-lg font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-100 active:bg-slate-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700;
+  }
+
+  /* ══════════════════════════════════════════════════════════════ */
+  /* KOLOM TENGAH (Tabs, Catatan, Ringkasan)                       */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-adjust {
+    @apply flex min-h-0 flex-1 flex-col;
+  }
+  .pos-tabs {
+    @apply flex shrink-0 gap-1 overflow-x-auto border-b border-slate-100 px-2 pt-2 dark:border-slate-800;
+  }
+  .pos-tab {
+    @apply relative inline-flex shrink-0 items-center gap-1.5 rounded-t-lg px-3 py-2.5 text-xs font-semibold text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800;
+  }
+  .pos-tab.is-active {
+    @apply border-b-2 border-primary-600 bg-primary-50/70 text-primary-700 dark:bg-primary-500/10 dark:text-primary-300;
+  }
+  .pos-tab-label {
+    @apply whitespace-nowrap;
+  }
+  .pos-tab-badge {
+    @apply rounded-full bg-primary-100 px-1.5 py-0.5 text-[10px] text-primary-700 dark:bg-primary-500/20 dark:text-primary-200;
+  }
+
+  /* Area Catatan mengisi sisa ruang, tapi bisa scroll jika teksnya panjang */
+  .pos-adjust-body {
+    @apply flex-1 overflow-y-auto p-4 bg-slate-50/30 dark:bg-slate-900/30;
+  }
+
+  /* Ringkasan diletakkan di bawah tengah, ukurannya tetap */
+  .pos-summary-box {
+    @apply shrink-0 border-t border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-900;
+  }
+  .pos-summary {
+    @apply space-y-1; /* Rapatkan jarak */
+  }
+  .pos-summary-row,
+  .pos-summary-total {
+    @apply flex items-center justify-between gap-3 text-xs;
+  }
+  .pos-summary-row {
+    @apply text-slate-500 dark:text-slate-400;
+  }
+  .pos-summary-row strong {
+    @apply font-semibold tabular-nums text-slate-800 dark:text-slate-100;
+  }
+  /* Jika ada diskon, beri warna merah lembut */
+  .pos-summary-row.is-discount strong {
+    @apply text-rose-600 font-bold;
+  }
+
+  /* Garis pemisah sebelum total akhir */
+  .pos-summary-total {
+    @apply border-t border-dashed border-slate-200 pt-3 font-bold text-slate-900 dark:border-slate-700 dark:text-white;
+  }
+
+  /* ══════════════════════════════════════════════════════════════ */
+  /* KOLOM KANAN (Pembayaran)                                      */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-payment-panel {
+    @apply flex min-h-0 flex-1 flex-col overflow-hidden;
+  }
+  .pos-payment-body {
+    @apply flex-1 overflow-y-auto p-4 space-y-3;
+  } /* Scroll hanya di body pembayaran */
+  .pos-payment-footer {
+    @apply shrink-0 border-t border-slate-200 bg-white p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-900 z-10;
+  }
+
+  .pos-payment {
+    @apply space-y-3;
+  }
+  .pos-segment,
+  .pos-method-grid {
+    @apply grid grid-cols-3 gap-1.5;
+  }
+  .pos-choice {
+    @apply relative cursor-pointer;
+  }
+  .pos-choice input:checked + .pos-segment-btn,
+  .pos-choice input:checked + .pos-method {
+    @apply border-primary-500 bg-primary-50 text-primary-700 ring-1 ring-primary-500/20 dark:bg-primary-500/15 dark:text-primary-300;
+  }
+  .pos-segment-btn,
+  .pos-method {
+    @apply flex min-h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-600 transition dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300;
+  }
+  .pos-method-grid {
+    @apply grid-cols-6;
+  }
+  .pos-method {
+    @apply flex flex-col items-center justify-center gap-1 px-1 py-2;
+  }
+
+  .pos-amount {
+    @apply flex;
+  }
+  .pos-amount .pos-input {
+    @apply text-lg font-bold tabular-nums;
+  }
+  .pos-inline-row {
+    @apply flex items-center justify-between gap-3;
+  }
+  .pos-amount-hint {
+    @apply text-[11px] text-slate-500;
+  }
+  .pos-amount-hint.is-error,
+  .pos-invalid {
+    @apply text-rose-600;
+  }
+
+  .pos-denoms-head {
+    @apply flex items-center justify-between text-xs font-semibold;
+  }
+  .pos-link-danger {
+    @apply text-xs font-semibold text-rose-600 hover:text-rose-700 disabled:opacity-40;
+  }
+  .pos-denoms {
+    @apply grid grid-cols-3 gap-1 mt-1;
+  }
+  .pos-denoms button {
+    @apply min-h-7 rounded-md border border-slate-200 bg-white px-1 text-[11px] font-semibold text-slate-700 shadow-sm hover:border-primary-300 hover:bg-primary-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200;
+  }
+  .pos-denoms button.is-exact {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300;
+  }
+
+  /* ══════════════════════════════════════════════════════════════ */
+  /* KOMPONEN UMUM (Tombol, Input, Tabel, Badge)                   */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-icon-tile {
+    @apply flex size-9 shrink-0 items-center justify-center rounded-xl;
+  }
+  .pos-icon-tile.tone-primary {
+    @apply bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300;
+  }
+  .pos-icon-tile.tone-info {
+    @apply bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300;
+  }
+  .pos-icon-tile.tone-success {
+    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300;
+  }
+  .pos-icon-tile.tone-warning {
+    @apply bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300;
+  }
+  .pos-icon-tile.tone-danger {
+    @apply bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300;
+  }
+
+  .pos-badge {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold;
+  }
+  .pos-badge-success {
+    @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-200;
+  }
+  .pos-badge-neutral {
+    @apply bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300;
+  }
+
+  .pos-button {
+    @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/30 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+  .pos-button-sm {
+    @apply min-h-8 px-2.5 py-1.5 text-xs;
+  }
+  .pos-button-lg {
+    @apply min-h-11 px-4 py-2.5 text-sm;
+  }
+  .pos-button-primary,
+  .pos-button-success {
+    @apply bg-primary-600 text-white shadow-sm hover:bg-primary-700;
+  }
+  /* Tombol Hijau (Bayar) */
+  .pos-button-success {
+    @apply bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/30 active:scale-[0.98];
+  }
+  .pos-button-soft-primary {
+    @apply bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-500/15 dark:text-primary-300 dark:hover:bg-primary-500/25;
+  }
+  .pos-button-soft-secondary,
+  .pos-button-light {
+    @apply bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700;
+  }
+  .pos-button-soft-danger,
+  .pos-button-danger {
+    @apply bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:hover:bg-rose-500/25;
+  }
+  .pos-button-outline-primary {
+    @apply border border-primary-200 text-primary-700 hover:bg-primary-50 dark:border-primary-800 dark:text-primary-300 dark:hover:bg-primary-500/10;
+  }
+  .pos-button-outline-danger {
+    @apply border border-rose-200 text-rose-700 hover:bg-rose-50 dark:border-rose-900 dark:text-rose-300;
+  }
+
+  /* State Disabled (Mati) yang lebih elegan */
+  .pos-button:disabled {
+    @apply cursor-not-allowed bg-slate-200 text-slate-400 shadow-none hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-500;
+  }
+
+  /* Tombol Nominal Cepat (5.000, 10.000, dll) agar lebih 'hidup' */
+  .pos-denoms button {
+    @apply min-h-9 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 hover:shadow disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200;
+  }
+
+  /* Tombol Uang Pas (aksen khusus) */
+  .pos-denoms button.is-exact {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300;
+  }
+
+  .pos-icon-button {
+    @apply inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 disabled:opacity-40 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white;
+  }
+  .pos-label,
+  .pos-field-label {
+    @apply mb-1.5 flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300;
+  }
+  .pos-input {
+    @apply min-h-9 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/15 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:disabled:bg-slate-800;
+  }
+  .pos-input-sm {
+    @apply min-h-8 px-2.5 py-1.5 text-xs;
+  }
+  .pos-input-group {
+    @apply flex min-w-0 items-stretch;
+  }
+  .pos-input-group > .pos-input,
+  .pos-input-group > .pos-select {
+    @apply min-w-0 flex-1 rounded-none first:rounded-l-lg last:rounded-r-lg;
+  }
+  .pos-input-addon {
+    @apply inline-flex items-center rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300;
+  }
+  .pos-checkbox {
+    @apply size-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500 disabled:opacity-50;
+  }
+  .pos-spinner {
+    @apply inline-block size-4 animate-spin rounded-full border-2 border-current border-r-transparent;
+  }
+  .pos-spinner-sm {
+    @apply size-3;
+  }
+  .pos-field-hint {
+    @apply mt-1.5 block text-[11px] text-slate-500 dark:text-slate-400;
+  }
+
+  .pos-table {
+    @apply w-full min-w-170 border-collapse text-xs;
+  }
+  .pos-table th {
+    @apply sticky top-0 z-10 bg-slate-50 px-2 py-2.5 text-left text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-300;
+  }
+  .pos-table td {
+    @apply border-t border-slate-100 px-2 py-2 align-middle dark:border-slate-800;
+  }
+  .pos-table tbody tr:hover {
+    @apply bg-slate-50/70 dark:hover:bg-slate-800/40;
+  }
+  .pos-table .col-no {
+    @apply w-8 text-center text-slate-400;
+  }
+  .pos-table .col-qty {
+    @apply w-28;
+  }
+  .pos-table .col-price {
+    @apply w-28;
+  }
+  .pos-table .col-disc {
+    @apply w-32;
+  }
+  .pos-table .col-amount {
+    @apply w-28 text-right font-semibold tabular-nums;
+  }
+  .pos-table .col-act {
+    @apply w-16;
+  }
+  .pos-qty {
+    @apply max-w-32;
+  }
+  .pos-item-name strong {
+    @apply block text-xs font-semibold text-slate-800 dark:text-slate-100;
+  }
+  .pos-item-name small {
+    @apply block text-[10px] text-slate-500 dark:text-slate-400;
+  }
+  .pos-item-note {
+    @apply mt-1 max-w-64;
+  }
+  .pos-row-actions {
+    @apply flex items-center justify-end gap-1;
+  }
+  .pos-minus {
+    @apply text-rose-600;
+  }
+
+  .pos-empty {
+    @apply flex min-h-40 flex-col items-center justify-center gap-2 p-6 text-center text-slate-500;
+  }
+  .pos-empty svg {
+    @apply text-slate-300 dark:text-slate-600 mb-2;
+  }
+  .pos-empty strong {
+    @apply text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1;
+  }
+  .pos-empty span {
+    @apply max-w-xs text-xs text-slate-500 dark:text-slate-400 leading-relaxed;
+  }
+  .pos-muted-center {
+    @apply block py-5 text-center text-xs text-slate-500 dark:text-slate-400;
+  }
+
+  /* ══════════════════════════════════════════════════════════════ */
+  /* LAIN-LAIN                                                     */
+  /* ══════════════════════════════════════════════════════════════ */
+  .pos-dock {
+    @apply fixed z-50 flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/95;
+  }
+  .pos-dock[data-edge='right'] {
+    @apply right-3 top-(--dock-offset,50%);
+    transform: translateY(-50%);
+  }
+  .pos-dock[data-edge='left'] {
+    @apply left-3 top-(--dock-offset,50%);
+    transform: translateY(-50%);
+  }
+  .pos-dock[data-edge='top'] {
+    @apply left-(--dock-offset,50%) top-3;
+    transform: translateX(-50%);
+  }
+  .pos-dock[data-edge='bottom'] {
+    @apply bottom-3 left-(--dock-offset,50%);
+    transform: translateX(-50%);
+  }
+  .pos-dock.is-collapsed {
+    @apply p-1;
+  }
+  .pos-dock.is-dragging {
+    @apply cursor-grabbing opacity-90;
+  }
+  .pos-dock-handle,
+  .pos-dock-btn {
+    @apply flex size-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-primary-50 hover:text-primary-700 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-primary-500/15 dark:hover:text-primary-300;
+  }
+  .pos-dock-handle {
+    @apply cursor-grab touch-none;
+  }
+  .pos-dock-items {
+    @apply flex items-center gap-1;
+  }
+  .pos-dock[data-edge='left'] .pos-dock-items,
+  .pos-dock[data-edge='right'] .pos-dock-items {
+    @apply flex-col;
+  }
+
+  .pos-toasts {
+    @apply fixed right-4 top-20 z-70 flex w-[min(92vw,420px)] flex-col gap-2;
+  }
+  .pos-alert {
+    @apply flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm shadow-lg;
+  }
+  .pos-alert-success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-200;
+  }
+  .pos-alert-danger {
+    @apply border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900 dark:bg-rose-950/70 dark:text-rose-200;
+  }
+
+  .pos-shortcut-panel {
+    @apply fixed right-4 top-24 z-65 w-[min(92vw,420px)] rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl dark:border-slate-700 dark:bg-slate-900;
+  }
+  .pos-shortcut-head {
+    @apply mb-3 flex items-start justify-between gap-3;
+  }
+  .pos-shortcut-grid {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-2;
+  }
+  .pos-shortcut-grid > span {
+    @apply flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300;
+  }
+  .pos-shortcut-grid kbd,
+  .pos-menu-item kbd,
+  .pos-tab kbd,
+  .pos-field-label kbd,
+  .pos-header-actions kbd {
+    @apply rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300;
+  }
+
+  .pos-posted {
+    @apply flex flex-wrap items-center gap-3 border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900 dark:bg-emerald-950/40;
+  }
+  .pos-posted > div {
+    @apply min-w-0 flex-1;
+  }
+  .pos-posted strong,
+  .pos-posted small {
+    @apply block;
+  }
+  .pos-posted strong {
+    @apply text-sm text-emerald-800 dark:text-emerald-200;
+  }
+  .pos-posted small {
+    @apply text-xs text-emerald-700 dark:text-emerald-300;
+  }
+
+  .pos-total {
+    @apply space-y-3;
+  }
+  .pos-total-main {
+    @apply rounded-xl bg-primary-50 p-2 text-center dark:bg-primary-500/10;
+  }
+  .pos-total-main small {
+    @apply block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider;
+  }
+  .pos-total-amount {
+    @apply my-0 block text-2xl font-black tracking-tight text-primary-700 dark:text-primary-300;
+  }
+  .pos-total-mode {
+    @apply font-semibold;
+  }
+  .pos-total-stats {
+    @apply grid grid-cols-3 gap-1 mt-2;
+  }
+  .pos-total-stats > div {
+    @apply rounded-lg bg-slate-50 p-2 text-center dark:bg-slate-800;
+  }
+  .pos-total-stats dt {
+    @apply text-[10px] text-slate-500;
+  }
+  .pos-total-stats dd {
+    @apply mt-1 text-xs font-bold tabular-nums;
+  }
+  .pos-total-stats .is-change dd {
+    @apply text-emerald-600;
+  }
+  .pos-total-stats .is-remaining dd {
+    @apply text-amber-600;
+  }
+
+  /* Area Final (Total & Tombol Bayar): Tidak boleh mengecil */
+  .pos-final {
+    @apply rounded-2xl border border-primary-200 bg-white p-3 shadow-lg dark:border-primary-900 dark:bg-slate-900;
+  }
+  .pos-final-actions {
+    @apply mt-3 flex flex-col gap-2;
+  }
+  .pos-final-actions > .pos-button {
+    @apply w-full;
+  }
+  .pos-final-actions small {
+    @apply text-[11px] text-slate-500;
+  }
+  /* Ubah breakpoint dari 1279px ke 1023px */
+  @media (max-width: 1023px) {
+    .pos-main {
+      @apply grid-cols-1 overflow-y-auto;
+    }
+    .pos-left,
+    .pos-middle,
+    .pos-right {
+      @apply h-auto;
+    }
+    .pos-cart,
+    .pos-adjust,
+    .pos-payment-panel {
+      @apply h-100; /* Beri tinggi statis di layar kecil */
+    }
+  }
+  /* Media Queries untuk responsif */
+  /*   @media (max-width: 1279px) {
+    .pos-main {
+      @apply grid-cols-1 overflow-y-auto;
+    }
+    .pos-left,
+    .pos-middle,
+    .pos-right {
+      @apply h-auto;
+    }
+    .pos-cart,
+    .pos-adjust,
+    .pos-payment-panel {
+      @apply h-100;
+    }
+  } */
+  @media (max-width: 640px) {
+    .pos-clock,
+    .pos-header-actions .pos-button-label {
+      @apply hidden;
+    }
+    .pos-shortcut-grid {
+      @apply grid-cols-1;
+    }
+  }
+}
