@@ -29,3 +29,19 @@ export interface CreateSalesReturnPayload {
   notes?: string;
   items: SalesReturnItem[];
 }
+
+export interface PosSalesReturnItem {
+  sale_item_id: number;
+  quantity: number;
+  restockable: boolean;
+  condition_notes?: string;
+}
+
+export interface CreatePosSalesReturnPayload {
+  return_number: string;
+  sale_id: number;
+  return_date: string;
+  reason?: string;
+  notes?: string;
+  items: PosSalesReturnItem[];
+}
