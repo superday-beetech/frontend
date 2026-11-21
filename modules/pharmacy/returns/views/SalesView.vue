@@ -138,10 +138,16 @@ onMounted(loadReturns);
         <p class="text-slate-500 mb-0">Pengelolaan retur barang dari pelanggan.</p>
       </div>
 
-      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="createReturn">
-        <i class="ti ti-plus me-1"></i>
-        Buat Sales Return
-      </button>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 border border-primary-600 text-primary-700 hover:bg-primary-50" @click="router.push('/pharmacy/returns/pos-create')">
+          <i class="ti ti-receipt me-1"></i>
+          Retur dari POS
+        </button>
+        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="createReturn">
+          <i class="ti ti-plus me-1"></i>
+          Retur dari Delivery
+        </button>
+      </div>
     </div>
 
     <div class="grid grid-cols-12 g-4">
