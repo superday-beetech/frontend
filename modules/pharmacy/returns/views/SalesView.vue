@@ -10,7 +10,9 @@ interface SalesReturn {
   id: number;
   return_number: string;
   customer_id: number;
-  delivery_id: number;
+  delivery_id: number | null;
+  sale_id?: number | null;
+  sale_number?: string | null;
   return_date: string;
   status: string;
   reason: string | null;
@@ -22,7 +24,11 @@ interface SalesReturn {
 
 interface SalesReturnItem {
   id: number;
-  delivery_item_id: number;
+  delivery_item_id: number | null;
+  sale_item_id?: number | null;
+  product_name?: string | null;
+  sku?: string | null;
+  batch_number?: string | null;
   batch_id: number;
   quantity: number;
   unit_price: number;
@@ -169,7 +175,7 @@ onMounted(loadReturns);
                   <tr>
                     <th>No. Retur</th>
                     <th>Tanggal</th>
-                    <th>Delivery ID</th>
+                    <th>Sumber</th>
                     <th class="text-right">Item</th>
                     <th class="text-right">Total</th>
                     <th>Status</th>
@@ -193,7 +199,7 @@ onMounted(loadReturns);
 
                     <td>{{ formatDate(item.return_date) }}</td>
 
-                    <td>{{ item.delivery_id }}</td>
+                    <td>{{ item.sale_number ? `POS · ${item.sale_number}` : `Delivery #${item.delivery_id ?? '-'}` }}</td>
 
                     <td class="text-right">
                       {{ item.total_items }}
@@ -246,8 +252,8 @@ onMounted(loadReturns);
                 </div>
 
                 <div class="col-6">
-                  <div class="text-slate-500 small">Delivery ID</div>
-                  <strong>{{ selected.return.delivery_id }}</strong>
+                  <div class="text-slate-500 small">Sumber Transaksi</div>
+                  <strong>{{ selected.return.sale_number || `Delivery #${selected.return.delivery_id ?? '-'}` }}</strong>
                 </div>
 
                 <div class="col-6">
@@ -274,14 +280,14 @@ onMounted(loadReturns);
 
               <div v-for="item in selected.items" :key="item.id" class="border rounded p-3 mb-2">
                 <div class="flex justify-between">
-                  <strong> Delivery Item #{{ item.delivery_item_id }} </strong>
+                  <strong>{{ item.product_name || (item.sale_item_id ? `POS Item #${item.sale_item_id}` : `Delivery Item #${item.delivery_item_id}`) }}</strong>
 
                   <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="item.restockable ? 'bg-success' : 'bg-secondary'">
                     {{ item.restockable ? "Dapat Restock" : "Tidak Restock" }}
                   </span>
                 </div>
 
-                <div class="small text-slate-500 mt-2">Batch ID: {{ item.batch_id }}</div>
+                <div class="small text-slate-500 mt-2">{{ item.sku ? `SKU: ${item.sku} · ` : '' }}{{ item.batch_number || `Batch #${item.batch_id}` }}</div>
 
                 <div class="flex justify-between mt-2">
                   <span>Jumlah</span>
