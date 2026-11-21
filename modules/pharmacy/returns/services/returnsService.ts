@@ -1,5 +1,5 @@
 import { http as api } from "@/core/api/client";
-import type { CreatePurchaseReturnPayload, CreateSalesReturnPayload } from "../types/returns";
+import type { CreatePurchaseReturnPayload, CreateSalesReturnPayload, CreatePosSalesReturnPayload } from "../types/returns";
 
 export const returnsService = {
   async listPurchase() {
@@ -18,7 +18,7 @@ export const returnsService = {
     return api.post(`/pharmacy/returns-api/post-purchase/${id}`);
   },
 
-  async createSales(payload: CreateSalesReturnPayload) {
+  async createSales(payload: CreateSalesReturnPayload | CreatePosSalesReturnPayload) {
     return api.post("/pharmacy/returns-api/create-sales", payload);
   },
 
