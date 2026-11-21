@@ -9,7 +9,7 @@ const toast = useToast();
 interface SalesReturn {
   id: number;
   return_number: string;
-  customer_id: number;
+  customer_id: number | null;
   delivery_id: number | null;
   sale_id?: number | null;
   sale_number?: string | null;
