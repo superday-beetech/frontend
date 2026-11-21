@@ -1,0 +1,57 @@
+{
+  "name": "cakra-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "check": "npm run typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{ts,tsx,vue,css}\" \"scripts/**/*.mjs\"",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "gen:module": "node scripts/new-module.mjs"
+  },
+  "dependencies": {
+    "@tiptap/extension-placeholder": "^3.34.0",
+    "@tiptap/pm": "^3.34.0",
+    "@tiptap/starter-kit": "^3.34.0",
+    "@tiptap/vue-3": "^3.34.0",
+    "@vue/devtools-api": "^8.2.1",
+    "axios": "^1.21.1",
+    "jsbarcode": "^3.12.3",
+    "localforage": "^1.10.0",
+    "lucide-vue-next": "^1.0.0",
+    "pinia": "^4.1.0",
+    "qrcode": "^1.5.4",
+    "sortablejs": "^1.15.7",
+    "vue": "^3.5.44",
+    "vue-router": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/jsbarcode": "^3.11.4",
+    "@types/node": "^24.19.2",
+    "@types/qrcode": "^1.5.6",
+    "@types/sortablejs": "^1.15.9",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-vue": "^10.12.1",
+    "prettier": "^3.10.1",
+    "tailwindcss": "^4.3.5",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0",
+    "vue-tsc": "^3.3.14"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
