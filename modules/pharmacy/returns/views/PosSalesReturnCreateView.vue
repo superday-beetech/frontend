@@ -53,9 +53,6 @@ function makeReturnNumber() {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
   return `POSR-${date}-${Math.floor(1000 + Math.random() * 9000)}`;
 }
-function formatCurrency(value: number | string) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0));
-}
 
 async function loadSales() {
   loading.value = true;
