@@ -113,8 +113,8 @@ async function createDraft() {
       return_number: returnNumber.value,
       sale_id: selectedSale.value.id,
       return_date: returnDate,
-      reason,
-      notes,
+      reason: reason.value,
+      notes: notes.value,
       items: selectedLines.value.map((line) => ({
         sale_item_id: line.id,
         quantity: line.return_quantity,
