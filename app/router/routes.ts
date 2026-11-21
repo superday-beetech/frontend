@@ -93,6 +93,12 @@ export const staticRoutes: RouteRecordRaw[] = [
         },
       },
       {
+        path: '/pharmacy/returns/pos-create',
+        name: 'PharmacyPosSalesReturnCreate',
+        component: resolveView('pharmacy/returns/views/PosSalesReturnCreateView'),
+        meta: { title: 'Retur Penjualan POS' },
+      },
+      {
         path: '/organization/select',
         name: 'OrganizationSelection',
         component: resolveView('auth/OrganizationSelectionView'),
