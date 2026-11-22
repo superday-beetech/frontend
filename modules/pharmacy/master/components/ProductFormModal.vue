@@ -108,6 +108,8 @@ watch(sellingPrice, (v) => {
 })
 
 // ── Form detail farmasi ──
+const detailExists = ref(false)
+
 const detailForm = ref({
   generic_name: '',
   active_ingredient: '',
@@ -502,8 +504,8 @@ async function save(): Promise<void> {
       key === 'requires_prescription' || key === 'min_stock' ? Number(value) !== 0 : value !== null && value !== '',
     )
 
-    if (hasDetail) {
-      if (!isEditing.value) {
+    if (hasDetail || (isEditing.value && detailExists.value)) {
+      if (!isEditing.value || !detailExists.value) {
         await productService.createDetail({ product_id: result.data.id, ...detailPayload })
       } else {
         try {
@@ -513,6 +515,7 @@ async function save(): Promise<void> {
           await productService.createDetail({ product_id: result.data.id, ...detailPayload })
         }
       }
+      detailExists.value = true
     }
 
     toast.success(isEditing.value ? 'Produk berhasil diperbarui.' : 'Produk berhasil ditambahkan.')
@@ -535,6 +538,7 @@ onMounted(async () => {
     try {
       const res = await productService.getDetail(props.product.id)
       if (!res.error && res.data) {
+        detailExists.value = true
         const d = res.data
         detailForm.value = {
           generic_name: d.generic_name ?? '',
