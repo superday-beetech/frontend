@@ -17,12 +17,13 @@ import BaseButtonSpin from '@/shared/components/ui/form/BaseButtonSpin.vue'
 const toast = useToast()
 // const env = loadEnv(process.cwd(), '')
 interface UnitConversionRow {
-  unit: string
+  unit_id: number | null
   qty: number | null
 }
 const BACKEND_URL = import.meta.env.VITE_DEV_API_TARGET
 
 interface ImageRow {
+  id?: number
   url: string // URL final (backend) atau blob URL sementara
   is_primary: boolean
   uploading?: boolean // flag sedang upload
@@ -30,6 +31,7 @@ interface ImageRow {
 }
 
 interface InfoRow {
+  id?: number
   group: string // 'indication', 'dosage_rule', dll
   title: string // Keterangan (opsional)
   content: string // Isi teks
@@ -160,7 +162,9 @@ function resetForm(product?: Product | null): void {
     manufacturer: '',
   }
 
-  unitConversions.value = []
+  unitConversions.value = product?.units
+    ?.filter((unit) => Number(unit.is_base) === 0 && Number(unit.is_active) === 1)
+    .map((unit) => ({ unit_id: Number(unit.unit_id), qty: Number(unit.conversion_factor) })) ?? []
   images.value = []
   activeTab.value = 'product'
 }
@@ -181,7 +185,7 @@ function getErrorMessage(error: any): string {
 
 // ── Konversi satuan ──
 function addUnitConversion(): void {
-  unitConversions.value.push({ unit: '', qty: null })
+  unitConversions.value.push({ unit_id: null, qty: null })
 }
 
 function removeUnitConversion(index: number): void {
@@ -340,17 +344,30 @@ function validateForm(): boolean {
     return false
   }
 
+  const selectedUnitIds = new Set<number>()
   for (const row of unitConversions.value) {
-    const unit = row.unit.trim()
-    if (!unit && row.qty != null) {
-      toast.warning('Nama satuan konversi wajib diisi.')
+    if (row.unit_id == null && row.qty != null) {
+      toast.warning('Satuan konversi wajib dipilih.')
       activeTab.value = 'detail'
       return false
     }
-    if (unit && (!Number.isFinite(Number(row.qty)) || Number(row.qty) <= 0)) {
-      toast.warning(`Jumlah konversi "${unit}" harus > 0.`)
-      activeTab.value = 'detail'
-      return false
+    if (row.unit_id != null) {
+      if (Number(row.unit_id) === Number(form.value.unit_id)) {
+        toast.warning('Satuan tambahan tidak boleh sama dengan satuan dasar.')
+        activeTab.value = 'detail'
+        return false
+      }
+      if (selectedUnitIds.has(Number(row.unit_id))) {
+        toast.warning('Satuan yang sama tidak boleh dipilih lebih dari sekali.')
+        activeTab.value = 'detail'
+        return false
+      }
+      selectedUnitIds.add(Number(row.unit_id))
+      if (!Number.isFinite(Number(row.qty)) || Number(row.qty) <= 0) {
+        toast.warning('Faktor konversi harus lebih besar dari 0.')
+        activeTab.value = 'detail'
+        return false
+      }
     }
   }
 
@@ -367,6 +384,57 @@ async function save(): Promise<void> {
 
   saving.value = true
 
+  const existingPrices = (props.product?.prices ?? [])
+    .filter((price) => Number(price.is_active ?? 1) === 1)
+    .map((price) => ({
+      unit_id: Number(price.unit_id),
+      customer_type: price.customer_type ?? null,
+      min_qty: Number(price.min_qty),
+      price: Number(price.price),
+      is_active: 1 as const,
+    }))
+
+  const basePriceIndex = existingPrices.findIndex(
+    (price) => price.unit_id === Number(form.value.unit_id)
+      && price.customer_type === null
+      && price.min_qty === 1,
+  )
+
+  const basePrice = {
+    unit_id: Number(form.value.unit_id),
+    customer_type: null,
+    min_qty: 1,
+    price: Number(form.value.selling_price),
+    is_active: 1 as const,
+  }
+
+  if (basePriceIndex >= 0) existingPrices[basePriceIndex] = basePrice
+  else if (basePrice.price > 0) existingPrices.push(basePrice)
+
+  const attributes = [
+    ...images.value
+      .filter((image) => image.url && !image.uploading)
+      .map((image, index) => ({
+        ...(image.id ? { id: image.id } : {}),
+        attr_type: 'image',
+        value_json: { url: image.url.startsWith(BACKEND_URL) ? image.url.slice(BACKEND_URL.length) : image.url },
+        is_primary: image.is_primary ? 1 as const : 0 as const,
+        is_active: 1 as const,
+        sort_order: index + 1,
+      })),
+    ...productInfos.value
+      .filter((info) => info.group && info.content.trim() !== '')
+      .map((info, index) => ({
+        ...(info.id ? { id: info.id } : {}),
+        attr_type: 'info',
+        attr_group: info.group,
+        title: info.title.trim() || null,
+        content: info.content.trim(),
+        is_active: 1 as const,
+        sort_order: index + 1,
+      })),
+  ]
+
   const payload: ProductWithDetailPayload = {
     sku: form.value.sku.trim(),
     barcode: form.value.barcode?.trim() || null,
@@ -376,8 +444,34 @@ async function save(): Promise<void> {
     purchase_price: Number(form.value.purchase_price),
     selling_price: Number(form.value.selling_price),
     description: form.value.description?.trim() || null,
-    is_active: Number(form.value.is_active),
-    detail: {
+    is_active: Number(form.value.is_active) as 0 | 1,
+    units: unitConversions.value
+      .filter((row) => row.unit_id != null && Number(row.qty) > 0)
+      .map((row, index) => ({
+        unit_id: Number(row.unit_id),
+        conversion_factor: Number(row.qty),
+        is_base: 0 as const,
+        is_purchase_unit: 0 as const,
+        is_sale_unit: 1 as const,
+        is_active: 1 as const,
+        sort_order: index + 1,
+      })),
+    prices: existingPrices,
+    attributes,
+  }
+
+  try {
+    const response = isEditing.value
+      ? await productService.update(props.product!.id, payload)
+      : await productService.create(payload)
+
+    const result = response.data
+
+    if (result.error || !result.data) {
+      throw new Error(typeof result.message === 'string' ? result.message : 'Gagal menyimpan produk.')
+    }
+
+    const detailPayload = {
       generic_name: detailForm.value.generic_name.trim() || null,
       active_ingredient: detailForm.value.active_ingredient.trim() || null,
       dosage_form: detailForm.value.dosage_form || null,
@@ -389,32 +483,22 @@ async function save(): Promise<void> {
       max_stock: detailForm.value.max_stock != null ? Number(detailForm.value.max_stock) : null,
       rack_location: detailForm.value.rack_location.trim() || null,
       manufacturer: detailForm.value.manufacturer.trim() || null,
-    },
-    units: unitConversions.value
-      .filter((r) => r.unit.trim() && Number(r.qty) > 0)
-      .map((r) => ({ unit: r.unit.trim().toLowerCase(), qty: Number(r.qty) })),
-    images: images.value.map((img) => ({
-      url: img.url,
-      is_primary: img.is_primary ? 1 : 0,
-    })),
-    infos: productInfos.value
-      .filter((r) => r.group && r.content.trim() !== '')
-      .map((r) => ({
-        group: r.group,
-        title: r.title.trim() || null,
-        content: r.content.trim(),
-      })),
-  }
+    }
+    const hasDetail = Object.entries(detailPayload).some(([key, value]) =>
+      key === 'requires_prescription' || key === 'min_stock' ? Number(value) !== 0 : value !== null && value !== '',
+    )
 
-  try {
-    const response = isEditing.value
-      ? await productService.updateWithDetail(props.product!.id, payload)
-      : await productService.createWithDetail(payload)
-
-    const result = response.data
-
-    if (result.error || !result.data) {
-      throw new Error(typeof result.message === 'string' ? result.message : 'Gagal menyimpan produk.')
+    if (hasDetail) {
+      if (!isEditing.value) {
+        await productService.createDetail({ product_id: result.data.id, ...detailPayload })
+      } else {
+        try {
+          await productService.updateDetail(result.data.id, detailPayload)
+        } catch (detailError: any) {
+          if (detailError?.response?.status !== 404) throw detailError
+          await productService.createDetail({ product_id: result.data.id, ...detailPayload })
+        }
+      }
     }
 
     toast.success(isEditing.value ? 'Produk berhasil diperbarui.' : 'Produk berhasil ditambahkan.')
@@ -461,19 +545,22 @@ onMounted(async () => {
       const attrs = await productService.getAttributes(props.product.id)
       const infoList = attrs.data?.info ?? []
       productInfos.value = infoList.map((i) => ({
-        group: i.attr_group, // 'indication', 'dosage_rule', dll
+        id: i.id,
+        group: i.attr_group,
         title: i.title ?? '',
         content: i.content,
       }))
-      const unitList = attrs.data?.unit ?? []
-      unitConversions.value = unitList.map((u) => ({
-        unit: u.title,
-        qty: Number(u.value_num),
-      }))
+      const unitList = props.product.units ?? []
+      unitConversions.value = unitList
+        .filter((unit) => Number(unit.is_base) === 0 && Number(unit.is_active) === 1)
+        .map((unit) => ({
+          unit_id: Number(unit.unit_id),
+          qty: Number(unit.conversion_factor),
+        }))
 
       const imageList = attrs.data?.image ?? []
       images.value = imageList.map((img) => ({
-        // url: img.value_json?.url ?? '',
+        id: img.id,
         url: BACKEND_URL + (img.value_json?.url ?? ''),
         is_primary: Number(img.is_primary) === 1,
       }))
@@ -732,14 +819,14 @@ onMounted(async () => {
           </div>
 
           <div v-for="(row, index) in unitConversions" :key="index" class="mb-2 flex items-center gap-2">
-            <input
-              v-model="row.unit"
-              type="text"
-              maxlength="30"
-              placeholder="Nama satuan (cth: box)"
-              :disabled="saving"
-              class="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-            />
+            <div class="flex-1">
+              <OptionSelect
+                v-model="row.unit_id"
+                :options="unitOptions"
+                placeholder="Pilih satuan"
+                :disabled="saving"
+              />
+            </div>
             <span class="px-1 font-medium text-slate-500">=</span>
             <!-- <input
               v-model.number="row.qty"
