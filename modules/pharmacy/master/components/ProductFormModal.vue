@@ -11,6 +11,8 @@ import BaseTextarea from '@/shared/components/ui/form/BaseTextarea.vue'
 import BaseInput from '@/shared/components/ui/form/BaseInput.vue'
 import OptionSelect from '@/shared/components/ui/form/OptionSelect.vue'
 import BaseInputClearable from '@/shared/components/ui/form/BaseInputClearable.vue'
+import BaseCheckbox from '@/shared/components/ui/form/BaseCheckbox.vue'
+import BaseButtonSpin from '@/shared/components/ui/form/BaseButtonSpin.vue'
 
 const toast = useToast()
 // const env = loadEnv(process.cwd(), '')
@@ -102,7 +104,24 @@ watch(sellingPrice, (v) => {
   form.value.selling_price = Number(v) || 0
 })
 
-// ── Satuan tambahan katalog (product_units) ──
+// ── Form detail farmasi ──
+const pharmacyAttributeId = ref<number | null>(null)
+
+const pharmacyForm = ref({
+  generic_name: '',
+  active_ingredient: '',
+  dosage_form: '',
+  strength: '',
+  drug_class: '',
+  bpom_number: '',
+  requires_prescription: 0,
+  min_stock: 0,
+  max_stock: null as number | null,
+  rack_location: '',
+  manufacturer: '',
+})
+
+// ── Konversi satuan (product_attributes tipe 'unit') ──
 const unitConversions = ref<UnitConversionRow[]>([])
 
 // ── Foto produk (product_attributes tipe 'image') ──
@@ -134,6 +153,21 @@ function resetForm(product?: Product | null): void {
   )?.price ?? product?.selling_price ?? 0
   form.value.selling_price = Number(baseSellingPrice)
   sellingPrice.value = Number(baseSellingPrice)
+
+  pharmacyAttributeId.value = null
+  pharmacyForm.value = {
+    generic_name: '',
+    active_ingredient: '',
+    dosage_form: '',
+    strength: '',
+    drug_class: '',
+    bpom_number: '',
+    requires_prescription: 0,
+    min_stock: 0,
+    max_stock: null,
+    rack_location: '',
+    manufacturer: '',
+  }
 
   unitConversions.value = product?.units
     ?.filter((unit) => Number(unit.is_base) === 0 && Number(unit.is_active) === 1)
@@ -327,18 +361,18 @@ function validateForm(): boolean {
     if (row.unit_id != null) {
       if (Number(row.unit_id) === Number(form.value.unit_id)) {
         toast.warning('Satuan tambahan tidak boleh sama dengan satuan dasar.')
-        activeTab.value = 'detail'
+        activeTab.value = 'attributes'
         return false
       }
       if (selectedUnitIds.has(Number(row.unit_id))) {
         toast.warning('Satuan yang sama tidak boleh dipilih lebih dari sekali.')
-        activeTab.value = 'detail'
+        activeTab.value = 'attributes'
         return false
       }
       selectedUnitIds.add(Number(row.unit_id))
       if (!Number.isFinite(Number(row.qty)) || Number(row.qty) <= 0) {
         toast.warning('Faktor konversi harus lebih besar dari 0.')
-        activeTab.value = 'detail'
+        activeTab.value = 'attributes'
         return false
       }
     }
@@ -437,7 +471,7 @@ async function save(): Promise<void> {
         sort_order: index + 1,
       })),
     prices: existingPrices,
-    attributes,
+    attributes: [...pharmacyAttribute, ...attributes],
   }
 
   try {
@@ -450,6 +484,36 @@ async function save(): Promise<void> {
     if (result.error || !result.data) {
       throw new Error(typeof result.message === 'string' ? result.message : 'Gagal menyimpan produk.')
     }
+
+    const pharmacyProfile = {
+      generic_name: pharmacyForm.value.generic_name.trim() || null,
+      active_ingredient: pharmacyForm.value.active_ingredient.trim() || null,
+      dosage_form: pharmacyForm.value.dosage_form.trim() || null,
+      strength: pharmacyForm.value.strength.trim() || null,
+      drug_class: pharmacyForm.value.drug_class.trim() || null,
+      bpom_number: pharmacyForm.value.bpom_number.trim() || null,
+      requires_prescription: Number(pharmacyForm.value.requires_prescription),
+      min_stock: Number(pharmacyForm.value.min_stock ?? 0),
+      max_stock: pharmacyForm.value.max_stock != null ? Number(pharmacyForm.value.max_stock) : null,
+      rack_location: pharmacyForm.value.rack_location.trim() || null,
+      manufacturer: pharmacyForm.value.manufacturer.trim() || null,
+    }
+    const hasPharmacyProfile = Object.entries(pharmacyProfile).some(([key, value]) =>
+      key === 'requires_prescription' || key === 'min_stock'
+        ? Number(value) !== 0
+        : value !== null && value !== '',
+    )
+    const pharmacyAttribute = hasPharmacyProfile
+      ? [{
+          ...(pharmacyAttributeId.value ? { id: pharmacyAttributeId.value } : {}),
+          attr_type: 'pharmacy',
+          attr_group: 'profile',
+          title: 'Profil Farmasi',
+          value_json: pharmacyProfile,
+          is_active: 1 as const,
+          sort_order: 1,
+        }]
+      : []
 
     toast.success(isEditing.value ? 'Produk berhasil diperbarui.' : 'Produk berhasil ditambahkan.')
 
@@ -470,6 +534,24 @@ onMounted(async () => {
     // Atribut: unit + image
     try {
       const attrs = await productService.getAttributes(props.product.id)
+      const pharmacy = attrs.data?.pharmacy?.[0]
+      if (pharmacy) {
+        pharmacyAttributeId.value = pharmacy.id
+        const d = pharmacy.value_json
+        pharmacyForm.value = {
+          generic_name: d.generic_name ?? '',
+          active_ingredient: d.active_ingredient ?? '',
+          dosage_form: d.dosage_form ?? '',
+          strength: d.strength ?? '',
+          drug_class: d.drug_class ?? '',
+          bpom_number: d.bpom_number ?? '',
+          requires_prescription: Number(d.requires_prescription ?? 0),
+          min_stock: Number(d.min_stock ?? 0),
+          max_stock: d.max_stock != null ? Number(d.max_stock) : null,
+          rack_location: d.rack_location ?? '',
+          manufacturer: d.manufacturer ?? '',
+        }
+      }
       const infoList = attrs.data?.info ?? []
       productInfos.value = infoList.map((i) => ({
         id: i.id,
@@ -526,7 +608,7 @@ onMounted(async () => {
         @click="activeTab = 'attributes'"
       >
         <Package class="w-4 h-4" />
-        Satuan & Atribut
+        Atribut Farmasi
       </button>
     </div>
 
@@ -647,8 +729,92 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- ══════════ Tab: Satuan & Atribut ══════════ -->
+      <!-- ══════════ Tab: Atribut Farmasi & Produk ══════════ -->
       <div v-show="activeTab === 'attributes'" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <!-- Nama Generik -->
+        <div class="md:col-span-6">
+          <BaseInput
+            v-model="pharmacyForm.generic_name"
+            label="Nama Generik"
+            placeholder="cth: Paracetamol"
+            :disabled="saving"
+            :floating="true"
+            maxlength="200"
+          />
+        </div>
+        <!-- Zat Aktif -->
+        <div class="md:col-span-6">
+          <BaseInput
+            v-model="pharmacyForm.active_ingredient"
+            label="Zat Aktif"
+            placeholder="cth: Paracetamol"
+            :disabled="saving"
+            :floating="true"
+            maxlength="200"
+          />
+        </div>
+
+        <!-- Bentuk Sediaan -->
+        <div class="md:col-span-6">
+          <BaseInput
+            v-model="pharmacyForm.dosage_form"
+            label="Bentuk Sediaan"
+            placeholder="cth: Tablet, Kapsul, Sirup"
+            :disabled="saving"
+            :floating="true"
+            maxlength="50"
+          />
+        </div>
+
+        <!-- Kekuatan -->
+        <div class="md:col-span-6">
+          <BaseInput
+            v-model="pharmacyForm.strength"
+            label="Kekuatan / Dosis"
+            placeholder="cth: 500 mg"
+            :disabled="saving"
+            :floating="true"
+            maxlength="200"
+          />
+        </div>
+
+        <!-- Golongan Obat -->
+        <div class="md:col-span-6">
+          <BaseInput
+            v-model="pharmacyForm.drug_class"
+            label="Golongan Obat"
+            placeholder="cth: Obat Bebas, Obat Keras"
+            :disabled="saving"
+            :floating="true"
+            maxlength="50"
+          />
+        </div>
+
+        <!-- BPOM -->
+        <div class="md:col-span-6">
+          <BaseInput
+            v-model="pharmacyForm.bpom_number"
+            label="No. Izin Edar/BPOM"
+            placeholder="cth: DBL1234567890A1"
+            :disabled="saving"
+            :floating="true"
+            maxlength="200"
+          />
+        </div>
+
+        <!-- Perlu Resep -->
+        <div class="md:col-span-12">
+          <BaseCheckbox
+            v-model="pharmacyForm.requires_prescription"
+            label="Perlu Resep Dokter"
+            description="Wajib"
+            variant="svg-draw"
+            :true-value="1"
+            :false-value="0"
+            :disabled="saving"
+          />
+        </div>
+
         <!-- Konversi Satuan -->
         <div class="md:col-span-12">
           <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Konversi Satuan</label>
@@ -836,6 +1002,40 @@ onMounted(async () => {
           <p class="mt-2 text-xs text-slate-500">JPG/PNG/WEBP, maks 2MB. Foto pertama otomatis jadi utama.</p>
         </div>
 
+        <!-- Stok -->
+        <div class="md:col-span-4">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Stok Minimum</label>
+          <BaseButtonSpin v-model="pharmacyForm.min_stock" :min="0" :disabled="saving" size="md" />
+        </div>
+        <div class="md:col-span-4">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Stok Maksimum</label>
+          <BaseButtonSpin v-model="pharmacyForm.max_stock" :min="0" :disabled="saving" size="md" />
+        </div>
+
+        <div class="md:col-span-4">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Rak / Lokasi</label>
+          <input
+            v-model="pharmacyForm.rack_location"
+            type="text"
+            maxlength="50"
+            placeholder="cth: A1"
+            :disabled="saving"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          />
+        </div>
+
+        <!-- Pabrik -->
+        <div class="md:col-span-12">
+          <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Pabrik</label>
+          <input
+            v-model="pharmacyForm.manufacturer"
+            type="text"
+            maxlength="150"
+            placeholder="cth: Kimia Farma"
+            :disabled="saving"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+          />
+        </div>
       </div>
 
       <!-- Footer -->
@@ -848,7 +1048,7 @@ onMounted(async () => {
             <span class="text-rose-600">*</span>
             wajib diisi.
           </span>
-          <span v-else>Atur satuan tambahan dan atribut produk.</span>
+          <span v-else>Atribut farmasi, satuan, dan informasi tambahan.</span>
         </div>
 
         <div class="flex w-full gap-2 sm:w-auto">
