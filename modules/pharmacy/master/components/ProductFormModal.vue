@@ -425,6 +425,36 @@ async function save(): Promise<void> {
   if (basePriceIndex >= 0) existingPrices[basePriceIndex] = basePrice
   else if (basePrice.price > 0) existingPrices.push(basePrice)
 
+  const pharmacyProfile = {
+    generic_name: pharmacyForm.value.generic_name.trim() || null,
+    active_ingredient: pharmacyForm.value.active_ingredient.trim() || null,
+    dosage_form: pharmacyForm.value.dosage_form.trim() || null,
+    strength: pharmacyForm.value.strength.trim() || null,
+    drug_class: pharmacyForm.value.drug_class.trim() || null,
+    bpom_number: pharmacyForm.value.bpom_number.trim() || null,
+    requires_prescription: Number(pharmacyForm.value.requires_prescription),
+    min_stock: Number(pharmacyForm.value.min_stock ?? 0),
+    max_stock: pharmacyForm.value.max_stock != null ? Number(pharmacyForm.value.max_stock) : null,
+    rack_location: pharmacyForm.value.rack_location.trim() || null,
+    manufacturer: pharmacyForm.value.manufacturer.trim() || null,
+  }
+  const hasPharmacyProfile = Object.entries(pharmacyProfile).some(([key, value]) =>
+    key === 'requires_prescription' || key === 'min_stock'
+      ? Number(value) !== 0
+      : value !== null && value !== '',
+  )
+  const pharmacyAttribute = hasPharmacyProfile
+    ? [{
+        ...(pharmacyAttributeId.value ? { id: pharmacyAttributeId.value } : {}),
+        attr_type: 'pharmacy',
+        attr_group: 'profile',
+        title: 'Profil Farmasi',
+        value_json: pharmacyProfile,
+        is_active: 1 as const,
+        sort_order: 1,
+      }]
+    : []
+
   const attributes = [
     ...images.value
       .filter((image) => image.url && !image.uploading)
@@ -485,35 +515,7 @@ async function save(): Promise<void> {
       throw new Error(typeof result.message === 'string' ? result.message : 'Gagal menyimpan produk.')
     }
 
-    const pharmacyProfile = {
-      generic_name: pharmacyForm.value.generic_name.trim() || null,
-      active_ingredient: pharmacyForm.value.active_ingredient.trim() || null,
-      dosage_form: pharmacyForm.value.dosage_form.trim() || null,
-      strength: pharmacyForm.value.strength.trim() || null,
-      drug_class: pharmacyForm.value.drug_class.trim() || null,
-      bpom_number: pharmacyForm.value.bpom_number.trim() || null,
-      requires_prescription: Number(pharmacyForm.value.requires_prescription),
-      min_stock: Number(pharmacyForm.value.min_stock ?? 0),
-      max_stock: pharmacyForm.value.max_stock != null ? Number(pharmacyForm.value.max_stock) : null,
-      rack_location: pharmacyForm.value.rack_location.trim() || null,
-      manufacturer: pharmacyForm.value.manufacturer.trim() || null,
-    }
-    const hasPharmacyProfile = Object.entries(pharmacyProfile).some(([key, value]) =>
-      key === 'requires_prescription' || key === 'min_stock'
-        ? Number(value) !== 0
-        : value !== null && value !== '',
-    )
-    const pharmacyAttribute = hasPharmacyProfile
-      ? [{
-          ...(pharmacyAttributeId.value ? { id: pharmacyAttributeId.value } : {}),
-          attr_type: 'pharmacy',
-          attr_group: 'profile',
-          title: 'Profil Farmasi',
-          value_json: pharmacyProfile,
-          is_active: 1 as const,
-          sort_order: 1,
-        }]
-      : []
+
 
     toast.success(isEditing.value ? 'Produk berhasil diperbarui.' : 'Produk berhasil ditambahkan.')
 
