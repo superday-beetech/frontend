@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import { Package, Pill, Image as ImageIcon, Info, Boxes } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
+import { Package, Image as ImageIcon, Info, Boxes } from 'lucide-vue-next'
 
-import productService, { type Product, type ProductDetail, type ProductAttributes } from '../services/productService'
-
-import { useMasterOptions } from '../composables/useMasterOptions'
+import productService, { type Product, type ProductAttributes } from '../services/productService'
 
 const props = defineProps<{
   product: Product
@@ -15,22 +13,10 @@ const emit = defineEmits<{
   close: []
 }>()
 
-// ── Master options ──
-const masterOptions = useMasterOptions()
-const { drugClassOptions, dosageFormOptions, loadProductOptions } = masterOptions
-
-const activeTab = ref<'product' | 'detail' | 'attributes'>('product')
-
-// ── Detail farmasi ──
-const detail = ref<ProductDetail | null>(null)
-const detailLoading = ref(false)
-const detailError = ref('')
-
-// ── Atribut (unit, image, info) ──
+const activeTab = ref<'product' | 'attributes'>('product')
 const attrs = ref<ProductAttributes>({})
 const attrsLoading = ref(false)
 
-// ── Helper ──
 function formatCurrency(value: number | string): string {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -38,35 +24,6 @@ function formatCurrency(value: number | string): string {
     maximumFractionDigits: 2,
   }).format(Number(value || 0))
 }
-
-function drugClassLabel(code: string | null | undefined): string {
-  if (!code) return '-'
-  return drugClassOptions.value.find((o) => o.value === code)?.label ?? code
-}
-
-function dosageFormLabel(value: string | null | undefined): string {
-  if (!value) return '-'
-  return dosageFormOptions.value.find((o) => o.value === value)?.label ?? value
-}
-
-// ── Computed ──
-const hasAnyDetail = computed(() => {
-  const d = detail.value
-  if (!d) return false
-  return Boolean(
-    d.generic_name ||
-    d.active_ingredient ||
-    d.dosage_form ||
-    d.strength ||
-    d.drug_class ||
-    d.bpom_number ||
-    d.requires_prescription ||
-    d.min_stock ||
-    d.max_stock ||
-    d.rack_location ||
-    d.manufacturer
-  )
-})
 
 const units = computed(() => (props.product.units ?? [])
   .filter((unit) => Number(unit.is_active) === 1)
@@ -89,10 +46,8 @@ const units = computed(() => (props.product.units ?? [])
   }))
 const images = computed(() => attrs.value.image ?? [])
 const infos = computed(() => attrs.value.info ?? [])
-
 const hasAnyAttribute = computed(() => units.value.length > 0 || images.value.length > 0 || infos.value.length > 0)
 
-// Kelompokkan info per attr_group
 const infoGroups = computed(() => {
   const groups: Record<string, Array<{ id: number; title: string | null; content: string; severity: string | null }>> = {}
   for (const item of infos.value) {
@@ -132,28 +87,6 @@ function severityClass(sev: string | null): string {
   return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
 }
 
-// ── Loaders ──
-async function loadDetail(): Promise<void> {
-  detailLoading.value = true
-  detailError.value = ''
-  try {
-    const res = await productService.getDetail(props.product.id)
-    if (res.error || !res.data) {
-      detail.value = null
-      return
-    }
-    detail.value = res.data
-  } catch (error: any) {
-    const status = error?.response?.status
-    if (status !== 404) {
-      detailError.value = 'Gagal memuat detail farmasi.'
-    }
-    detail.value = null
-  } finally {
-    detailLoading.value = false
-  }
-}
-
 async function loadAttributes(): Promise<void> {
   attrsLoading.value = true
   try {
@@ -170,26 +103,15 @@ async function loadAttributes(): Promise<void> {
   }
 }
 
-// ── Watch ──
 watch(
   () => props.product,
-  async (p) => {
+  async (product) => {
     activeTab.value = 'product'
-    if (p?.id) {
-      await Promise.all([loadDetail(), loadAttributes()])
-    }
+    if (product?.id) await loadAttributes()
   },
-  { immediate: true }
+  { immediate: true },
 )
 
-onMounted(async () => {
-  await loadProductOptions()
-  if (props.product?.id) {
-    await Promise.all([loadDetail(), loadAttributes()])
-  }
-})
-
-// ── Class helper ──
 const labelClass = 'mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400'
 const valueClass = 'text-sm text-slate-800 dark:text-slate-100'
 </script>
@@ -210,19 +132,6 @@ const valueClass = 'text-sm text-slate-800 dark:text-slate-100'
       >
         <Package class="w-4 h-4" />
         Produk
-      </button>
-      <button
-        type="button"
-        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px"
-        :class="
-          activeTab === 'detail'
-            ? 'border-primary-600 text-primary-600 dark:text-primary-400'
-            : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
-        "
-        @click="activeTab = 'detail'"
-      >
-        <Pill class="w-4 h-4" />
-        Detail Farmasi
       </button>
       <button
         type="button"
@@ -314,116 +223,6 @@ const valueClass = 'text-sm text-slate-800 dark:text-slate-100'
         <div>
           <div :class="labelClass">Diperbarui</div>
           <div class="text-sm text-slate-500">{{ product.updated_at || '-' }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════ Tab: Detail Farmasi ══════════ -->
-    <div v-show="activeTab === 'detail'">
-      <div v-if="detailLoading" class="flex items-center justify-center gap-2 py-8 text-sm text-slate-500">
-        <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-600 border-r-transparent"></span>
-        Memuat detail farmasi...
-      </div>
-
-      <div
-        v-else-if="detailError"
-        class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-900/20 dark:text-rose-400"
-      >
-        {{ detailError }}
-      </div>
-
-      <div
-        v-else-if="!detail || !hasAnyDetail"
-        class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-900/20 dark:text-amber-400"
-      >
-        Detail farmasi belum diisi untuk produk ini.
-      </div>
-
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <div :class="labelClass">Nama Generik</div>
-          <div :class="valueClass">{{ detail.generic_name || '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Zat Aktif</div>
-          <div :class="valueClass">{{ detail.active_ingredient || '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Bentuk Sediaan</div>
-          <div :class="valueClass">{{ dosageFormLabel(detail.dosage_form) }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Kekuatan / Dosis</div>
-          <div :class="valueClass">{{ detail.strength || '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Golongan Obat</div>
-          <span
-            v-if="detail.drug_class"
-            class="inline-flex items-center rounded-full bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400"
-          >
-            {{ drugClassLabel(detail.drug_class) }}
-          </span>
-          <span v-else class="text-sm text-slate-500">-</span>
-        </div>
-
-        <div>
-          <div :class="labelClass">No. Izin Edar (BPOM)</div>
-          <code
-            v-if="detail.bpom_number"
-            class="rounded bg-slate-100 px-2 py-1 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-          >
-            {{ detail.bpom_number }}
-          </code>
-          <span v-else class="text-sm text-slate-500">-</span>
-        </div>
-
-        <div class="md:col-span-2">
-          <div :class="labelClass">Perlu Resep</div>
-          <span
-            class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium"
-            :class="
-              Number(detail.requires_prescription) === 1
-                ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-            "
-          >
-            {{ Number(detail.requires_prescription) === 1 ? 'Ya, wajib resep dokter' : 'Tidak perlu resep' }}
-          </span>
-        </div>
-
-        <div>
-          <div :class="labelClass">Stok Minimum</div>
-          <div :class="valueClass">{{ detail.min_stock ?? '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Stok Maksimum</div>
-          <div :class="valueClass">{{ detail.max_stock ?? '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Rak / Lokasi</div>
-          <div :class="valueClass">{{ detail.rack_location || '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Pabrik</div>
-          <div :class="valueClass">{{ detail.manufacturer || '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Detail Dibuat</div>
-          <div class="text-sm text-slate-500">{{ detail.created_at || '-' }}</div>
-        </div>
-
-        <div>
-          <div :class="labelClass">Detail Diperbarui</div>
-          <div class="text-sm text-slate-500">{{ detail.updated_at || '-' }}</div>
         </div>
       </div>
     </div>
