@@ -146,7 +146,14 @@ function resetForm(product?: Product | null): void {
   }
 
   purchasePrice.value = Number(product?.purchase_price ?? 0)
-  sellingPrice.value = Number(product?.selling_price ?? 0)
+  const baseSellingPrice = product?.prices?.find(
+    (price) => Number(price.unit_id) === Number(product.unit_id)
+      && price.customer_type == null
+      && Number(price.min_qty) === 1
+      && Number(price.is_active ?? 1) === 1,
+  )?.price ?? product?.selling_price ?? 0
+  form.value.selling_price = Number(baseSellingPrice)
+  sellingPrice.value = Number(baseSellingPrice)
 
   detailForm.value = {
     generic_name: '',
@@ -384,8 +391,15 @@ async function save(): Promise<void> {
 
   saving.value = true
 
+  const retainedUnitIds = new Set<number>([
+    Number(form.value.unit_id),
+    ...unitConversions.value
+      .filter((row) => row.unit_id != null && Number(row.qty) > 0)
+      .map((row) => Number(row.unit_id)),
+  ])
+
   const existingPrices = (props.product?.prices ?? [])
-    .filter((price) => Number(price.is_active ?? 1) === 1)
+    .filter((price) => Number(price.is_active ?? 1) === 1 && retainedUnitIds.has(Number(price.unit_id)))
     .map((price) => ({
       unit_id: Number(price.unit_id),
       customer_type: price.customer_type ?? null,
