@@ -100,31 +100,6 @@ export type ProductAttributePayload = Omit<ProductAttribute, 'id' | 'product_id'
   id?: number
 }
 
-export interface ProductDetail {
-  id: number
-  product_id: number
-  generic_name: string | null
-  active_ingredient: string | null
-  dosage_form: string | null
-  strength: string | null
-  drug_class: string | null
-  bpom_number: string | null
-  requires_prescription: number
-  min_stock: number
-  max_stock: number | null
-  rack_location: string | null
-  manufacturer: string | null
-}
-
-export type ProductDetailPayload = Partial<Omit<ProductDetail, 'id' | 'product_id'>> & {
-  product_id?: number
-}
-
-export interface ProductOptions {
-  drug_classes: Array<{ value: string; label: string }>
-  dosage_forms: Array<{ value: string; label: string }>
-}
-
 export interface ProductAttributes {
   image?: Array<{ id: number; value_json: { url: string }; is_primary: number }>
   info?: Array<{ id: number; attr_group: string; title: string | null; content: string; severity: string | null }>
@@ -173,31 +148,10 @@ function parseJsonValue(value: unknown): Record<string, unknown> | null {
 }
 
 const BASE_URL = '/pharmacy/product-api'
-const DETAIL_BASE_URL = '/pharmacy/product-detail-api'
 
 const productService = {
   getAll(params?: ProductListParams) {
     return api.get<ApiResponse<ProductListData>>(BASE_URL, { params })
-  },
-
-  async getOptions() {
-    const response = await api.get<ApiResponse<ProductOptions>>('/pharmacy/product-option-api')
-    return response.data
-  },
-
-  async getDetail(productId: number) {
-    const response = await api.get<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/show/${productId}`)
-    return response.data
-  },
-
-  async createDetail(payload: ProductDetailPayload) {
-    const response = await api.post<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/create`, payload)
-    return response.data
-  },
-
-  async updateDetail(productId: number, payload: ProductDetailPayload) {
-    const response = await api.put<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/update/${productId}`, payload)
-    return response.data
   },
 
   getById(id: number) {
