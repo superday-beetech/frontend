@@ -2,7 +2,6 @@ import { computed, ref } from "vue";
 
 import categoryService, { type Category } from "@/modules/pharmacy/master/services/categoryService";
 import unitService, { type Unit } from "@/modules/pharmacy/master/services/unitService";
-import productService from "../services/productService";
 import type { OptionItem } from "@/shared/composables/useOption";
 
 // State module-level → dibagi antar komponen (singleton)
@@ -11,11 +10,6 @@ const units = ref<Unit[]>([]);
 const loading = ref(false);
 const loaded = ref(false);
 const error = ref<string>("");
-
-const drugClassOptions = ref<OptionItem[]>([]);
-const dosageFormOptions = ref<OptionItem[]>([]);
-const productOptionsLoaded = ref(false);
-const productOptionsLoading = ref(false);
 
 function getErrorMessage(e: any): string {
   const m = e?.response?.data?.message;
@@ -54,29 +48,6 @@ async function load(force = false): Promise<void> {
   }
 }
 
-async function loadProductOptions(force = false): Promise<void> {
-  if (productOptionsLoaded.value && !force) return;
-  if (productOptionsLoading.value) return;
-
-  productOptionsLoading.value = true;
-
-  try {
-    const res = await productService.getOptions();
-    const data = res.data;
-
-    if (!data) throw new Error("Gagal memuat opsi produk.");
-
-    drugClassOptions.value = data.drug_classes;
-    dosageFormOptions.value = data.dosage_forms;
-
-    productOptionsLoaded.value = true;
-  } catch (e: any) {
-    error.value = getErrorMessage(e);
-  } finally {
-    productOptionsLoading.value = false;
-  }
-}
-
 function reset(): void {
   categories.value = [];
   units.value = [];
@@ -112,10 +83,5 @@ export function useMasterOptions() {
     unitOptions,
     load,
     reset,
-    drugClassOptions,
-    dosageFormOptions,
-    productOptionsLoaded,
-    productOptionsLoading,
-    loadProductOptions,
   };
 }
