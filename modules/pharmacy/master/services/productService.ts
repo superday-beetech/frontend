@@ -100,6 +100,48 @@ export type ProductAttributePayload = Omit<ProductAttribute, 'id' | 'product_id'
   id?: number
 }
 
+export interface ProductDetail {
+  id: number
+  product_id: number
+  generic_name: string | null
+  active_ingredient: string | null
+  dosage_form: string | null
+  strength: string | null
+  drug_class: string | null
+  bpom_number: string | null
+  requires_prescription: number
+  min_stock: number
+  max_stock: number | null
+  rack_location: string | null
+  manufacturer: string | null
+}
+
+export type ProductDetailPayload = Partial<Omit<ProductDetail, 'id' | 'product_id'>> & {
+  product_id?: number
+}
+
+export interface ProductOptions {
+  drug_classes: Array<{ value: string; label: string }>
+  dosage_forms: Array<{ value: string; label: string }>
+}
+
+export interface ProductAttributes {
+  unit?: Array<{
+    id: number
+    title: string
+    value_num: number
+    value_num_2: number | null
+    value_json: { barcode?: string } | null
+    is_primary: number
+  }>
+  image?: Array<{ id: number; value_json: { url: string }; is_primary: number }>
+  info?: Array<{ id: number; attr_group: string; title: string | null; content: string; severity: string | null }>
+}
+
+export type ProductWithDetailPayload = ProductPayload & {
+  detail?: ProductDetailPayload | null
+}
+
 export interface ProductPagination {
   current_page: number
   per_page: number
@@ -131,10 +173,28 @@ export interface UploadImageResult {
 }
 
 const BASE_URL = '/pharmacy/product-api'
+const DETAIL_BASE_URL = '/pharmacy/product-detail-api'
 
 const productService = {
   getAll(params?: ProductListParams) {
     return api.get<ApiResponse<ProductListData>>(BASE_URL, { params })
+  },
+
+  async getOptions() {
+    const response = await api.get<ApiResponse<ProductOptions>>('/pharmacy/product-option-api')
+    return response.data
+  },
+
+  getDetail(productId: number) {
+    return api.get<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/show/${productId}`)
+  },
+
+  createDetail(payload: ProductDetailPayload) {
+    return api.post<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/create`, payload)
+  },
+
+  updateDetail(productId: number, payload: ProductDetailPayload) {
+    return api.put<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/update/${productId}`, payload)
   },
 
   getById(id: number) {
@@ -153,8 +213,39 @@ const productService = {
     return api.delete<ApiResponse<{ id: number }>>(`${BASE_URL}/delete/${id}`)
   },
 
-  getAttributes(productId: number) {
-    return api.get<ApiResponse<ProductAttribute[]>>(`${BASE_URL}/attributes/${productId}`)
+  async getAttributes(productId: number) {
+    const response = await api.get<ApiResponse<ProductAttribute[]>>(`${BASE_URL}/attributes/${productId}`)
+    const rows = response.data.data ?? []
+    const grouped: ProductAttributes = { unit: [], image: [], info: [] }
+
+    for (const row of rows) {
+      if (row.attr_type === 'unit') {
+        grouped.unit?.push({
+          id: row.id ?? 0,
+          title: row.title ?? '',
+          value_num: Number(row.value_num ?? 0),
+          value_num_2: row.value_num_2 == null ? null : Number(row.value_num_2),
+          value_json: row.value_json as { barcode?: string } | null,
+          is_primary: Number(row.is_primary ?? 0),
+        })
+      } else if (row.attr_type === 'image') {
+        grouped.image?.push({
+          id: row.id ?? 0,
+          value_json: (row.value_json ?? {}) as { url: string },
+          is_primary: Number(row.is_primary ?? 0),
+        })
+      } else if (row.attr_type === 'info') {
+        grouped.info?.push({
+          id: row.id ?? 0,
+          attr_group: row.attr_group ?? '',
+          title: row.title ?? null,
+          content: row.content ?? '',
+          severity: row.severity ?? null,
+        })
+      }
+    }
+
+    return { ...response, data: { ...response.data, data: grouped } }
   },
 
   getPrices(productId: number) {
