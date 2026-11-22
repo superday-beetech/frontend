@@ -44,9 +44,6 @@ const pagination = ref<ProductPagination>({
 const status = ref<string>('')
 const categoryId = ref<number | string>('')
 
-const dateFrom = ref('')
-const dateTo = ref('')
-
 // ── Opsi Filter ──
 const statusOptions: OptionItem[] = [
   { value: '', label: 'Semua Status' },
@@ -90,8 +87,6 @@ async function loadProducts(page = currentPage.value): Promise<void> {
       page,
       per_page: perPage.value,
       search: search.value.trim(),
-      date_from: dateFrom.value || undefined,
-      date_to: dateTo.value || undefined,
       is_active: status.value === '' ? undefined : Number(status.value),
       category_id: categoryId.value === '' ? undefined : Number(categoryId.value),
     })
@@ -199,12 +194,10 @@ function resetFilters(): void {
   search.value = ''
   status.value = ''
   categoryId.value = ''
-  dateFrom.value = ''
-  dateTo.value = ''
 }
 
 // ── Watchers ──
-watch([search, dateFrom, dateTo, status, categoryId], () => {
+watch([search, status, categoryId], () => {
   if (searchTimeout) clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     loadProducts(1)
