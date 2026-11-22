@@ -72,6 +72,7 @@ export interface ProductAttribute {
 
 export interface ProductPayload {
   sku: string
+  sku_auto_generated?: boolean
   barcode: string | null
   name: string
   category_id: number
@@ -172,7 +173,14 @@ const productService = {
   getById(id: number) {
     return api.get<ApiResponse<Product>>(`${BASE_URL}/show/${id}`)
   },
-
+  generateSku(categoryId: number, dosageForm?: string) {
+    return api.get<ApiResponse<{ sku: string }>>(`${BASE_URL}/generateSku`, {
+      params: {
+        category_id: categoryId,
+        ...(dosageForm ? { dosage_form: dosageForm } : {}),
+      },
+    })
+  },
   create(payload: ProductPayload) {
     return api.post<ApiResponse<Product>>(`${BASE_URL}/create`, payload)
   },

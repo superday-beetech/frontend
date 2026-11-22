@@ -25,30 +25,35 @@ function formatCurrency(value: number | string): string {
   }).format(Number(value || 0))
 }
 
-const units = computed(() => (props.product.units ?? [])
-  .filter((unit) => Number(unit.is_active) === 1)
-  .map((unit) => {
-    const price = (props.product.prices ?? [])
-      .filter((item) => Number(item.unit_id) === Number(unit.unit_id)
-        && item.customer_type == null
-        && Number(item.min_qty) === 1
-        && Number(item.is_active ?? 1) === 1)
-      .sort((a, b) => String(b.valid_from ?? '').localeCompare(String(a.valid_from ?? '')))[0]
+const units = computed(() =>
+  (props.product.units ?? [])
+    .filter((unit) => Number(unit.is_active) === 1)
+    .map((unit) => {
+      const price = (props.product.prices ?? [])
+        .filter(
+          (item) =>
+            Number(item.unit_id) === Number(unit.unit_id) &&
+            item.customer_type == null &&
+            Number(item.min_qty) === 1 &&
+            Number(item.is_active ?? 1) === 1
+        )
+        .sort((a, b) => String(b.valid_from ?? '').localeCompare(String(a.valid_from ?? '')))[0]
 
-    return {
-      ...unit,
-      title: unit.unit_name ?? '-',
-      value_num: Number(unit.conversion_factor),
-      value_num_2: price?.price ?? null,
-      value_json: unit.barcode ? { barcode: unit.barcode } : null,
-      is_primary: Number(unit.is_base),
-    }
-  }))
+      return {
+        ...unit,
+        title: unit.unit_name ?? '-',
+        value_num: Number(unit.conversion_factor),
+        value_num_2: price?.price ?? null,
+        value_json: unit.barcode ? { barcode: unit.barcode } : null,
+        is_primary: Number(unit.is_base),
+      }
+    })
+)
 const pharmacyProfile = computed(() => attrs.value.pharmacy?.[0]?.value_json ?? null)
 const images = computed(() => attrs.value.image ?? [])
 const infos = computed(() => attrs.value.info ?? [])
-const hasAnyAttribute = computed(() =>
-  Boolean(pharmacyProfile.value) || units.value.length > 0 || images.value.length > 0 || infos.value.length > 0,
+const hasAnyAttribute = computed(
+  () => Boolean(pharmacyProfile.value) || units.value.length > 0 || images.value.length > 0 || infos.value.length > 0
 )
 
 const infoGroups = computed(() => {
@@ -112,7 +117,7 @@ watch(
     activeTab.value = 'product'
     if (product?.id) await loadAttributes()
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 const labelClass = 'mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400'

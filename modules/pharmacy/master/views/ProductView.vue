@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { Plus, RotateCcw, Eye, Pencil, Trash2, RefreshCw } from 'lucide-vue-next'
 
 import { useToast } from '@/shared/composables/useToast'
@@ -63,11 +63,12 @@ const perPageOptions = [
 // ── Helper ──
 let searchTimeout: ReturnType<typeof setTimeout> | undefined
 
-function getErrorMessage(error: any): string {
-  const message = error?.response?.data?.message
+function getErrorMessage(error: unknown): string {
+  const err = error as { response?: { data?: { message?: unknown } }; message?: string }
+  const message = err?.response?.data?.message
   if (Array.isArray(message)) return message.join(', ')
   if (typeof message === 'string') return message
-  return error?.message || 'Terjadi kesalahan.'
+  return err?.message || 'Terjadi kesalahan.'
 }
 
 function formatCurrency(value: number | string): string {
@@ -87,7 +88,7 @@ async function loadProducts(page = currentPage.value): Promise<void> {
       page,
       per_page: perPage.value,
       search: search.value.trim(),
-      is_active: status.value === '' ? undefined : Number(status.value),
+      is_active: status.value === '' ? undefined : Number(status.value) === 1 ? 1 : 0,
       category_id: categoryId.value === '' ? undefined : Number(categoryId.value),
     })
 
@@ -186,10 +187,13 @@ async function deleteProduct(product: Product): Promise<void> {
   }
 }
 function reloadData(): void {
-  // Panggil loadProducts dengan halaman saat ini
-  // Ini akan memuat ulang data tanpa mereset filter
-  loadProducts(currentPage.value)
+  // Jika halaman saat ini melebihi total halaman (mis. setelah data menyusut),
+  // fallback ke halaman terakhir yang valid.
+  const maxPage = Math.max(1, pagination.value.total_pages || 1)
+  const target = Math.min(currentPage.value, maxPage)
+  loadProducts(target)
 }
+
 function resetFilters(): void {
   search.value = ''
   status.value = ''
@@ -206,6 +210,10 @@ watch([search, status, categoryId], () => {
 
 watch(perPage, () => {
   loadProducts(1)
+})
+
+onUnmounted(() => {
+  if (searchTimeout) clearTimeout(searchTimeout)
 })
 
 onMounted(async () => {
@@ -275,7 +283,6 @@ onMounted(async () => {
             />
           </div>
 
-          <!-- 4. Pencarian (Pakai BaseInput) -->
           <!-- 4. Pencarian (Pakai BaseInput) -->
           <div class="md:col-span-4 flex items-end gap-2">
             <!-- Pencarian -->
