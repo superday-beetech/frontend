@@ -121,7 +121,7 @@ const pharmacyForm = ref({
   manufacturer: '',
 })
 
-// ── Konversi satuan (product_attributes tipe 'unit') ──
+// ── Satuan tambahan katalog (product_units) ──
 const unitConversions = ref<UnitConversionRow[]>([])
 
 // ── Foto produk (product_attributes tipe 'image') ──
