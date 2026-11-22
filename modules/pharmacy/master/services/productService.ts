@@ -126,20 +126,8 @@ export interface ProductOptions {
 }
 
 export interface ProductAttributes {
-  unit?: Array<{
-    id: number
-    title: string
-    value_num: number
-    value_num_2: number | null
-    value_json: { barcode?: string } | null
-    is_primary: number
-  }>
   image?: Array<{ id: number; value_json: { url: string }; is_primary: number }>
   info?: Array<{ id: number; attr_group: string; title: string | null; content: string; severity: string | null }>
-}
-
-export type ProductWithDetailPayload = ProductPayload & {
-  detail?: ProductDetailPayload | null
 }
 
 export interface ProductPagination {
@@ -232,19 +220,10 @@ const productService = {
     const response = await api.get<ApiResponse<ProductAttribute[]>>(`${BASE_URL}/attributes/${productId}`)
     const envelope = response.data
     const rows = envelope.data ?? []
-    const grouped: ProductAttributes = { unit: [], image: [], info: [] }
+    const grouped: ProductAttributes = { image: [], info: [] }
 
     for (const row of rows) {
-      if (row.attr_type === 'unit') {
-        grouped.unit?.push({
-          id: row.id ?? 0,
-          title: row.title ?? '',
-          value_num: Number(row.value_num ?? 0),
-          value_num_2: row.value_num_2 == null ? null : Number(row.value_num_2),
-          value_json: parseJsonValue(row.value_json) as { barcode?: string } | null,
-          is_primary: Number(row.is_primary ?? 0),
-        })
-      } else if (row.attr_type === 'image') {
+      if (row.attr_type === 'image') {
         grouped.image?.push({
           id: row.id ?? 0,
           value_json: (parseJsonValue(row.value_json) ?? {}) as { url: string },
