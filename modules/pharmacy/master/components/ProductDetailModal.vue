@@ -44,9 +44,12 @@ const units = computed(() => (props.product.units ?? [])
       is_primary: Number(unit.is_base),
     }
   }))
+const pharmacyProfile = computed(() => attrs.value.pharmacy?.[0]?.value_json ?? null)
 const images = computed(() => attrs.value.image ?? [])
 const infos = computed(() => attrs.value.info ?? [])
-const hasAnyAttribute = computed(() => units.value.length > 0 || images.value.length > 0 || infos.value.length > 0)
+const hasAnyAttribute = computed(() =>
+  Boolean(pharmacyProfile.value) || units.value.length > 0 || images.value.length > 0 || infos.value.length > 0,
+)
 
 const infoGroups = computed(() => {
   const groups: Record<string, Array<{ id: number; title: string | null; content: string; severity: string | null }>> = {}
@@ -242,6 +245,59 @@ const valueClass = 'text-sm text-slate-800 dark:text-slate-100'
       </div>
 
       <div v-else class="space-y-6">
+        <section v-if="pharmacyProfile" class="space-y-3">
+          <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
+            <Info class="w-4 h-4 text-primary-600" />
+            Profil Farmasi
+          </h3>
+          <div class="grid grid-cols-1 gap-4 rounded-lg border border-slate-200 p-4 dark:border-slate-800 md:grid-cols-2">
+            <div v-if="pharmacyProfile.generic_name">
+              <div :class="labelClass">Nama Generik</div>
+              <div :class="valueClass">{{ pharmacyProfile.generic_name }}</div>
+            </div>
+            <div v-if="pharmacyProfile.active_ingredient">
+              <div :class="labelClass">Zat Aktif</div>
+              <div :class="valueClass">{{ pharmacyProfile.active_ingredient }}</div>
+            </div>
+            <div v-if="pharmacyProfile.dosage_form">
+              <div :class="labelClass">Bentuk Sediaan</div>
+              <div :class="valueClass">{{ pharmacyProfile.dosage_form }}</div>
+            </div>
+            <div v-if="pharmacyProfile.strength">
+              <div :class="labelClass">Kekuatan / Dosis</div>
+              <div :class="valueClass">{{ pharmacyProfile.strength }}</div>
+            </div>
+            <div v-if="pharmacyProfile.drug_class">
+              <div :class="labelClass">Golongan Obat</div>
+              <div :class="valueClass">{{ pharmacyProfile.drug_class }}</div>
+            </div>
+            <div v-if="pharmacyProfile.bpom_number">
+              <div :class="labelClass">No. Izin Edar (BPOM)</div>
+              <div :class="valueClass">{{ pharmacyProfile.bpom_number }}</div>
+            </div>
+            <div>
+              <div :class="labelClass">Perlu Resep</div>
+              <div :class="valueClass">{{ Number(pharmacyProfile.requires_prescription) === 1 ? 'Ya' : 'Tidak' }}</div>
+            </div>
+            <div v-if="pharmacyProfile.manufacturer">
+              <div :class="labelClass">Pabrik</div>
+              <div :class="valueClass">{{ pharmacyProfile.manufacturer }}</div>
+            </div>
+            <div v-if="pharmacyProfile.min_stock">
+              <div :class="labelClass">Stok Minimum</div>
+              <div :class="valueClass">{{ pharmacyProfile.min_stock }}</div>
+            </div>
+            <div v-if="pharmacyProfile.max_stock != null">
+              <div :class="labelClass">Stok Maksimum</div>
+              <div :class="valueClass">{{ pharmacyProfile.max_stock }}</div>
+            </div>
+            <div v-if="pharmacyProfile.rack_location">
+              <div :class="labelClass">Rak / Lokasi</div>
+              <div :class="valueClass">{{ pharmacyProfile.rack_location }}</div>
+            </div>
+          </div>
+        </section>
+
         <!-- ══ Satuan ══ -->
         <section v-if="units.length">
           <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
