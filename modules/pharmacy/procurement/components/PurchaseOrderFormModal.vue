@@ -2,7 +2,6 @@
 import { computed, reactive, ref } from 'vue'
 
 import OptionSelect from '@/shared/components/ui/form/OptionSelect.vue'
-import ButtonSpin from '@/shared/components/ui/form/ButtonSpin.vue'
 import CurrencyInput from '@/shared/components/ui/form/CurrencyInput.vue'
 
 import { useDiscount, type DiscountMode } from '@/shared/composables/useDiscount'
@@ -189,7 +188,7 @@ const availableProducts = computed<OptionItem[]>(() =>
     }))
 )
 
-function addProduct(productIdValue: string | number): void {
+function addProduct(productIdValue: string | number | null): void {
   if (productIdValue === '') return
 
   const productId = Number(productIdValue)
