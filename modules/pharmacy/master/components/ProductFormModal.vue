@@ -157,6 +157,7 @@ function resetForm(product?: Product | null): void {
   form.value.selling_price = Number(baseSellingPrice)
   sellingPrice.value = Number(baseSellingPrice)
 
+  detailExists.value = false
   detailForm.value = {
     generic_name: '',
     active_ingredient: '',
