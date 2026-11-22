@@ -2,8 +2,8 @@
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import distributionService from "../api/distribution.api";
-import deliveryService from "../api/delivery.api";
+import distributionService from "../services/distributionService";
+import deliveryService from "../services/deliveryService";
 
 import type { DistributionOrderDetail } from "../types/distribution";
 

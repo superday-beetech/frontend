@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import reportService from "../api/report.api";
-import type { StockSummaryFilter, StockSummaryItem, StockSummaryReport } from "../api/report.api";
+import reportService from "../services/reportService";
+import type { StockSummaryFilter, StockSummaryItem, StockSummaryReport } from "../services/reportService";
 
 const loading = ref(false);
 const exporting = ref(false);

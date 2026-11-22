@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Supplier } from "../api/supplier.api";
+import type { Supplier } from "../services/supplierService";
 
 defineProps<{
   supplier: Supplier;

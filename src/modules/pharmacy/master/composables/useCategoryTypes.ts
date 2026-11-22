@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import categoryTypeService, { type CategoryTypeOption } from "../api/category-type.api";
+import categoryTypeService, { type CategoryTypeOption } from "../services/categoryTypeService";
 
 // Cache per module
 const cache: Record<string, CategoryTypeOption[]> = {};

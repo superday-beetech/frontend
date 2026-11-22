@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "@/shared/composables/useToast";
-import { inventoryService } from "../api/inventory.api";
+import { inventoryService } from "../services/inventoryService";
 import type { StockOpnameDetail, StockOpnameItem, SaveStockOpnameCountsPayload } from "../types/inventory";
 
 const toast = useToast();

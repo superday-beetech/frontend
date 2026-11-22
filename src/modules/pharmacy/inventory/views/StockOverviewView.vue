@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { inventoryService } from "../api/inventory.api";
+import { inventoryService } from "../services/inventoryService";
 import type { InventoryPagination, StockOverview } from "../types/inventory";
 import { useToast } from "@/shared/composables/useToast";
 

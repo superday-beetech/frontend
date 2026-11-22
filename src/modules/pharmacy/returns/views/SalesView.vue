@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import returnsService from "../api/returns.api";
+import { http as api } from "@/core/api/client";
 import { useToast } from "@/shared/composables/useToast";
 
 const toast = useToast();
@@ -77,7 +77,7 @@ const loadReturns = async () => {
   loading.value = true;
 
   try {
-    const response = await returnsService.listSales();
+    const response = await api.get("/pharmacy/returns-api/list-sales");
 
     returns.value = response.data.data?.items ?? [];
   } catch (error: any) {
@@ -92,7 +92,7 @@ const showDetail = async (id: number) => {
   selected.value = null;
 
   try {
-    const response = await returnsService.showSales(id);
+    const response = await api.get(`/pharmacy/returns-api/show-sales/${id}`);
 
     selected.value = response.data.data;
   } catch (error: any) {
@@ -110,7 +110,7 @@ const postReturn = async (id: number) => {
   postingId.value = id;
 
   try {
-    const response = await returnsService.postSales(id);
+    const response = await api.post(`/pharmacy/returns-api/post-sales/${id}`);
 
     toast.success(response.data.message ?? "Sales return berhasil diposting.", "success");
 

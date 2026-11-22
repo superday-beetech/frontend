@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import deliveryService from "@/modules/pharmacy/distribution/api/delivery.api";
-import returnsService from "../api/returns.api";
+import { http as api } from "@/core/api/client";
 
 interface Delivery {
   id: number;
@@ -10,6 +9,17 @@ interface Delivery {
   customer_name?: string;
   delivery_date: string;
   status: string;
+}
+
+interface DeliveryItem {
+  id: number;
+  product_id: number;
+  product_name: string;
+  sku?: string;
+  batch_id: number;
+  batch_number?: string;
+  quantity_dispatched: number;
+  unit_price: number;
 }
 
 interface ReturnItemForm {
@@ -53,6 +63,10 @@ const totalAmount = computed(() => items.value.reduce((total, item) => total + N
 
 const totalRestockable = computed(() => items.value.reduce((total, item) => total + (item.restockable ? Number(item.quantity || 0) : 0), 0));
 
+function getResponseData(response: any): any {
+  return response?.data?.data;
+}
+
 function generateReturnNumber(): string {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
 
@@ -74,12 +88,18 @@ async function loadDeliveries() {
   errorMessage.value = "";
 
   try {
-    const data = await deliveryService.getDeliveries({
-      page: 1,
-      per_page: 100,
+    const response = await api.get("/pharmacy/delivery-api", {
+      params: {
+        page: 1,
+        per_page: 100,
+      },
     });
 
-    deliveries.value = data.items.filter((delivery) => delivery.status === "posted").map((delivery) => ({ ...delivery, id: Number(delivery.id) }));
+    const data = getResponseData(response);
+
+    const rows = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [];
+
+    deliveries.value = rows.filter((delivery: Delivery) => delivery.status === "posted");
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || "Gagal mengambil daftar pengiriman.";
   } finally {
@@ -99,7 +119,9 @@ async function loadDeliveryDetail() {
   loadingDetail.value = true;
 
   try {
-    const data = await deliveryService.getDeliveryDetail(Number(selectedDeliveryId.value));
+    const response = await api.get(`/pharmacy/delivery-api/show/${selectedDeliveryId.value}`);
+
+    const data = getResponseData(response);
 
     const delivery = data?.delivery;
 
@@ -109,11 +131,11 @@ async function loadDeliveryDetail() {
 
     selectedDelivery.value = delivery;
 
-    const deliveryItems = Array.isArray(data?.items) ? data.items : [];
+    const deliveryItems: DeliveryItem[] = Array.isArray(data?.items) ? data.items : [];
 
     items.value = deliveryItems.map((item) => ({
       deliveryItemId: Number(item.id),
-      productName: item.product_name ?? "-",
+      productName: item.product_name,
       sku: item.sku,
       batchNumber: item.batch_number,
       batchId: Number(item.batch_id),
@@ -178,9 +200,9 @@ async function submitReturn() {
       })),
     };
 
-    const response = await returnsService.createSales(payload);
+    const response = await api.post("/pharmacy/returns-api/create-sales", payload);
 
-    const data = response.data?.data;
+    const data = getResponseData(response);
 
     createdReturnId.value = Number(data?.return_id);
 

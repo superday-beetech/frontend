@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
 import { useToast } from "@/shared/composables/useToast";
-import financeService from "../api/finance.api";
+import financeService from "../services/financeService";
 
 const toast = useToast();
 

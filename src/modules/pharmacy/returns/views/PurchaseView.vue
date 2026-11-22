@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import returnsService from "../api/returns.api";
+import { http as api } from "@/core/api/client";
 
 interface PurchaseReturn {
   id: number;
@@ -103,7 +103,7 @@ async function loadReturns() {
   errorMessage.value = "";
 
   try {
-    const response = await returnsService.listPurchase();
+    const response = await api.get("/pharmacy/returns-api/list-purchase");
 
     const data = getResponseData(response);
 
@@ -121,7 +121,7 @@ async function showDetail(id: number) {
   errorMessage.value = "";
 
   try {
-    const response = await returnsService.showPurchase(id);
+    const response = await api.get(`/pharmacy/returns-api/show-purchase/${id}`);
 
     selectedReturn.value = getResponseData(response);
   } catch (error: any) {
@@ -145,7 +145,7 @@ async function postReturn(item: PurchaseReturn) {
   successMessage.value = "";
 
   try {
-    const response = await returnsService.postPurchase(item.id);
+    const response = await api.post(`/pharmacy/returns-api/post-purchase/${item.id}`);
 
     successMessage.value = response.data?.message || "Purchase Return berhasil diposting.";
 

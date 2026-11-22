@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
-import reportService, { type StockCardFilter, type StockCardReport } from "../api/report.api";
+import reportService, { type StockCardFilter, type StockCardReport } from "../services/reportService";
 import { useToast } from "@/shared/composables/useToast";
 
 const toast = useToast();

@@ -1,160 +1,168 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { useToast } from "@/shared/composables/useToast";
-import { useModal } from "@/shared/composables/useModal";
+import { computed, onMounted, ref } from 'vue'
+import { useToast } from '@/shared/composables/useToast'
+import { useModal } from '@/shared/composables/useModal'
 
-import financeService from "../api/finance.api";
-import type { ExpensePayload } from "../types/finance";
+import financeService from '../services/financeService'
+import type { ExpensePayload } from '../types/finance'
 
-import ExpenseFormModal from "./ExpenseFormModal.vue";
+import ExpenseFormModal from './ExpenseFormModal.vue'
 
-const toast = useToast();
+const toast = useToast()
 
 interface ExpenseRow {
-  id: number;
-  expense_number: string;
-  expense_date: string;
-  category: string;
-  description: string;
-  amount: number;
-  payment_method: string;
-  reference_number?: string | null;
-  notes?: string | null;
+  id: number
+  expense_number: string
+  expense_date: string
+  category: string
+  description: string
+  amount: number
+  payment_method: string
+  reference_number?: string | null
+  notes?: string | null
 }
 
-const modalStore = useModal();
+const modalStore = useModal()
 
-const expenses = ref<ExpenseRow[]>([]);
-const loading = ref(false);
-const search = ref("");
+const expenses = ref<ExpenseRow[]>([])
+const loading = ref(false)
+const search = ref('')
 
 const categoryLabels: Record<string, string> = {
-  transportation: "Transportasi",
-  utilities: "Listrik dan Air",
-  rent: "Sewa",
-  salary: "Gaji dan Upah",
-  supplies: "Perlengkapan",
-  administration: "Administrasi",
-  operational: "Operasional",
-};
+  transportation: 'Transportasi',
+  utilities: 'Listrik dan Air',
+  rent: 'Sewa',
+  salary: 'Gaji dan Upah',
+  supplies: 'Perlengkapan',
+  administration: 'Administrasi',
+  operational: 'Operasional',
+}
 
 const filteredExpenses = computed(() => {
-  const keyword = search.value.trim().toLowerCase();
+  const keyword = search.value.trim().toLowerCase()
 
-  if (!keyword) return expenses.value;
+  if (!keyword) return expenses.value
 
-  return expenses.value.filter((expense) => [expense.expense_number, expense.category, expense.description, expense.payment_method, expense.reference_number ?? ""].some((value) => String(value).toLowerCase().includes(keyword)));
-});
+  return expenses.value.filter((expense) =>
+    [expense.expense_number, expense.category, expense.description, expense.payment_method, expense.reference_number ?? ''].some((value) =>
+      String(value).toLowerCase().includes(keyword)
+    )
+  )
+})
 
-const totalExpense = computed(() => filteredExpenses.value.reduce((total, expense) => total + Number(expense.amount || 0), 0));
+const totalExpense = computed(() => filteredExpenses.value.reduce((total, expense) => total + Number(expense.amount || 0), 0))
 
 function unwrapResponse(response: any): any {
-  return response?.data?.data ?? response?.data ?? response;
+  return response?.data?.data ?? response?.data ?? response
 }
 
 function generateExpenseNumber(): string {
-  const now = new Date();
+  const now = new Date()
 
-  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("");
+  const date = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('')
 
-  const time = [String(now.getHours()).padStart(2, "0"), String(now.getMinutes()).padStart(2, "0"), String(now.getSeconds()).padStart(2, "0")].join("");
+  const time = [
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+    String(now.getSeconds()).padStart(2, '0'),
+  ].join('')
 
-  return `EXP-${date}-${time}`;
+  return `EXP-${date}-${time}`
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
     maximumFractionDigits: 0,
-  }).format(Number(value || 0));
+  }).format(Number(value || 0))
 }
 
 function formatDate(value: string): string {
-  if (!value) return "-";
+  if (!value) return '-'
 
-  const date = new Date(`${value.slice(0, 10)}T00:00:00`);
+  const date = new Date(`${value.slice(0, 10)}T00:00:00`)
 
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(date);
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
 }
 
 function formatCategory(value: string): string {
-  return categoryLabels[value] ?? value ?? "-";
+  return categoryLabels[value] ?? value ?? '-'
 }
 
 function formatPaymentMethod(value: string): string {
   const labels: Record<string, string> = {
-    cash: "Tunai",
-    transfer: "Transfer",
-    debit: "Debit",
-    credit: "Kredit",
-  };
+    cash: 'Tunai',
+    transfer: 'Transfer',
+    debit: 'Debit',
+    credit: 'Kredit',
+  }
 
-  return labels[value] ?? value ?? "-";
+  return labels[value] ?? value ?? '-'
 }
 
 async function loadExpenses(): Promise<void> {
-  loading.value = true;
+  loading.value = true
 
   try {
-    const response = await financeService.getExpenses();
-    const body = unwrapResponse(response);
+    const response = await financeService.getExpenses()
+    const body = unwrapResponse(response)
 
-    const rows = Array.isArray(body) ? body : (body?.items ?? body?.expenses ?? []);
+    const rows = Array.isArray(body) ? body : (body?.items ?? body?.expenses ?? [])
 
-    expenses.value = rows;
+    expenses.value = rows
   } catch (error) {
-    console.error("Gagal memuat pengeluaran:", error);
-    toast.error("Gagal memuat daftar pengeluaran.");
+    console.error('Gagal memuat pengeluaran:', error)
+    toast.error('Gagal memuat daftar pengeluaran.')
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
 async function saveExpense(payload: ExpensePayload): Promise<void> {
   try {
-    await financeService.createExpense(payload);
+    await financeService.createExpense(payload)
 
-    toast.success("Pengeluaran berhasil disimpan.");
-    await loadExpenses();
+    toast.success('Pengeluaran berhasil disimpan.')
+    await loadExpenses()
   } catch (error: any) {
-    console.error("Gagal menyimpan pengeluaran:", error);
+    console.error('Gagal menyimpan pengeluaran:', error)
 
-    const message = error?.response?.data?.messages?.error ?? error?.response?.data?.message ?? "Gagal menyimpan pengeluaran.";
+    const message = error?.response?.data?.messages?.error ?? error?.response?.data?.message ?? 'Gagal menyimpan pengeluaran.'
 
-    toast.error(message);
+    toast.error(message)
   }
 }
 
 function openCreateModal(): void {
   modalStore.open({
-    title: "Tambah Pengeluaran",
+    title: 'Tambah Pengeluaran',
     component: ExpenseFormModal,
-    size: "lg",
+    size: 'lg',
     centered: true,
     props: {
       expenseNumber: generateExpenseNumber(),
     },
     onSelect: async (value: unknown) => {
-      if (typeof value !== "object" || value === null || !("expense_number" in value) || !("expense_date" in value)) {
-        return;
+      if (typeof value !== 'object' || value === null || !('expense_number' in value) || !('expense_date' in value)) {
+        return
       }
 
-      const payload = value as ExpensePayload;
+      const payload = value as ExpensePayload
 
-      modalStore.close();
-      await saveExpense(payload);
+      modalStore.close()
+      await saveExpense(payload)
     },
-  });
+  })
 }
 
 onMounted(() => {
-  loadExpenses();
-});
+  loadExpenses()
+})
 </script>
 
 <template>
@@ -165,7 +173,11 @@ onMounted(() => {
         <p class="text-slate-500 mb-0">Kelola pencatatan biaya dan pengeluaran operasional apotek.</p>
       </div>
 
-      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreateModal">
+      <button
+        type="button"
+        class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700"
+        @click="openCreateModal"
+      >
         <i class="ti ti-plus me-1"></i>
         Tambah Pengeluaran
       </button>
@@ -173,7 +185,7 @@ onMounted(() => {
 
     <div class="grid grid-cols-12 g-3 mb-4">
       <div class="col-span-12 md:col-span-6 col-xl-4">
-        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 h-full">
           <div class="p-5">
             <div class="text-slate-500 mb-2">Total Pengeluaran</div>
             <h4 class="mb-0">{{ formatCurrency(totalExpense) }}</h4>
@@ -182,7 +194,7 @@ onMounted(() => {
       </div>
 
       <div class="col-span-12 md:col-span-6 col-xl-4">
-        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm h-full">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 h-full">
           <div class="p-5">
             <div class="text-slate-500 mb-2">Jumlah Transaksi</div>
             <h4 class="mb-0">{{ filteredExpenses.length }}</h4>
@@ -191,7 +203,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 border-0 shadow-sm">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div class="p-5">
         <div class="grid grid-cols-12 items-center mb-3">
           <div class="col-span-12 md:col-span-6">
@@ -199,12 +211,19 @@ onMounted(() => {
           </div>
 
           <div class="col-span-12 md:col-span-6 mt-3 mt-md-0">
-            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" placeholder="Cari nomor, kategori, atau deskripsi..." />
+            <input
+              v-model="search"
+              type="search"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              placeholder="Cari nomor, kategori, atau deskripsi..."
+            />
           </div>
         </div>
 
         <div class="w-full overflow-x-auto">
-          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0">
+          <table
+            class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle mb-0"
+          >
             <thead>
               <tr>
                 <th>Nomor Pengeluaran</th>

@@ -1,84 +1,89 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from 'vue'
+import { Plus, RotateCcw, Eye, Pencil, Trash2, RefreshCw } from 'lucide-vue-next'
 
-import { useToast } from "@/shared/composables/useToast";
-import { useConfirm } from "@/shared/composables/useConfirm";
-import { useModal } from "@/shared/composables/useModal";
-import { useMasterOptions } from "@/modules/pharmacy/master/composables/useMasterOptions";
+import { useToast } from '@/shared/composables/useToast'
+import { useConfirm } from '@/shared/composables/useConfirm'
+import { useModal } from '@/shared/composables/useModal'
+import { useMasterOptions } from '@/modules/pharmacy/master/composables/useMasterOptions'
 
-import productService, { type Product, type ProductPagination } from "../api/product.api";
+import productService, { type Product, type ProductPagination } from '../services/productService'
 
-import ProductFormModal from "../components/ProductFormModal.vue";
-import ProductDetailModal from "../components/ProductDetailModal.vue";
-import OptionSelect from "@/shared/components/ui/form/OptionSelect.vue";
-import type { OptionItem } from "@/shared/composables/useOption";
+import ProductFormModal from '../components/ProductFormModal.vue'
+import ProductDetailModal from '../components/ProductDetailModal.vue'
 
-const toast = useToast();
-const { confirm } = useConfirm();
+// Komponen UI
+import OptionSelect from '@/shared/components/ui/form/OptionSelect.vue'
+import BaseInput from '@/shared/components/ui/form/BaseInput.vue'
+import BaseButton from '@/shared/components/ui/primitives/BaseButton.vue'
+import BaseBadge from '@/shared/components/ui/feedback/BaseBadge.vue'
+import TablePaginationBar from '@/shared/components/ui/data/TablePaginationBar.vue'
 
-const modalStore = useModal();
-const masterOptions = useMasterOptions();
+import type { OptionItem } from '@/shared/composables/useOption'
 
-const products = ref<Product[]>([]);
-const loading = ref(false);
+const toast = useToast()
+const { confirm } = useConfirm()
+const modalStore = useModal()
+const masterOptions = useMasterOptions()
 
-const search = ref("");
-const currentPage = ref(1);
-const perPage = ref(10);
+// ── State ──
+const products = ref<Product[]>([])
+const loading = ref(false)
+
+const search = ref('')
+const currentPage = ref(1)
+const perPage = ref(10)
 
 const pagination = ref<ProductPagination>({
   current_page: 1,
   per_page: 10,
   total: 0,
   total_pages: 0,
-});
+})
 
-const status = ref<string>("");
-const categoryId = ref<number | string>("");
+const status = ref<string>('')
+const categoryId = ref<number | string>('')
 
-const dateFrom = ref("");
-const dateTo = ref("");
+const dateFrom = ref('')
+const dateTo = ref('')
 
-// Opsi filter
+// ── Opsi Filter ──
 const statusOptions: OptionItem[] = [
-  { value: "", label: "Semua Status" },
-  { value: "1", label: "Aktif" },
-  { value: "0", label: "Tidak Aktif" },
-];
+  { value: '', label: 'Semua Status' },
+  { value: '1', label: 'Aktif' },
+  { value: '0', label: 'Tidak Aktif' },
+]
 
-// Kategori otomatis dari useMasterOptions (module: pharmacy)
-const categoryFilterOptions = computed<OptionItem[]>(() => [{ value: "", label: "Semua Kategori" }, ...masterOptions.categoryOptions.value]);
+const categoryFilterOptions = computed<OptionItem[]>(() => [{ value: '', label: 'Semua Kategori' }, ...masterOptions.categoryOptions.value])
 
-const visiblePages = computed<(number | string)[]>(() => {
-  const total = pagination.value.total_pages;
-  const current = currentPage.value;
+const perPageOptions = [
+  { label: '10', value: 10 },
+  { label: '25', value: 25 },
+  { label: '50', value: 50 },
+  { label: '100', value: 100 },
+]
 
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  if (current <= 4) return [1, 2, 3, 4, 5, "...", total - 1, total];
-  if (current >= total - 3) return [1, 2, "...", total - 4, total - 3, total - 2, total - 1, total];
-
-  return [1, 2, "...", current - 1, current, current + 1, "...", total - 1, total];
-});
-
-let searchTimeout: ReturnType<typeof setTimeout> | undefined;
+// ── Helper ──
+let searchTimeout: ReturnType<typeof setTimeout> | undefined
 
 function getErrorMessage(error: any): string {
-  const message = error?.response?.data?.message;
-  if (Array.isArray(message)) return message.join(", ");
-  if (typeof message === "string") return message;
-  return error?.message || "Terjadi kesalahan.";
+  const message = error?.response?.data?.message
+  if (Array.isArray(message)) return message.join(', ')
+  if (typeof message === 'string') return message
+  return error?.message || 'Terjadi kesalahan.'
 }
 
 function formatCurrency(value: number | string): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
     maximumFractionDigits: 2,
-  }).format(Number(value || 0));
+  }).format(Number(value || 0))
 }
 
+// ── Actions ──
 async function loadProducts(page = currentPage.value): Promise<void> {
-  loading.value = true;
+  loading.value = true
 
   try {
     const response = await productService.getAll({
@@ -87,258 +92,292 @@ async function loadProducts(page = currentPage.value): Promise<void> {
       search: search.value.trim(),
       date_from: dateFrom.value || undefined,
       date_to: dateTo.value || undefined,
-      is_active: status.value === "" ? undefined : Number(status.value),
-      category_id: categoryId.value === "" ? undefined : Number(categoryId.value),
-    });
+      is_active: status.value === '' ? undefined : Number(status.value),
+      category_id: categoryId.value === '' ? undefined : Number(categoryId.value),
+    })
 
-    const result = response.data;
+    const result = response.data
 
     if (result.error || !result.data) {
-      throw new Error(typeof result.message === "string" ? result.message : "Gagal mengambil data produk.");
+      throw new Error(typeof result.message === 'string' ? result.message : 'Gagal mengambil data produk.')
     }
 
-    products.value = result.data.items;
-    pagination.value = result.data.pagination;
-    currentPage.value = result.data.pagination.current_page;
+    products.value = result.data.items
+    pagination.value = result.data.pagination
+    currentPage.value = result.data.pagination.current_page
   } catch (error: any) {
-    toast.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error))
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
 function openCreateForm(): void {
   modalStore.open({
-    title: "Tambah Produk",
+    title: 'Tambah Produk',
     component: ProductFormModal,
     props: { product: null },
-    size: "lg",
+    size: 'xl',
     centered: true,
     scrollable: true,
     onSelect: async () => {
-      await loadProducts(1);
+      await loadProducts(1)
     },
-  });
+  })
 }
 
 function openEditForm(product: Product): void {
   modalStore.open({
-    title: "Ubah Produk",
+    title: 'Ubah Produk',
     component: ProductFormModal,
     props: { product },
-    size: "lg",
+    size: 'xl',
     centered: true,
     scrollable: true,
     onSelect: async () => {
-      await loadProducts(currentPage.value);
+      await loadProducts(currentPage.value)
     },
-  });
+  })
 }
 
 async function openDetail(product: Product): Promise<void> {
   try {
-    const response = await productService.getById(product.id);
-    const result = response.data;
+    const response = await productService.getById(product.id)
+    const result = response.data
 
     if (result.error || !result.data) {
-      throw new Error(typeof result.message === "string" ? result.message : "Gagal mengambil detail produk.");
+      throw new Error(typeof result.message === 'string' ? result.message : 'Gagal mengambil detail produk.')
     }
 
     modalStore.open({
-      title: "Detail Produk",
+      title: 'Detail Produk',
       component: ProductDetailModal,
       props: { product: result.data },
-      size: "lg",
+      size: 'lg',
       centered: true,
       scrollable: true,
       onSelect: (value) => {
-        openEditForm(value as Product);
+        openEditForm(value as Product)
       },
-    });
+    })
   } catch (error: any) {
-    toast.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error))
   }
 }
 
 async function deleteProduct(product: Product): Promise<void> {
   const confirmed = await confirm({
-    title: "Konfirmasi Hapus",
+    title: 'Konfirmasi Hapus',
     message: `Hapus produk "${product.name}"?`,
-    confirmText: "Ya, Hapus",
-    variant: "danger",
-  });
-  if (!confirmed) return;
+    confirmText: 'Ya, Hapus',
+    variant: 'danger',
+  })
+  if (!confirmed) return
 
   try {
-    const response = await productService.delete(product.id);
-    const result = response.data;
+    const response = await productService.delete(product.id)
+    const result = response.data
 
     if (result.error) {
-      throw new Error(typeof result.message === "string" ? result.message : "Gagal menghapus produk.");
+      throw new Error(typeof result.message === 'string' ? result.message : 'Gagal menghapus produk.')
     }
 
-    toast.success("Produk berhasil dihapus.");
+    toast.success('Produk berhasil dihapus.')
 
-    const nextPage = products.value.length === 1 && currentPage.value > 1 ? currentPage.value - 1 : currentPage.value;
-    await loadProducts(nextPage);
+    const nextPage = products.value.length === 1 && currentPage.value > 1 ? currentPage.value - 1 : currentPage.value
+    await loadProducts(nextPage)
   } catch (error: any) {
-    toast.error(getErrorMessage(error));
+    toast.error(getErrorMessage(error))
   }
 }
-
-function changePage(page: number): void {
-  if (loading.value || page < 1 || page > pagination.value.total_pages || page === currentPage.value) return;
-  loadProducts(page);
+function reloadData(): void {
+  // Panggil loadProducts dengan halaman saat ini
+  // Ini akan memuat ulang data tanpa mereset filter
+  loadProducts(currentPage.value)
 }
-
 function resetFilters(): void {
-  search.value = "";
-  status.value = "";
-  categoryId.value = "";
-  dateFrom.value = "";
-  dateTo.value = "";
+  search.value = ''
+  status.value = ''
+  categoryId.value = ''
+  dateFrom.value = ''
+  dateTo.value = ''
 }
 
+// ── Watchers ──
 watch([search, dateFrom, dateTo, status, categoryId], () => {
-  if (searchTimeout) clearTimeout(searchTimeout);
+  if (searchTimeout) clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
-    loadProducts(1);
-  }, 350);
-});
+    loadProducts(1)
+  }, 350)
+})
 
 watch(perPage, () => {
-  loadProducts(1);
-});
+  loadProducts(1)
+})
 
 onMounted(async () => {
-  await masterOptions.load();
-  await loadProducts(1);
-});
+  await masterOptions.load()
+  await loadProducts(1)
+})
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full space-y-4">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h4 class="mb-1">Produk</h4>
-        <p class="text-slate-500 mb-0">Kelola data produk apotek.</p>
+        <h1 class="text-xl font-bold text-slate-900 dark:text-white">Produk</h1>
+        <p class="text-sm text-slate-500">Kelola data produk apotek.</p>
       </div>
 
-      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 bg-primary-600 text-white hover:bg-primary-700" @click="openCreateForm">
-        <i class="ti ti-plus me-1"></i>
-        Tambah Produk
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- Tombol Reload di Header -->
+        <button
+          @click="reloadData"
+          :disabled="loading"
+          class="flex h-[38px] items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          title="Muat Ulang Data"
+        >
+          <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': loading }" />
+        </button>
+
+        <BaseButton @click="openCreateForm">
+          <Plus class="w-4 h-4" />
+          Tambah Produk
+        </BaseButton>
+      </div>
     </div>
 
+    <!-- Main Card -->
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div class="p-5">
-        <!-- Filter -->
-        <div class="grid grid-cols-12 g-3 mb-3 items-end">
-          <div class="col-span-12 md:col-span-2">
-            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Tampilkan</label>
-            <select v-model.number="perPage" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-select-sm">
-              <option :value="10">10</option>
-              <option :value="25">25</option>
-              <option :value="50">50</option>
-              <option :value="100">100</option>
-            </select>
+      <div class="p-5 space-y-4">
+        <!-- Container Filter -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-4">
+          <!-- 1. Tampilkan (Pakai OptionSelect) -->
+          <div class="md:col-span-2">
+            <OptionSelect v-model="perPage" label="Tampilkan" :options="perPageOptions" :searchable="false" :floating="false" />
           </div>
 
-          <div class="col-span-12 md:col-span-3">
-            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Kategori</label>
-            <OptionSelect v-model="categoryId" :options="categoryFilterOptions" placeholder="Semua kategori" search-placeholder="Cari kategori..." />
+          <!-- 2. Kategori -->
+          <div class="md:col-span-3">
+            <OptionSelect
+              v-model="categoryId"
+              label="Kategori"
+              :options="categoryFilterOptions"
+              placeholder="Semua kategori"
+              search-placeholder="Cari kategori..."
+              :floating="false"
+            />
           </div>
 
-          <div class="col-span-12 md:col-span-2">
-            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Status</label>
-            <OptionSelect v-model="status" :options="statusOptions" placeholder="Semua status" :searchable="false" />
+          <!-- 3. Status -->
+          <div class="md:col-span-3">
+            <OptionSelect
+              v-model="status"
+              label="Status"
+              :options="statusOptions"
+              placeholder="Semua status"
+              :searchable="false"
+              :floating="false"
+            />
           </div>
 
-          <div class="col-span-12 md:col-span-3">
-            <label class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300 small mb-1">Pencarian</label>
-            <input v-model="search" type="search" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 form-control-sm" placeholder="SKU, barcode, produk..." />
-          </div>
+          <!-- 4. Pencarian (Pakai BaseInput) -->
+          <!-- 4. Pencarian (Pakai BaseInput) -->
+          <div class="md:col-span-4 flex items-end gap-2">
+            <!-- Pencarian -->
+            <div class="flex-1">
+              <BaseInput v-model="search" label="Pencarian" placeholder="SKU, barcode, produk..." :floating="false" />
+            </div>
 
-          <div class="col-span-12 md:col-span-2">
-            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 w-full" @click="resetFilters">
-              <i class="ti ti-refresh me-1"></i>
-              Reset
+            <!-- Tombol Reset -->
+            <button
+              @click="resetFilters"
+              class="flex h-[42px] shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+              title="Reset Filter"
+            >
+              <RotateCcw class="h-4 w-4" />
+              <span class="hidden sm:inline">Reset</span>
             </button>
           </div>
         </div>
 
-        <!-- Tabel Produk -->
-        <div class="w-full overflow-x-auto">
-          <table class="w-full border-collapse text-sm [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/50 align-middle">
-            <thead>
+        <!-- Table Section -->
+        <div class="w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800">
+          <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50 text-xs uppercase font-semibold text-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
               <tr>
-                <th style="width: 60px">No.</th>
-                <th>Produk</th>
-                <th>SKU / Barcode</th>
-                <th>Kategori</th>
-                <th>Satuan</th>
-                <th class="text-right">Harga Beli</th>
-                <th class="text-right">Harga Jual</th>
-                <th>Status</th>
-                <th class="text-center" style="width: 130px">Aksi</th>
+                <th class="px-4 py-3 w-12 text-center">No.</th>
+                <th class="px-4 py-3">Produk</th>
+                <th class="px-4 py-3">SKU / Barcode</th>
+                <th class="px-4 py-3">Kategori</th>
+                <th class="px-4 py-3">Satuan</th>
+                <th class="px-4 py-3 text-right">Harga Beli</th>
+                <th class="px-4 py-3 text-right">Harga Jual</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 text-center w-32">Aksi</th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <!-- Loading -->
               <tr v-if="loading">
-                <td colspan="9" class="text-center py-4">
-                  <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent spinner-border-sm me-2"></span>
-                  Memuat data...
+                <td colspan="9" class="px-4 py-8 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-600 border-r-transparent"></span>
+                    <span>Memuat data...</span>
+                  </div>
                 </td>
               </tr>
 
+              <!-- Empty -->
               <tr v-else-if="products.length === 0">
-                <td colspan="9" class="text-center text-slate-500 py-4">Data produk tidak ditemukan.</td>
+                <td colspan="9" class="px-4 py-8 text-center text-slate-500">Data produk tidak ditemukan.</td>
               </tr>
 
-              <tr v-for="(product, index) in products" :key="product.id">
-                <td>{{ (currentPage - 1) * perPage + index + 1 }}</td>
+              <!-- Data Rows -->
+              <tr
+                v-for="(product, index) in products"
+                :key="product.id"
+                class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+              >
+                <td class="px-4 py-3 text-center text-slate-500">{{ (currentPage - 1) * perPage + index + 1 }}</td>
 
-                <td>
-                  <div class="font-semibold">{{ product.name }}</div>
-                  <small class="text-slate-500">
-                    {{ product.description || "-" }}
-                  </small>
+                <td class="px-4 py-3">
+                  <div class="font-semibold text-slate-900 dark:text-white">{{ product.name }}</div>
+                  <div class="text-xs text-slate-500">{{ product.description || '-' }}</div>
                 </td>
 
-                <td>
-                  <div>{{ product.sku || "-" }}</div>
-                  <small class="text-slate-500">{{ product.barcode || "-" }}</small>
+                <td class="px-4 py-3">
+                  <div class="font-medium">{{ product.sku || '-' }}</div>
+                  <div class="text-xs text-slate-500">{{ product.barcode || '-' }}</div>
                 </td>
 
-                <td>{{ product.category_name || "-" }}</td>
-                <td>{{ product.unit_name || "-" }}</td>
+                <td class="px-4 py-3">{{ product.category_name || '-' }}</td>
+                <td class="px-4 py-3">{{ product.unit_name || '-' }}</td>
 
-                <td class="text-right whitespace-nowrap">
-                  {{ formatCurrency(product.purchase_price) }}
-                </td>
-                <td class="text-right whitespace-nowrap">
-                  {{ formatCurrency(product.selling_price) }}
-                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap">{{ formatCurrency(product.purchase_price) }}</td>
+                <td class="px-4 py-3 text-right whitespace-nowrap">{{ formatCurrency(product.selling_price) }}</td>
 
-                <td>
-                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium" :class="Number(product.is_active) === 1 ? 'bg-success' : 'bg-secondary'">
-                    {{ Number(product.is_active) === 1 ? "Aktif" : "Tidak Aktif" }}
-                  </span>
+                <!-- Status (BaseBadge) -->
+                <td class="px-4 py-3">
+                  <BaseBadge :variant="Number(product.is_active) === 1 ? 'success' : 'neutral'">
+                    {{ Number(product.is_active) === 1 ? 'Aktif' : 'Tidak Aktif' }}
+                  </BaseBadge>
                 </td>
 
-                <td class="text-center">
-                  <div class="flex justify-center gap-1">
-                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Detail" @click="openDetail(product)">
-                      <i class="ti ti-eye"></i>
-                    </button>
-                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200" title="Ubah" @click="openEditForm(product)">
-                      <i class="ti ti-edit"></i>
-                    </button>
-                    <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:opacity-50 px-2.5 py-1.5 text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 text-rose-600" title="Hapus" @click="deleteProduct(product)">
-                      <i class="ti ti-trash"></i>
-                    </button>
+                <!-- Aksi (BaseButton) -->
+                <td class="px-4 py-3">
+                  <div class="flex justify-center items-center gap-1">
+                    <BaseButton variant="ghost" size="sm" title="Detail" @click="openDetail(product)">
+                      <Eye class="w-4 h-4 text-slate-500 hover:text-blue-600" />
+                    </BaseButton>
+                    <BaseButton variant="ghost" size="sm" title="Ubah" @click="openEditForm(product)">
+                      <Pencil class="w-4 h-4 text-slate-500 hover:text-amber-600" />
+                    </BaseButton>
+                    <BaseButton variant="ghost" size="sm" title="Hapus" @click="deleteProduct(product)">
+                      <Trash2 class="w-4 h-4 text-slate-500 hover:text-rose-600" />
+                    </BaseButton>
                   </div>
                 </td>
               </tr>
@@ -346,51 +385,17 @@ onMounted(async () => {
           </table>
         </div>
 
-        <!-- Pagination -->
-        <div class="flex flex-wrap justify-between items-center gap-2 mt-3">
-          <div class="text-slate-500 small">
-            Menampilkan
-            {{ products.length ? (currentPage - 1) * perPage + 1 : 0 }}
-            sampai
-            {{ (currentPage - 1) * perPage + products.length }}
-            dari {{ pagination.total }} data
-          </div>
-
-          <nav v-if="pagination.total_pages > 0" aria-label="Navigasi halaman">
-            <ul class="pagination pagination-sm mb-0">
-              <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                <button class="page-link" type="button" :disabled="currentPage === 1" @click="changePage(1)">Pertama</button>
-              </li>
-
-              <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                <button class="page-link" type="button" :disabled="currentPage === 1" @click="changePage(currentPage - 1)">Sebelumnya</button>
-              </li>
-
-              <li
-                v-for="(page, index) in visiblePages"
-                :key="`${page}-${index}`"
-                class="page-item"
-                :class="{
-                  active: page === currentPage,
-                  disabled: page === '...',
-                }"
-              >
-                <span v-if="page === '...'" class="page-link">...</span>
-                <button v-else class="page-link" type="button" @click="changePage(Number(page))">
-                  {{ page }}
-                </button>
-              </li>
-
-              <li class="page-item" :class="{ disabled: currentPage === pagination.total_pages }">
-                <button class="page-link" type="button" :disabled="currentPage === pagination.total_pages" @click="changePage(currentPage + 1)">Selanjutnya</button>
-              </li>
-
-              <li class="page-item" :class="{ disabled: currentPage === pagination.total_pages }">
-                <button class="page-link" type="button" :disabled="currentPage === pagination.total_pages" @click="changePage(pagination.total_pages)">Akhir</button>
-              </li>
-            </ul>
-          </nav>
-        </div>
+        <!-- ✨ PAGINATION BAR (Menggunakan Komponen Terpisah) ✨ -->
+        <TablePaginationBar
+          :current-page="currentPage"
+          :total-pages="pagination.total_pages"
+          :total-items="pagination.total"
+          :per-page="perPage"
+          :loading="loading"
+          item-label="produk"
+          @update:page="loadProducts($event)"
+          @update:per-page="perPage = $event"
+        />
       </div>
     </div>
   </div>

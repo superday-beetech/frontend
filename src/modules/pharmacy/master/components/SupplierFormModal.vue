@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
-import supplierService, { type Supplier, type SupplierPayload } from "../api/supplier.api";
+import supplierService, { type Supplier, type SupplierPayload } from "../services/supplierService";
 import { useToast } from "@/shared/composables/useToast";
 
 const toast = useToast();
