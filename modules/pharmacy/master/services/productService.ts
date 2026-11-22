@@ -100,7 +100,22 @@ export type ProductAttributePayload = Omit<ProductAttribute, 'id' | 'product_id'
   id?: number
 }
 
+export interface ProductPharmacyProfile {
+  generic_name: string | null
+  active_ingredient: string | null
+  dosage_form: string | null
+  strength: string | null
+  drug_class: string | null
+  bpom_number: string | null
+  requires_prescription: number
+  min_stock: number
+  max_stock: number | null
+  rack_location: string | null
+  manufacturer: string | null
+}
+
 export interface ProductAttributes {
+  pharmacy?: Array<{ id: number; value_json: ProductPharmacyProfile }>
   image?: Array<{ id: number; value_json: { url: string }; is_primary: number }>
   info?: Array<{ id: number; attr_group: string; title: string | null; content: string; severity: string | null }>
 }
@@ -174,10 +189,18 @@ const productService = {
     const response = await api.get<ApiResponse<ProductAttribute[]>>(`${BASE_URL}/attributes/${productId}`)
     const envelope = response.data
     const rows = envelope.data ?? []
-    const grouped: ProductAttributes = { image: [], info: [] }
+    const grouped: ProductAttributes = { pharmacy: [], image: [], info: [] }
 
     for (const row of rows) {
-      if (row.attr_type === 'image') {
+      if (row.attr_type === 'pharmacy') {
+        const value = parseJsonValue(row.value_json)
+        if (value) {
+          grouped.pharmacy?.push({
+            id: row.id ?? 0,
+            value_json: value as unknown as ProductPharmacyProfile,
+          })
+        }
+      } else if (row.attr_type === 'image') {
         grouped.image?.push({
           id: row.id ?? 0,
           value_json: (parseJsonValue(row.value_json) ?? {}) as { url: string },
