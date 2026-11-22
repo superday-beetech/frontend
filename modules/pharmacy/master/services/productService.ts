@@ -172,6 +172,18 @@ export interface UploadImageResult {
   filename: string
 }
 
+function parseJsonValue(value: unknown): Record<string, unknown> | null {
+  if (value == null) return null
+  if (typeof value === 'object') return value as Record<string, unknown>
+  if (typeof value !== 'string') return null
+
+  try {
+    return JSON.parse(value) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
 const BASE_URL = '/pharmacy/product-api'
 const DETAIL_BASE_URL = '/pharmacy/product-detail-api'
 
@@ -185,16 +197,19 @@ const productService = {
     return response.data
   },
 
-  getDetail(productId: number) {
-    return api.get<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/show/${productId}`)
+  async getDetail(productId: number) {
+    const response = await api.get<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/show/${productId}`)
+    return response.data
   },
 
-  createDetail(payload: ProductDetailPayload) {
-    return api.post<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/create`, payload)
+  async createDetail(payload: ProductDetailPayload) {
+    const response = await api.post<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/create`, payload)
+    return response.data
   },
 
-  updateDetail(productId: number, payload: ProductDetailPayload) {
-    return api.put<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/update/${productId}`, payload)
+  async updateDetail(productId: number, payload: ProductDetailPayload) {
+    const response = await api.put<ApiResponse<ProductDetail>>(`${DETAIL_BASE_URL}/update/${productId}`, payload)
+    return response.data
   },
 
   getById(id: number) {
@@ -215,7 +230,8 @@ const productService = {
 
   async getAttributes(productId: number) {
     const response = await api.get<ApiResponse<ProductAttribute[]>>(`${BASE_URL}/attributes/${productId}`)
-    const rows = response.data.data ?? []
+    const envelope = response.data
+    const rows = envelope.data ?? []
     const grouped: ProductAttributes = { unit: [], image: [], info: [] }
 
     for (const row of rows) {
@@ -225,13 +241,13 @@ const productService = {
           title: row.title ?? '',
           value_num: Number(row.value_num ?? 0),
           value_num_2: row.value_num_2 == null ? null : Number(row.value_num_2),
-          value_json: row.value_json as { barcode?: string } | null,
+          value_json: parseJsonValue(row.value_json) as { barcode?: string } | null,
           is_primary: Number(row.is_primary ?? 0),
         })
       } else if (row.attr_type === 'image') {
         grouped.image?.push({
           id: row.id ?? 0,
-          value_json: (row.value_json ?? {}) as { url: string },
+          value_json: (parseJsonValue(row.value_json) ?? {}) as { url: string },
           is_primary: Number(row.is_primary ?? 0),
         })
       } else if (row.attr_type === 'info') {
@@ -245,7 +261,7 @@ const productService = {
       }
     }
 
-    return { ...response, data: { ...response.data, data: grouped } }
+    return { ...envelope, data: grouped }
   },
 
   getPrices(productId: number) {
