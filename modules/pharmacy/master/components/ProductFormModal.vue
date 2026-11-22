@@ -4,7 +4,7 @@ import { useToast } from '@/shared/composables/useToast'
 import { useCurrencyInput } from '@/shared/composables/useCurrencyInput'
 import { Package, Pill, Trash2, Plus, ImagePlus, Star } from 'lucide-vue-next'
 // import { loadEnv } from 'vite'
-import productService, { type Product, type ProductPayload, type ProductWithDetailPayload } from '../services/productService'
+import productService, { type Product, type ProductPayload } from '../services/productService'
 
 import { useMasterOptions } from '../composables/useMasterOptions'
 import BaseTextarea from '@/shared/components/ui/form/BaseTextarea.vue'
@@ -124,7 +124,7 @@ const detailForm = ref({
   manufacturer: '',
 })
 
-// ── Konversi satuan (product_attributes tipe 'unit') ──
+// ── Satuan tambahan katalog (product_units) ──
 const unitConversions = ref<UnitConversionRow[]>([])
 
 // ── Foto produk (product_attributes tipe 'image') ──
@@ -452,7 +452,7 @@ async function save(): Promise<void> {
       })),
   ]
 
-  const payload: ProductWithDetailPayload = {
+  const payload: ProductPayload = {
     sku: form.value.sku.trim(),
     barcode: form.value.barcode?.trim() || null,
     name: form.value.name.trim(),
