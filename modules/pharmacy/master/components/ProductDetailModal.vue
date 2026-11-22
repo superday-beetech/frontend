@@ -68,7 +68,25 @@ const hasAnyDetail = computed(() => {
   )
 })
 
-const units = computed(() => attrs.value.unit ?? [])
+const units = computed(() => (props.product.units ?? [])
+  .filter((unit) => Number(unit.is_active) === 1)
+  .map((unit) => {
+    const price = (props.product.prices ?? [])
+      .filter((item) => Number(item.unit_id) === Number(unit.unit_id)
+        && item.customer_type == null
+        && Number(item.min_qty) === 1
+        && Number(item.is_active ?? 1) === 1)
+      .sort((a, b) => String(b.valid_from ?? '').localeCompare(String(a.valid_from ?? '')))[0]
+
+    return {
+      ...unit,
+      title: unit.unit_name ?? '-',
+      value_num: Number(unit.conversion_factor),
+      value_num_2: price?.price ?? null,
+      value_json: unit.barcode ? { barcode: unit.barcode } : null,
+      is_primary: Number(unit.is_base),
+    }
+  }))
 const images = computed(() => attrs.value.image ?? [])
 const infos = computed(() => attrs.value.info ?? [])
 
