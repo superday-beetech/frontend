@@ -5,8 +5,10 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const isDev = mode === 'development'
 
   return {
+    base: isDev ? '/' : '/acn/',
     plugins: [vue(), tailwindcss()],
 
     resolve: {
@@ -34,6 +36,12 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      host: '0.0.0.0',
+      port: 5173,
+      allowedHosts: ['cakra.test'],
+      cors: {
+        origin: 'https://cakra.test',
+      },
       proxy: {
         '/api': {
           target: env.VITE_DEV_API_TARGET || 'https://cakra.test',
@@ -50,31 +58,3 @@ export default defineConfig(({ mode }) => {
     },
   }
 })
-/* import { defineConfig, loadEnv } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
-import { fileURLToPath, URL } from 'node:url'
-
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-
-  return {
-    plugins: [vue(), tailwindcss()],
-    resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-      },
-    },
-    server: {
-      // Session memakai cookie → di development panggil API lewat proxy (same-origin),
-      // sehingga cookie SameSite=Lax berfungsi persis seperti di produksi.
-      proxy: {
-        '/api': {
-          target: env.VITE_DEV_API_TARGET || 'https://api.cakra.test',
-          changeOrigin: true,
-        },
-      },
-    },
-  }
-})
- */

@@ -14,7 +14,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/modules/master/views/.DashboardView.vue"],
   // Spec dijalankan Vitest sendiri; dikecualikan agar `npm run build` tidak bergantung pada paket test.
   "exclude": ["src/**/*.spec.ts"]
 }
