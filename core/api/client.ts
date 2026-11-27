@@ -7,18 +7,36 @@ import { env } from '@/core/config/env'
 // CSRF (CodeIgniter 4, CSRFProtection = 'cookie'): CI4 menaruh token di cookie yang bisa dibaca JS;
 // axios menyalinnya ke header pada request non-GET. Nama di bawah HARUS sama dengan
 // Config\Security::$cookieName dan $headerName di backend.
+
+function readCsrfToken(): string | null {
+  return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? null
+}
+
 export const http = axios.create({
   baseURL: env.apiBaseUrl,
   timeout: 15000,
   withCredentials: true,
-  withXSRFToken: true,
-  xsrfCookieName: 'csrf_cookie_name',
-  xsrfHeaderName: 'X-CSRF-TOKEN',
+  //   withXSRFToken: true,
+  //   xsrfCookieName: 'csrf_cookie_name',
+  //   xsrfHeaderName: 'X-CSRF-TOKEN',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
   },
+})
+
+// Kirim token di setiap request non-GET
+http.interceptors.request.use((config) => {
+  const method = (config.method ?? 'get').toLowerCase()
+  if (method !== 'get' && method !== 'head' && method !== 'options') {
+    const token = readCsrfToken()
+    if (token) {
+      config.headers = config.headers ?? {}
+      config.headers['X-CSRF-TOKEN'] = token
+    }
+  }
+  return config
 })
 
 // --- Penanganan 401 tanpa full page reload ---------------------------------
