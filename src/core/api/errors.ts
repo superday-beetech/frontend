@@ -2,7 +2,7 @@
 interface ErrorLike {
   response?: {
     status?: number
-    data?: { message?: string; errors?: Record<string, string | string[]> }
+    data?: { message?: string; detail?: string; errors?: Record<string, string | string[]> }
   }
 }
 
@@ -15,7 +15,8 @@ export function getErrorStatus(error: unknown): number | undefined {
 }
 
 export function getApiErrorMessage(error: unknown, fallback = 'Terjadi kesalahan. Silakan coba lagi.'): string {
-  return asErrorLike(error).response?.data?.message || fallback
+  const data = asErrorLike(error).response?.data
+  return data?.message || data?.detail || fallback
 }
 
 /** Error per-field (422) dengan satu pesan per field; objek kosong jika tidak ada. */
