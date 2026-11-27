@@ -11,8 +11,10 @@ let csrfToken: string | null = null
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
-function rememberCsrfToken(headers: Record<string, unknown> | undefined): void {
-  const value = headers?.['x-csrf-token']
+function rememberCsrfToken(headers: unknown): void {
+  const value = headers && typeof headers === 'object'
+    ? (headers as Record<string, unknown>)['x-csrf-token']
+    : undefined
 
   if (typeof value === 'string' && value.trim() !== '') {
     csrfToken = value
