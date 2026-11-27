@@ -1,13 +1,18 @@
-import { apiGet, apiPost, apiPut, apiDelete, apiList } from '@/core/api/request'
+import { apiGet, apiPost, apiPut, apiDelete } from '@/core/api/request'
 
-import type { Organization, OrganizationCreatePayload, OrganizationUpdatePayload, OrganizationQuery } from '../types/organization.types'
-import type { Paginated } from '@/core/api/types'
+import type {
+  Organization,
+  OrganizationCreatePayload,
+  OrganizationUpdatePayload,
+  OrganizationQuery,
+  OrganizationListResult,
+} from '../types/organization.types'
 
 const BASE_URL = '/core/organizations'
 
 export const organizationsApi = {
-  index(params: OrganizationQuery = {}): Promise<Paginated<Organization>> {
-    return apiList<Organization>(BASE_URL, params)
+  index(params: OrganizationQuery = {}): Promise<OrganizationListResult> {
+    return apiGet<OrganizationListResult>(BASE_URL, { params })
   },
 
   show(id: number): Promise<Organization> {

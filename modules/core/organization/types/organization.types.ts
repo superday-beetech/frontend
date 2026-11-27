@@ -1,4 +1,14 @@
-import type { Paginated } from '@/core/api/types'
+export interface PaginationMeta {
+  current_page: number
+  last_page: number
+  per_page: number
+  total: number
+}
+
+export interface PaginatedResult<T> {
+  items: T[]
+  pagination: PaginationMeta
+}
 
 /* =========================================================
  * ORGANIZATION
@@ -11,14 +21,16 @@ export interface Organization {
   name: string
   legal_name: string | null
   organization_type: string
-  status: string
+  status: 'active' | 'inactive'
   timezone: string
   currency: string
   membership_role?: string
   is_default?: boolean | number
 }
 
-export interface OrganizationPayload {
+export interface OrganizationCreatePayload {
+  code: string
+  slug: string
   name: string
   legal_name?: string | null
   organization_type?: string
@@ -26,16 +38,21 @@ export interface OrganizationPayload {
   currency?: string
 }
 
-/** Payload khusus pembuatan organisasi. */
-export interface OrganizationCreatePayload extends OrganizationPayload {
-  code: string
-  slug: string
+export interface OrganizationUpdatePayload {
+  name?: string
+  legal_name?: string | null
+  organization_type?: string
+  timezone?: string
+  currency?: string
 }
 
-/** Payload khusus perubahan organisasi. */
-export type OrganizationUpdatePayload = Partial<OrganizationPayload>
+export interface OrganizationQuery {
+  page?: number
+  per_page?: number
+  q?: string
+}
 
-export type OrganizationListResult = Paginated<Organization>
+export type OrganizationListResult = PaginatedResult<Organization>
 
 /* =========================================================
  * ORGANIZATION UNIT
@@ -48,19 +65,27 @@ export interface OrganizationUnit {
   code: string
   name: string
   unit_type: string
-  status: string
-  description?: string | null
+  status: 'active' | 'inactive'
+  metadata?: Record<string, unknown> | null
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 export interface OrganizationUnitPayload {
   parent_id?: number | null
-  code: string
-  name: string
-  unit_type: string
-  description?: string | null
+  code?: string
+  name?: string
+  unit_type?: string
+  status?: 'active' | 'inactive'
+  metadata?: Record<string, unknown> | null
 }
 
-export type OrganizationUnitListResult = Paginated<OrganizationUnit>
+export interface OrganizationUnitQuery {
+  organization_id: number
+  include_inactive?: boolean
+}
+
+export type OrganizationUnitListResult = OrganizationUnit[]
 
 /* =========================================================
  * ORGANIZATION MEMBERSHIP
@@ -79,14 +104,15 @@ export interface OrganizationMembership {
   organization_id: number
   user_id: number
   username?: string
-  email?: string
   membership_role: string
-  status: string
+  status: 'active' | 'inactive'
   is_default: number | boolean
-  unit_id: number | null
-  unit_name: string | null
   units: OrganizationMembershipUnit[]
   unit_ids: number[]
+  unit_id: number | null
+  unit_name: string | null
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 export interface OrganizationMembershipPayload {
@@ -99,7 +125,15 @@ export interface OrganizationMembershipPayload {
   default_unit_id?: number | null
 }
 
-export type OrganizationMembershipListResult = Paginated<OrganizationMembership>
+export interface OrganizationMembershipQuery {
+  organization_id: number
+  page?: number
+  per_page?: number
+  q?: string
+  status?: string
+}
+
+export type OrganizationMembershipListResult = PaginatedResult<OrganizationMembership>
 
 /* =========================================================
  * ORGANIZATION USERS
@@ -108,31 +142,12 @@ export type OrganizationMembershipListResult = Paginated<OrganizationMembership>
 export interface OrganizationUser {
   id: number
   username: string
-  email?: string
-  name?: string
 }
 
-/* =========================================================
- * QUERY PARAMETERS
- * ======================================================= */
-
-export interface OrganizationQuery {
+export interface OrganizationUserQuery {
   page?: number
   per_page?: number
   q?: string
 }
 
-export interface OrganizationUnitQuery {
-  organization_id: number
-  include_inactive?: boolean
-  page?: number
-  per_page?: number
-  q?: string
-}
-
-export interface OrganizationMembershipQuery {
-  organization_id: number
-  page?: number
-  per_page?: number
-  q?: string
-}
+export type OrganizationUserListResult = PaginatedResult<OrganizationUser>

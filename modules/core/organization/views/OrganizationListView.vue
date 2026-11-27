@@ -1,34 +1,28 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
-import { Building2, Plus, Search, RefreshCw, Pencil, Archive, X, Save } from 'lucide-vue-next'
+import { Building2, Plus, Search, RefreshCw, Pencil, Archive } from 'lucide-vue-next'
 
 import PageHeader from '@/shared/components/ui/primitives/PageHeader.vue'
 import BaseButton from '@/shared/components/ui/primitives/BaseButton.vue'
 
+import { useModal } from '@/shared/composables/useModal'
+import { useConfirm } from '@/shared/composables/useConfirm'
+import { useToast } from '@/shared/composables/useToast'
+
+import OrganizationForm from '../components/OrganizationForm.vue'
 import { useOrganizationManagementStore } from '../stores/organization.store'
 
-import type { Organization, OrganizationPayload } from '../types/organization.types'
-
+import type { Organization, OrganizationCreatePayload, OrganizationUpdatePayload } from '../types/organization.types'
+import BasePagination from '@/shared/components/ui/data/BasePagination.vue'
 const store = useOrganizationManagementStore()
+
+const { open, close } = useModal()
+const { confirm } = useConfirm()
+const toast = useToast()
 
 const search = ref('')
 const page = ref(1)
 const perPage = ref(10)
-
-const showForm = ref(false)
-const editingId = ref<number | null>(null)
-
-const form = ref<OrganizationPayload>({
-  code: '',
-  slug: '',
-  name: '',
-  legal_name: '',
-  organization_type: 'business',
-  timezone: 'Asia/Jakarta',
-  currency: 'IDR',
-})
-
-const isEditing = computed(() => editingId.value !== null)
 
 const totalPages = computed(() => Math.max(1, store.pagination.last_page || 1))
 
@@ -56,7 +50,7 @@ function errorText(error: unknown): string {
   return err.message || 'Terjadi kesalahan.'
 }
 
-async function loadData(targetPage = page.value) {
+async function loadData(targetPage = page.value): Promise<void> {
   try {
     await store.fetchList({
       page: targetPage,
@@ -66,135 +60,96 @@ async function loadData(targetPage = page.value) {
 
     page.value = store.pagination.current_page
   } catch (error) {
-    window.alert(errorText(error))
+    toast.error('Gagal memuat organisasi', errorText(error))
   }
 }
 
-function resetForm() {
-  editingId.value = null
+function openCreate(): void {
+  open({
+    title: 'Tambah Organisasi',
+    component: OrganizationForm,
+    size: 'lg',
+    props: {
+      mode: 'create',
+    },
+    onSelect: async (value?: unknown) => {
+      if (!value) return
 
-  form.value = {
-    code: '',
-    slug: '',
-    name: '',
-    legal_name: '',
-    organization_type: 'business',
-    timezone: 'Asia/Jakarta',
-    currency: 'IDR',
-  }
-}
+      try {
+        await store.create(value as OrganizationCreatePayload)
 
-function openCreate() {
-  resetForm()
-  showForm.value = true
-}
+        toast.success('Organisasi berhasil dibuat', 'Organisasi baru sudah tersimpan.')
 
-function openEdit(item: Organization) {
-  editingId.value = item.id
-
-  form.value = {
-    name: item.name,
-    legal_name: item.legal_name ?? '',
-    organization_type: item.organization_type,
-    timezone: item.timezone,
-    currency: item.currency,
-  }
-
-  showForm.value = true
-}
-
-function closeForm() {
-  showForm.value = false
-  resetForm()
-}
-
-function makeSlug() {
-  if (isEditing.value) return
-
-  form.value.slug = String(form.value.name ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
-
-async function submitForm() {
-  if (!form.value.name?.trim()) {
-    window.alert('Nama organisasi wajib diisi.')
-    return
-  }
-
-  const wasEditing = isEditing.value
-  const currentPage = page.value
-
-  try {
-    if (wasEditing && editingId.value !== null) {
-      await store.update(editingId.value, {
-        name: form.value.name.trim(),
-        legal_name: form.value.legal_name?.trim() || null,
-        organization_type: form.value.organization_type,
-        timezone: form.value.timezone,
-        currency: form.value.currency,
-      })
-
-      window.alert('Organisasi berhasil diperbarui.')
-    } else {
-      if (!form.value.code?.trim()) {
-        window.alert('Kode organisasi wajib diisi.')
-        return
+        close()
+        await loadData(1)
+      } catch (error) {
+        toast.error('Gagal membuat organisasi', errorText(error))
       }
-
-      if (!form.value.slug?.trim()) {
-        window.alert('Slug organisasi wajib diisi.')
-        return
-      }
-
-      await store.create({
-        code: form.value.code.trim().toUpperCase(),
-        slug: form.value.slug.trim().toLowerCase(),
-        name: form.value.name.trim(),
-        legal_name: form.value.legal_name?.trim() || null,
-        organization_type: form.value.organization_type,
-        timezone: form.value.timezone,
-        currency: form.value.currency,
-      })
-
-      window.alert('Organisasi berhasil dibuat.')
-    }
-
-    closeForm()
-    await loadData(wasEditing ? currentPage : 1)
-  } catch (error) {
-    window.alert(errorText(error))
-  }
+    },
+  })
 }
 
-async function archiveOrganization(item: Organization) {
-  const confirmed = window.confirm(`Arsipkan organisasi "${item.name}"?\n\nOrganisasi tidak akan dihapus secara permanen.`)
+function openEdit(item: Organization): void {
+  open({
+    title: 'Edit Organisasi',
+    component: OrganizationForm,
+    size: 'lg',
+    props: {
+      mode: 'edit',
+      initialValue: {
+        name: item.name,
+        legal_name: item.legal_name ?? '',
+        organization_type: item.organization_type,
+        timezone: item.timezone,
+        currency: item.currency ?? 'IDR',
+      },
+    },
+    onSelect: async (value?: unknown) => {
+      if (!value) return
 
-  if (!confirmed) return
+      try {
+        const payload = value as OrganizationUpdatePayload
+
+        await store.update(item.id, payload)
+
+        toast.success('Organisasi berhasil diperbarui', 'Perubahan data organisasi sudah tersimpan.')
+
+        close()
+        await loadData(page.value)
+      } catch (error) {
+        toast.error('Gagal memperbarui organisasi', errorText(error))
+      }
+    },
+  })
+}
+
+async function archiveOrganization(item: Organization): Promise<void> {
+  const approved = await confirm({
+    title: 'Arsipkan Organisasi',
+    message: `Yakin ingin mengarsipkan organisasi "${item.name}"? Organisasi tidak akan dihapus secara permanen.`,
+    confirmText: 'Ya, Arsipkan',
+    cancelText: 'Batal',
+    variant: 'danger',
+  })
+
+  if (!approved) return
 
   try {
     await store.archive(item.id)
 
-    window.alert('Organisasi berhasil diarsipkan.')
+    toast.success('Organisasi berhasil diarsipkan', `${item.name} sudah diarsipkan.`)
 
     const nextPage = store.items.length === 0 && page.value > 1 ? page.value - 1 : page.value
 
     await loadData(nextPage)
   } catch (error) {
-    window.alert(errorText(error))
+    toast.error('Gagal mengarsipkan organisasi', errorText(error))
   }
 }
 
-function previousPage() {
-  if (page.value <= 1) return
-  loadData(page.value - 1)
-}
-
-function nextPage() {
-  if (page.value >= totalPages.value) return
-  loadData(page.value + 1)
+function handlePageChange(nextPage: number): void {
+  if (nextPage === page.value || store.loading) return
+  void loadData(nextPage)
 }
 
 watch(search, () => {
@@ -202,20 +157,22 @@ watch(search, () => {
 
   searchTimer = setTimeout(() => {
     page.value = 1
-    loadData(1)
+    void loadData(1)
   }, 350)
 })
 
 watch(perPage, () => {
   page.value = 1
-  loadData(1)
+  void loadData(1)
 })
+
+onMounted(() => {
+  void loadData(1)
+})
+
 onBeforeUnmount(() => {
-  if (searchTimer) {
-    clearTimeout(searchTimer)
-  }
+  if (searchTimer) clearTimeout(searchTimer)
 })
-onMounted(() => loadData(1))
 </script>
 
 <template>
@@ -356,159 +313,19 @@ onMounted(() => loadData(1))
 
       <!-- Pagination -->
       <div
-        class="flex flex-col gap-3 border-t border-slate-200 px-5 py-3 text-sm dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 border-t border-slate-200 px-5 py-3 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between"
       >
         <span class="text-xs text-slate-500">Total {{ store.pagination.total }} organisasi</span>
 
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            :disabled="page <= 1 || store.loading"
-            class="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40 dark:border-slate-700"
-            @click="previousPage"
-          >
-            Sebelumnya
-          </button>
-
-          <span class="text-xs text-slate-500">{{ page }} / {{ totalPages }}</span>
-
-          <button
-            type="button"
-            :disabled="page >= totalPages || store.loading"
-            class="rounded-lg border border-slate-200 px-3 py-1.5 disabled:opacity-40 dark:border-slate-700"
-            @click="nextPage"
-          >
-            Berikutnya
-          </button>
-        </div>
+        <BasePagination
+          :current-page="page"
+          :total-pages="totalPages"
+          :loading="store.loading"
+          :show-edges="true"
+          :show-prev-next-text="false"
+          @update:page="handlePageChange"
+        />
       </div>
     </div>
-
-    <!-- Form Modal -->
-    <Teleport to="body">
-      <div
-        v-if="showForm"
-        class="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-slate-950/50 p-4"
-        @click.self="closeForm"
-      >
-        <div class="my-auto w-full max-w-2xl rounded-2xl bg-white shadow-2xl dark:bg-slate-900">
-          <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-800">
-            <div>
-              <h2 class="font-semibold text-slate-900 dark:text-white">
-                {{ isEditing ? 'Edit Organisasi' : 'Tambah Organisasi' }}
-              </h2>
-
-              <p class="mt-1 text-xs text-slate-500">Lengkapi informasi dasar organisasi.</p>
-            </div>
-
-            <button type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" @click="closeForm">
-              <X class="h-5 w-5" />
-            </button>
-          </div>
-
-          <form class="space-y-4 p-6" @submit.prevent="submitForm">
-            <div v-if="!isEditing" class="grid gap-4 sm:grid-cols-2">
-              <label class="block">
-                <span class="mb-1.5 block text-sm font-medium">Kode Organisasi *</span>
-
-                <input
-                  v-model="form.code"
-                  required
-                  maxlength="50"
-                  placeholder="ACN"
-                  class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm uppercase outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950"
-                />
-              </label>
-
-              <label class="block">
-                <span class="mb-1.5 block text-sm font-medium">Slug *</span>
-
-                <input
-                  v-model="form.slug"
-                  required
-                  maxlength="100"
-                  placeholder="adi-cakra-nata"
-                  class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950"
-                />
-              </label>
-            </div>
-
-            <label class="block">
-              <span class="mb-1.5 block text-sm font-medium">Nama Organisasi *</span>
-
-              <input
-                v-model="form.name"
-                required
-                maxlength="150"
-                placeholder="Nama organisasi"
-                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950"
-                @blur="makeSlug"
-              />
-            </label>
-
-            <label class="block">
-              <span class="mb-1.5 block text-sm font-medium">Nama Legal</span>
-
-              <input
-                v-model="form.legal_name"
-                maxlength="200"
-                placeholder="Nama badan hukum (opsional)"
-                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-primary-500 dark:border-slate-700 dark:bg-slate-950"
-              />
-            </label>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <label class="block">
-                <span class="mb-1.5 block text-sm font-medium">Tipe Organisasi *</span>
-
-                <select
-                  v-model="form.organization_type"
-                  required
-                  class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950"
-                >
-                  <option value="business">Business</option>
-                  <option value="cooperative">Cooperative</option>
-                  <option value="non_profit">Non Profit</option>
-                  <option value="government">Government</option>
-                  <option value="other">Other</option>
-                </select>
-              </label>
-
-              <label class="block">
-                <span class="mb-1.5 block text-sm font-medium">Zona Waktu *</span>
-
-                <input
-                  v-model="form.timezone"
-                  required
-                  maxlength="64"
-                  class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950"
-                />
-              </label>
-            </div>
-
-            <label class="block">
-              <span class="mb-1.5 block text-sm font-medium">Mata Uang *</span>
-
-              <input
-                v-model="form.currency"
-                required
-                maxlength="3"
-                minlength="3"
-                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm uppercase dark:border-slate-700 dark:bg-slate-950"
-              />
-            </label>
-
-            <div class="flex justify-end gap-2 border-t border-slate-200 pt-4 dark:border-slate-800">
-              <BaseButton type="button" variant="secondary" @click="closeForm">Batal</BaseButton>
-
-              <BaseButton type="submit" :loading="store.saving">
-                <Save class="h-4 w-4" />
-                {{ isEditing ? 'Simpan Perubahan' : 'Buat Organisasi' }}
-              </BaseButton>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Teleport>
   </div>
 </template>

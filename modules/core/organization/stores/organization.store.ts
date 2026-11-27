@@ -29,7 +29,7 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
       response?: {
         data?: {
           message?: string | string[]
-          errors?: Record<string, string>
+          errors?: Record<string, string | string[]>
         }
       }
       message?: string
@@ -48,7 +48,7 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
     const errors = err.response?.data?.errors
 
     if (errors) {
-      return Object.values(errors).join(', ')
+      return Object.values(errors).flat().join(', ')
     }
 
     return err.message || 'Terjadi kesalahan.'
@@ -63,12 +63,11 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
 
       items.value = result.items ?? []
 
-      // apiList() mengembalikan metadata dengan properti `meta`.
       pagination.value = {
-        current_page: result.meta?.current_page ?? 1,
-        per_page: result.meta?.per_page ?? DEFAULT_PER_PAGE,
-        total: result.meta?.total ?? items.value.length,
-        last_page: result.meta?.last_page ?? 1,
+        current_page: result.pagination?.current_page ?? 1,
+        per_page: result.pagination?.per_page ?? DEFAULT_PER_PAGE,
+        total: result.pagination?.total ?? items.value.length,
+        last_page: result.pagination?.last_page ?? 1,
       }
 
       return result
@@ -95,12 +94,14 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
     }
   }
 
-  async function update(id: number, payload: OrganizationUpdatePayload) {
+  async function create(payload: OrganizationCreatePayload) {
     saving.value = true
     errorMessage.value = null
 
     try {
-      return await organizationsApi.create(payload)
+      const result = await organizationsApi.create(payload)
+      current.value = result
+      return result
     } catch (error) {
       errorMessage.value = getErrorMessage(error)
       throw error
@@ -109,7 +110,7 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
     }
   }
 
-  async function update(id: number, payload: Partial<OrganizationPayload>) {
+  async function update(id: number, payload: OrganizationUpdatePayload) {
     saving.value = true
     errorMessage.value = null
 
@@ -117,6 +118,15 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
       const result = await organizationsApi.update(id, payload)
 
       current.value = result
+
+      const index = items.value.findIndex((item) => item.id === id)
+
+      if (index !== -1) {
+        items.value[index] = {
+          ...items.value[index],
+          ...result,
+        }
+      }
 
       return result
     } catch (error) {
@@ -138,6 +148,10 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
 
       pagination.value.total = Math.max(0, pagination.value.total - 1)
 
+      if (current.value?.id === id) {
+        current.value = null
+      }
+
       return true
     } catch (error) {
       errorMessage.value = getErrorMessage(error)
@@ -151,7 +165,6 @@ export const useOrganizationManagementStore = defineStore('organization-manageme
     items.value = []
     current.value = null
     errorMessage.value = null
-
     loading.value = false
     saving.value = false
 
